@@ -1,7 +1,6 @@
 # Dependencies
 node_modules/
 dist/
-
 # Environment
 .env
 .env.local
@@ -9,7 +8,7 @@ dist/
 
 # Media files
 *.mp4
-
+*.mp3
 *.mov
 *.avi
 *.wmv

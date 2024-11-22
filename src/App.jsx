@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import ReactFullpage from '@fullpage/react-fullpage';
+import { motion } from 'framer-motion';
 import Slide1 from './components/Slide1';
 import Slide2 from './components/Slide2';
 import Slide3 from './components/Slide3';
+import FullscreenScroll from './components/FullscreenScroll';
 import { FaVolumeMute, FaVolumeUp } from 'react-icons/fa';
 
 function App() {
@@ -73,8 +74,58 @@ function App() {
     </button>
   );
 
+  const logoVariants = {
+    initial: {
+      y: 0,
+      scale: 1,
+      top: '6rem'
+    },
+    scrolled: {
+      y: 0,
+      scale: 0.5,
+      top: '1rem'
+    }
+  };
+
+  const headingVariants = {
+    initial: {
+      opacity: 1,
+      y: 0
+    },
+    scrolled: {
+      opacity: 0,
+      y: -20
+    }
+  };
+
   return (
-    <div className="App">
+    <div className="relative">
+      {/* Logo Section - Fixed above all slides */}
+      <motion.div
+        className="fixed w-full z-50 flex flex-col items-center"
+        initial="initial"
+        animate={currentSection > 0 ? "scrolled" : "initial"}
+        transition={{ 
+          duration: 1,
+          ease: [0.16, 1, 0.3, 1], 
+          delay: 0.1
+        }}
+      >
+        <motion.img 
+          variants={logoVariants}
+          src="/images/logo.svg"
+          alt="OPUS Loop Logo" 
+          className="absolute h-20 md:h-24 w-auto"
+        />
+        <motion.div
+          variants={headingVariants}
+          className="absolute top-48 md:top-52 text-center"
+        >
+          <h1 className="text-white text-2xl md:text-3xl font-bold mb-2 lowercase">opus loop</h1>
+          <p className="text-white/80 text-base md:text-lg lowercase">a simple meditation app</p>
+        </motion.div>
+      </motion.div>
+
       {/* Background Audio */}
       <audio ref={audioRef} loop>
         <source src="https://res.cloudinary.com/daiq2zvtv/video/upload/v1732277721/meditation_g6tpsj.mp3" type="audio/mp3" />
@@ -90,33 +141,17 @@ function App() {
         </div>
       )}
 
-      <ReactFullpage
-        licenseKey={'YOUR_KEY_HERE'}
-        scrollingSpeed={1000}
-        afterLoad={(origin, destination) => {
-          setCurrentSection(destination.index);
-        }}
-        render={({ state, fullpageApi }) => {
-          return (
-            <ReactFullpage.Wrapper>
-              <div className="section">
-                <Slide1
-                  meditationTime={formatTime(meditationTime)}
-                  fullpageApi={fullpageApi}
-                  isMuted={isMuted}
-                  onToggleMute={toggleMute}
-                />
-              </div>
-              <div className="section">
-                <Slide2 />
-              </div>
-              <div className="section">
-                <Slide3 />
-              </div>
-            </ReactFullpage.Wrapper>
-          );
-        }}
-      />
+      <FullscreenScroll onSectionChange={setCurrentSection}>
+        <Slide1
+          meditationTime={formatTime(meditationTime)}
+          fullpageApi={null}
+          isMuted={isMuted}
+          onToggleMute={toggleMute}
+          currentSection={currentSection}
+        />
+        <Slide2 />
+        <Slide3 />
+      </FullscreenScroll>
     </div>
   );
 }

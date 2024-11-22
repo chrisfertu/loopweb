@@ -176,6 +176,14 @@
     @apply hidden;
   }
 
+  .fp-watermark {
+    display: none !important;
+  }
+
+  #fp-nav {
+    z-index: 100;
+  }
+
   .button-primary {
     @apply flex items-center gap-3 px-6 py-3 bg-white text-black rounded-full font-medium transition-all;
     background: linear-gradient(90deg, #ffffff 0%, #f0f0f0 100%);

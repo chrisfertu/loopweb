@@ -24,22 +24,19 @@ const EmailSignup = ({ isOpen, onClose }) => {
 
     try {
       if (!supabase) {
-        console.log('Development mode: ', { name, email });
-        setIsSuccess(true);
-        setTimeout(() => {
-          onClose();
-          setIsSuccess(false);
-          setName('');
-          setEmail('');
-        }, 2000);
+        console.error('Supabase client not initialized');
+        setError('Unable to connect to the database. Please try again later.');
         return;
       }
 
-      const { error: supabaseError } = await supabase
+      console.log('Attempting to insert:', { name, email });
+      const { data, error: supabaseError } = await supabase
         .from('early_adopters')
-        .insert([{ name, email }]);
+        .insert([{ name, email }])
+        .select();
 
       if (supabaseError) {
+        console.error('Supabase error:', supabaseError);
         if (supabaseError.code === '23505') {
           setError('This email is already registered. Thank you for your interest!');
         } else {
@@ -48,6 +45,7 @@ const EmailSignup = ({ isOpen, onClose }) => {
         return;
       }
 
+      console.log('Successfully inserted:', data);
       setIsSuccess(true);
       setTimeout(() => {
         onClose();

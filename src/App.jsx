@@ -15,6 +15,7 @@ function App() {
 
   useEffect(() => {
     if (audioRef.current) {
+      audioRef.current.muted = isMuted;
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
         playPromise.catch(error => {
@@ -23,7 +24,7 @@ function App() {
       }
       audioRef.current.volume = 0.5;
     }
-  }, []);
+  }, [isMuted]);
 
   const togglePlay = () => {
     if (audioRef.current) {
@@ -38,8 +39,9 @@ function App() {
 
   const toggleMute = () => {
     if (audioRef.current) {
-      audioRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
+      const newMutedState = !isMuted;
+      audioRef.current.muted = newMutedState;
+      setIsMuted(newMutedState);
     }
   };
 

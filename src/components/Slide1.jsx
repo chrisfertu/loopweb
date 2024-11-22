@@ -25,7 +25,7 @@ const Slide1 = ({ meditationTime, onScrollDown, fullpageApi }) => {
           loading="lazy"
           onError={handleVideoError}
         >
-          <source src="/videos/meditation-bg.mp4" type="video/mp4" />
+          <source src="https://res.cloudinary.com/daiq2zvtv/video/upload/v1732277724/meditation-bg_gtfnrq.mp4" type="video/mp4" />
         </video>
       </div>
       

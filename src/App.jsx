@@ -107,7 +107,7 @@ function App() {
     <>
       {/* Persistent Audio */}
       <audio ref={audioRef} preload="auto">
-        <source src="/sound/meditation.mp3" type="audio/mp3" />
+        <source src="https://res.cloudinary.com/daiq2zvtv/video/upload/v1732277721/meditation_g6tpsj.mp3" type="audio/mp3" />
       </audio>
 
       {/* Persistent Mute Button */}

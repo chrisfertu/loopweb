@@ -30,4 +30,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          cname: ${{ secrets.CNAME }}  # Optional: If you have a custom domain
+          cname: ${{ secrets.CNAME }}  # Optional: If you have a custom domaingit add .github/workflows/deploy.yml
+          git commit -m "Update GitHub Actions workflow"
+          git push origin main

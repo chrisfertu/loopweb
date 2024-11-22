@@ -100,7 +100,7 @@ const Slide2 = () => {
             muted
             playsInline
           >
-            <source src="/videos/features-video.mp4" type="video/mp4" />
+            <source src="https://res.cloudinary.com/daiq2zvtv/video/upload/v1732277722/features-video_inhrsl.mp4" type="video/mp4" />
           </video>
         </div>
 

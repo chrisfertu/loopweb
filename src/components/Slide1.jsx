@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaBell, FaChevronDown } from 'react-icons/fa';
+import { FaBell, FaChevronDown, FaVolumeMute, FaVolumeUp } from 'react-icons/fa';
 import EmailSignup from './EmailSignup';
 
-const Slide1 = ({ meditationTime, onScrollDown, fullpageApi }) => {
+const Slide1 = ({ meditationTime, fullpageApi, isMuted, onToggleMute }) => {
   const [isEmailOpen, setIsEmailOpen] = useState(false);
   const [videoError, setVideoError] = useState(false);
 
@@ -14,13 +14,27 @@ const Slide1 = ({ meditationTime, onScrollDown, fullpageApi }) => {
 
   return (
     <div className="slide bg-black min-h-screen">
+      {/* Logo */}
+      <motion.div 
+        className="absolute top-4 left-4 z-20"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.6 }}
+      >
+        <img 
+          src="/images/logo.svg"
+          alt="OPUS Loop Logo" 
+          className="h-8 w-auto"
+        />
+      </motion.div>
+
       {/* Background Video */}
       <div className="absolute inset-0 w-full h-full overflow-hidden">
         <video
           className="video-background"
           autoPlay
           loop
-          muted
+          muted={isMuted}
           playsInline
           loading="lazy"
           onError={handleVideoError}
@@ -43,12 +57,33 @@ const Slide1 = ({ meditationTime, onScrollDown, fullpageApi }) => {
         
         {/* Timer */}
         <motion.div
-          className="font-mono text-5xl md:text-6xl lg:text-7xl font-bold tracking-wider text-white"
+          className="font-mono text-5xl md:text-6xl lg:text-7xl font-bold tracking-wider text-white mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.6 }}
         >
           {meditationTime}
+        </motion.div>
+
+        {/* Mute Button */}
+        <motion.div
+          className="mb-16"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+        >
+          <button
+            onClick={onToggleMute}
+            className={`p-3 rounded-full ${
+              isMuted ? 'bg-white/20' : 'bg-white'
+            } transition-colors`}
+          >
+            {isMuted ? (
+              <FaVolumeMute className={isMuted ? 'text-white' : 'text-black'} size={24} />
+            ) : (
+              <FaVolumeUp className={isMuted ? 'text-white' : 'text-black'} size={24} />
+            )}
+          </button>
         </motion.div>
         
         {/* Button Container */}

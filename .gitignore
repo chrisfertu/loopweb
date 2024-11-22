@@ -3,7 +3,6 @@ node_modules/
 dist/
 # Environment
 .env
-.env.local
 *.log
 
 # Media files
@@ -21,3 +20,4 @@ dist/
 .Trashes
 ehthumbs.db
 Thumbs.db
+.env.local

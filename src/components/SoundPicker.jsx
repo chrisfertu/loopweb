@@ -49,15 +49,21 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+            onTouchEnd={(e) => e.stopPropagation()}
           />
 
-          {/* Sheet */}
+          {/* Sheet - stop touch events from reaching FullscreenScroll */}
           <motion.div
             className="sound-picker-sheet"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+            onTouchEnd={(e) => e.stopPropagation()}
           >
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-2">
@@ -76,7 +82,7 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
             </div>
 
             {/* Sound list */}
-            <div className="px-3 pb-6 space-y-1 max-h-[60vh] overflow-y-auto">
+            <div className="px-3 pb-10 space-y-1 max-h-[70vh] overflow-y-auto overscroll-contain">
               {/* Silence */}
               <SoundGroup label={null}>
                 <SoundRow

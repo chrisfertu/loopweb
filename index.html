@@ -2,54 +2,103 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OPUS Loop - Simple Meditation App with Spotify & Soundcloud Integration</title>
-    
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="OPUS Loop is a simple meditation app featuring personal sounds, Spotify & Soundcloud integration, binaural beats, and Apple Health integration. No subscriptions required." />
-    <meta name="keywords" content="meditation app, binaural beats, spotify integration, soundcloud integration, mindfulness, apple health, mindful minutes" />
-    <meta name="author" content="OPUS Loop" />
-    
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="OPUS Loop - Simple Meditation App" />
-    <meta property="og:description" content="Enhance your meditation with personal sounds, Spotify & Soundcloud integration, and binaural beats. No subscriptions." />
+
+    <!-- Primary Meta Tags -->
+    <title>OPUS Loop — Meditation Timer</title>
+    <meta name="title" content="OPUS Loop — Meditation Timer" />
+    <meta name="description" content="A meditation timer you buy once and own forever. No subscription. No account. Import your own soundtracks. Set up your presets. Practice your way." />
+    <meta name="keywords" content="meditation, timer, mindfulness, binaural beats, focus, sleep, relaxation, mindful minutes, breathing, workout, bell, prayer, iOS app" />
+    <meta name="author" content="OPUS" />
+
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/path-to-your-image.jpg" />
-    
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="OPUS Loop - Simple Meditation App" />
-    <meta name="twitter:description" content="Enhance your meditation with personal sounds, Spotify & Soundcloud integration, and binaural beats. No subscriptions." />
-    
+    <meta property="og:url" content="https://opusloop.co/" />
+    <meta property="og:title" content="OPUS Loop — Meditation Timer" />
+    <meta property="og:description" content="A meditation timer you buy once and own forever. No subscription. No account. Import your own soundtracks. Set up your presets. Practice your way." />
+    <meta property="og:image" content="https://opusloop.co/images/logo.svg" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://opusloop.co/" />
+    <meta property="twitter:title" content="OPUS Loop — Meditation Timer" />
+    <meta property="twitter:description" content="A meditation timer you buy once and own forever. No subscription. No account. Import your own soundtracks. Set up your presets. Practice your way." />
+    <meta property="twitter:image" content="https://opusloop.co/images/logo.svg" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/logo.svg" />
+    <link rel="apple-touch-icon" href="/images/logo.svg" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" />
+
+    <!-- Theme -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="OPUS Loop" />
+    <link rel="apple-touch-icon" href="/images/icon-192.png" />
+
     <!-- Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "MobileApplication",
       "name": "OPUS Loop",
-      "description": "A simple meditation app with Spotify & Soundcloud integration, binaural beats, and Apple Health integration.",
+      "description": "A meditation timer you buy once and own forever. No subscription. No account. Import your own soundtracks. Set up your presets. Practice your way.",
       "applicationCategory": "HealthApplication",
       "operatingSystem": "iOS",
       "offers": {
         "@type": "Offer",
-        "price": "5.00",
+        "price": "4.99",
         "priceCurrency": "USD"
       },
       "featureList": [
-        "Personal sound uploads (MP3)",
-        "Spotify and Soundcloud integration",
-        "Apple Health Integration",
-        "Various noise types",
-        "Binaural beats",
+        "Meditation timer with unlimited presets",
+        "Import your own guided meditations and soundtracks",
+        "Procedurally generated binaural beats and noise",
+        "Apple Health integration with mindful minutes",
+        "Apple Watch companion app",
+        "iCloud sync across devices",
         "No subscription required"
-      ]
+      ],
+      "author": {
+        "@type": "Organization",
+        "name": "OPUS",
+        "url": "https://www.opus.ro"
+      }
     }
     </script>
-    <script type="module" crossorigin src="/assets/index-DTbeNVHw.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CZ93nPpt.css">
+
+    <!-- SPA GitHub Pages redirect handler -->
+    <script>
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) {
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+            l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
+    <script type="module" crossorigin src="/assets/index-DpVkSSMO.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-LrHin--n.css">
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js');
+        });
+      }
+    </script>
   </body>
 </html>

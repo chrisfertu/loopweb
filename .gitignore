@@ -6,11 +6,12 @@ dist/
 *.log
 
 # Media files
-*.mp4
 *.mp3
 *.mov
 *.avi
 *.wmv
+# Allow website video assets
+# *.mp4 removed - pastelmountains.mp4 needed for the site
 
 # System files
 .DS_Store

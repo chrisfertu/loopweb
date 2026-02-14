@@ -1,0 +1,22 @@
+{
+  "appclips": {
+    "apps": [
+      "3D726482F7.ro.opus.loop.Clip"
+    ]
+  },
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": [
+          "3D726482F7.ro.opus.loop"
+        ],
+        "components": [
+          {
+            "/": "/clip*"
+          }
+        ]
+      }
+    ]
+  }
+}

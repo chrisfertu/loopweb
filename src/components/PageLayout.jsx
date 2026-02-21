@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 const PageLayout = ({ title, lastUpdated, children }) => (
   <div className="legal-page">
-    <div className="max-w-2xl mx-auto px-6 py-16 md:py-24">
+    <div className="max-w-2xl mx-auto px-6 pt-20 pb-16 md:pt-28 md:pb-24">
       {/* Header */}
       <nav className="mb-12">
         <Link

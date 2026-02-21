@@ -54,35 +54,64 @@ const SectionReveal = ({ children, className = '', delay = 0 }) => (
   </motion.div>
 );
 
-// Typing effect for noise types
-const noiseTypes = ['brown', 'white', 'pink', 'dark'];
+const soundPhrases = [
+  'brown noise',
+  'binaural beats',
+  'silence',
+  'your favorite song on repeat',
+  'pink noise',
+  '4Hz theta waves',
+  'white noise',
+  'your own soundscapes',
+  'dark noise',
+  '20Hz focus beats',
+  'that earworm, on loop',
+  '10Hz alpha waves',
+];
+
+function shuffleArray(arr) {
+  const shuffled = [...arr];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
 
 const useTypingEffect = () => {
-  const [text, setText] = useState(noiseTypes[0]);
+  const [text, setText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [queue, setQueue] = useState(() => shuffleArray(soundPhrases));
+  const [queueIndex, setQueueIndex] = useState(0);
 
   useEffect(() => {
+    const currentPhrase = queue[queueIndex];
+
     const timeout = setTimeout(() => {
       if (isDeleting) {
         if (text === '') {
           setIsDeleting(false);
-          setCurrentIndex((prev) => (prev + 1) % noiseTypes.length);
+          const nextIndex = queueIndex + 1;
+          if (nextIndex >= queue.length) {
+            setQueue(shuffleArray(soundPhrases));
+            setQueueIndex(0);
+          } else {
+            setQueueIndex(nextIndex);
+          }
         } else {
           setText((prev) => prev.slice(0, -1));
         }
       } else {
-        const nextWord = noiseTypes[currentIndex];
-        if (text === nextWord) {
-          setTimeout(() => setIsDeleting(true), 1200);
+        if (text === currentPhrase) {
+          setTimeout(() => setIsDeleting(true), 1400);
         } else {
-          setText(nextWord.slice(0, text.length + 1));
+          setText(currentPhrase.slice(0, text.length + 1));
         }
       }
-    }, isDeleting ? 80 : 120);
+    }, isDeleting ? 40 : 70);
 
     return () => clearTimeout(timeout);
-  }, [text, isDeleting, currentIndex]);
+  }, [text, isDeleting, queue, queueIndex]);
 
   return text;
 };
@@ -271,7 +300,7 @@ const WhatItIsSection = () => (
 
     <div className="section-two-col">
       <SectionReveal className="flex justify-center" delay={0.1}>
-        <AppPreview alt="Timer screen" />
+        <AppPreview src="/images/app/timer.m4v" alt="Timer screen" />
       </SectionReveal>
 
       <SectionReveal className="flex flex-col justify-center" delay={0.2}>
@@ -317,7 +346,11 @@ const PresetsSection = () => (
       </SectionReveal>
 
       <SectionReveal className="flex justify-center" delay={0.2}>
-        <AppPreview alt="Presets" />
+        <AppPreview
+          srcs={['/images/app/preset1.jpeg', '/images/app/preset2.jpeg', '/images/app/preset3.jpeg']}
+          crossfadeInterval={2000}
+          alt="Presets"
+        />
       </SectionReveal>
     </div>
   </section>
@@ -328,21 +361,25 @@ const PresetsSection = () => (
 // ────────────────────────────────────────────────────────────
 
 const SoundsSection = () => {
-  const noiseText = useTypingEffect();
+  const typedSound = useTypingEffect();
 
   return (
     <section className="section-container">
       <SectionReveal className="text-center mb-12 md:mb-16">
         <h2 className="section-heading">Bring your own teacher.</h2>
         <p className="font-courier text-sm text-white/30 tracking-wide">
-          Or try <span className="text-opus-green">{noiseText}</span> noise.
+          Or try <span className="text-opus-green">{typedSound}</span><span className="typing-cursor text-opus-green/50">|</span>
         </p>
       </SectionReveal>
 
       <div className="section-two-col">
-        <SectionReveal className="flex justify-center" delay={0.1}>
-          <AppPreview alt="Sound picker" />
-        </SectionReveal>
+      <SectionReveal className="flex justify-center" delay={0.1}>
+        <AppPreview
+          srcs={['/images/app/soundtracks.jpeg', '/images/app/playlist.jpeg']}
+          crossfadeInterval={3000}
+          alt="Sound picker"
+        />
+      </SectionReveal>
 
         <SectionReveal className="flex flex-col justify-center" delay={0.2}>
           <p className="text-white/50 text-base leading-relaxed mb-4">

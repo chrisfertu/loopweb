@@ -110,8 +110,10 @@
 
   /* ── App Preview ── */
   .app-preview {
-    @apply w-full rounded-2xl overflow-hidden;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    @apply w-full overflow-hidden relative;
+    border-radius: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
   }
 
   .app-preview-placeholder {
@@ -255,5 +257,14 @@
 
   .tabular-nums {
     font-variant-numeric: tabular-nums;
+  }
+
+  .typing-cursor {
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
   }
 }

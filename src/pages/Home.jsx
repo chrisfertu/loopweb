@@ -348,7 +348,7 @@ const PresetsSection = () => (
       <SectionReveal className="flex justify-center" delay={0.2}>
         <AppPreview
           srcs={['/images/app/preset1.jpeg', '/images/app/preset2.jpeg', '/images/app/preset3.jpeg']}
-          crossfadeInterval={2000}
+          crossfadeInterval={5000}
           alt="Presets"
         />
       </SectionReveal>
@@ -376,7 +376,7 @@ const SoundsSection = () => {
       <SectionReveal className="flex justify-center" delay={0.1}>
         <AppPreview
           srcs={['/images/app/soundtracks.jpeg', '/images/app/playlist.jpeg']}
-          crossfadeInterval={3000}
+          crossfadeInterval={6000}
           alt="Sound picker"
         />
       </SectionReveal>

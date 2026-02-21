@@ -68,7 +68,7 @@ const CrossfadeImages = ({ srcs, interval, alt }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.8, ease: 'easeInOut' }}
+        transition={{ duration: 1.2, ease: 'easeInOut' }}
       />
     </AnimatePresence>
   );

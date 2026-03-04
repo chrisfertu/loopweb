@@ -201,7 +201,7 @@ const HeroSection = () => {
     src="/images/logo-new.svg"
     alt="OPUS Loop"
     className={`transition-all duration-700 ease-in-out ${
-      isActive ? 'w-16 h-16 opacity-40 mb-8' : 'w-20 h-20 md:w-24 md:h-24 mb-14'
+      isActive ? 'w-24 h-24 opacity-40 mb-8' : 'w-36 h-36 md:w-48 md:h-48 mb-14'
     }`}
   />
 
@@ -209,10 +209,10 @@ const HeroSection = () => {
   <div className={`flex flex-col items-center transition-all duration-700 ease-in-out ${
     isActive ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'
   }`}>
-    <h1 className="text-3xl md:text-5xl lg:text-6xl font-semibold leading-tight mb-4 text-white">
+    <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight mb-4 text-white">
       Your rituals, without<br />the monthly sacrifice.
     </h1>
-    <p className="text-lg md:text-xl text-white/50 mb-0 max-w-lg">
+    <p className="text-sm md:text-xl text-white/50 mb-0 max-w-lg">
       For meditation, prayer, or whatever centers you.
     </p>
   </div>
@@ -286,26 +286,23 @@ const HeroSection = () => {
 
 const WhatItIsSection = () => (
   <section className="section-container">
-    <SectionReveal className="text-center mb-12 md:mb-16">
-      <h2 className="section-heading">A tool, not a service.</h2>
-      <p className="font-inter text-sm text-white/30 tracking-wide">Timer. Player. Nothing more.</p>
-    </SectionReveal>
-
     <div className="section-two-col">
       <SectionReveal className="flex justify-center" delay={0.1}>
         <AppPreview src="/images/app/timer.m4v" alt="Timer screen" />
       </SectionReveal>
 
       <SectionReveal className="flex flex-col justify-center" delay={0.2}>
-        <p className="text-white/50 text-base leading-relaxed mb-4">
+        <h2 className="section-heading text-left mb-1">A tool, not a service.</h2>
+        <p className="font-inter text-sm text-white/30 tracking-wide mb-6">Timer. Player. Nothing more.</p>
+        <p className="text-white/50 text-sm md:text-base leading-relaxed mb-4">
           You set a duration, choose a soundtrack or silence, and tap play. That's it.
         </p>
-        <p className="text-white/50 text-base leading-relaxed mb-4">
+        <p className="text-white/50 text-sm md:text-base leading-relaxed mb-4">
           Underneath that simplicity: unlimited presets, each with its own soundtrack, bell
           configuration, background visuals, and reminder schedule. Set them up once. Switch
           between them with a swipe.
         </p>
-        <p className="text-white/50 text-base leading-relaxed">
+        <p className="text-white/50 text-sm md:text-base leading-relaxed">
           No locked features. No tiers. No upsells. You get the whole thing.
         </p>
       </SectionReveal>
@@ -319,31 +316,29 @@ const WhatItIsSection = () => (
 
 const PresetsSection = () => (
   <section className="section-container">
-    <SectionReveal className="text-center mb-12 md:mb-16">
-      <h2 className="section-heading">Set it up your way. Keep it forever.</h2>
-    </SectionReveal>
-
-    <div className="section-two-col section-two-col-reverse">
-      <SectionReveal className="flex flex-col justify-center" delay={0.1}>
-        <p className="text-white/50 text-base leading-relaxed mb-4">
-          Each preset saves everything: duration, soundtrack, bells, background, and health toggles.
-          One for morning meditation, one for deep work, one for prayer. Your call.
-        </p>
-        <p className="text-white/50 text-base leading-relaxed mb-4">
-          Custom icons, video or image backgrounds, individual reminder schedules. Make each one feel
-          like its own app.
-        </p>
-        <p className="text-white/50 text-base leading-relaxed">
-          Set it up once, then it's one tap.
-        </p>
-      </SectionReveal>
-
-      <SectionReveal className="flex justify-center" delay={0.2}>
+    <div className="section-two-col">
+      <SectionReveal className="flex justify-center" delay={0.1}>
         <AppPreview
           srcs={['/images/app/preset1.jpeg', '/images/app/preset2.jpeg', '/images/app/preset3.jpeg']}
           crossfadeInterval={5000}
           alt="Presets"
         />
+      </SectionReveal>
+
+      <SectionReveal className="flex flex-col justify-center" delay={0.2}>
+        <h2 className="section-heading text-left mb-1">Set it up your way. Keep it forever.</h2>
+        <p className="font-inter text-sm text-white/30 tracking-wide mb-6">Make unlimited presets.</p>
+        <p className="text-white/50 text-sm md:text-base leading-relaxed mb-4">
+          Each preset saves everything: duration, soundtrack, bells, background, and health toggles.
+          One for morning meditation, one for deep work, one for prayer. Your call.
+        </p>
+        <p className="text-white/50 text-sm md:text-base leading-relaxed mb-4">
+          Custom icons, video or image backgrounds, individual reminder schedules. Make each one feel
+          like its own app.
+        </p>
+        <p className="text-white/50 text-sm md:text-base leading-relaxed">
+          Set it up once, then it's one tap.
+        </p>
       </SectionReveal>
     </div>
   </section>
@@ -375,16 +370,16 @@ const SoundsSection = () => {
       </SectionReveal>
 
         <SectionReveal className="flex flex-col justify-center" delay={0.2}>
-          <p className="text-white/50 text-base leading-relaxed mb-4">
+          <p className="text-white/50 text-sm md:text-base leading-relaxed mb-4">
             Import guided meditations, mantras, or music from your files or iCloud Drive.
             Use Apple Music. Or use the built-in procedural soundscapes: binaural beats,
             white noise, pink noise, brown noise, dark noise.
           </p>
-          <p className="text-white/50 text-base leading-relaxed mb-4">
+          <p className="text-white/50 text-sm md:text-base leading-relaxed mb-4">
             Imported tracks can loop or play once. Switch sounds mid-session without
             stopping the timer.
           </p>
-          <p className="text-white/50 text-base leading-relaxed">
+          <p className="text-white/50 text-sm md:text-base leading-relaxed">
             Or just sit in silence. The app doesn't mind.
           </p>
         </SectionReveal>
@@ -408,20 +403,37 @@ const useCases = [
   'A silent timer that lets your podcast keep playing.',
 ];
 
+const CheckIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-opus-green shrink-0 mt-[5px]">
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
+
 const UseCasesSection = () => (
   <section className="section-container">
-    <SectionReveal className="text-center mb-10 md:mb-14">
-      <p className="font-inter text-xs text-white/25 tracking-[0.2em] uppercase">One app, many practices</p>
+    <SectionReveal className="text-center mb-12 md:mb-16">
+      <h2 className="section-heading">One app, many practices.</h2>
     </SectionReveal>
 
-    <div className="max-w-xl mx-auto">
-      {useCases.map((line, i) => (
-        <SectionReveal key={i} delay={0.05 * i}>
-          <p className="font-inter text-sm md:text-base text-white/40 py-3 border-b border-white/[0.04] last:border-b-0">
-            {line}
-          </p>
-        </SectionReveal>
-      ))}
+    <div className="section-two-col">
+      <SectionReveal className="flex justify-center" delay={0.1}>
+        <AppPreview
+          srcs={['/images/app/preset1.jpeg', '/images/app/preset2.jpeg', '/images/app/preset3.jpeg']}
+          crossfadeInterval={5000}
+          alt="One app, many practices"
+        />
+      </SectionReveal>
+
+      <SectionReveal className="flex flex-col justify-center" delay={0.2}>
+        <ul className="flex flex-col gap-3">
+          {useCases.map((line, i) => (
+            <li key={i} className="flex items-start gap-2.5">
+              <CheckIcon />
+              <span className="text-white/50 text-sm md:text-base leading-relaxed">{line}</span>
+            </li>
+          ))}
+        </ul>
+      </SectionReveal>
     </div>
   </section>
 );
@@ -436,26 +448,26 @@ const HealthSection = () => (
       <h2 className="section-heading">Track your practice, not your spending.</h2>
     </SectionReveal>
 
-    <div className="section-two-col section-two-col-reverse">
-      <SectionReveal className="flex flex-col justify-center" delay={0.1}>
-        <p className="text-white/50 text-base leading-relaxed mb-4">
+    <div className="section-two-col">
+      <SectionReveal className="flex justify-center" delay={0.1}>
+        <AppPreview type="wide" alt="Apple Watch" />
+      </SectionReveal>
+
+      <SectionReveal className="flex flex-col justify-center" delay={0.2}>
+        <p className="text-white/50 text-sm md:text-base leading-relaxed mb-4">
           Sessions sync to Apple Health as mindful minutes. Automatically. No extra steps.
         </p>
-        <p className="text-white/50 text-base leading-relaxed mb-4">
+        <p className="text-white/50 text-sm md:text-base leading-relaxed mb-4">
           Apple Watch companion with heart rate monitoring. Start, pause, and track sessions
           from your wrist. Mind & Body mode turns any session into a workout.
         </p>
-        <p className="text-white/50 text-base leading-relaxed mb-4">
+        <p className="text-white/50 text-sm md:text-base leading-relaxed mb-4">
           Live Activities put your session on the Lock Screen. Your presets, soundtracks,
           and history sync across devices through iCloud.
         </p>
-        <p className="text-white/50 text-base leading-relaxed">
+        <p className="text-white/50 text-sm md:text-base leading-relaxed">
           All of this is included. There's nothing to unlock.
         </p>
-      </SectionReveal>
-
-      <SectionReveal className="flex justify-center" delay={0.2}>
-        <AppPreview type="wide" alt="Apple Watch" />
       </SectionReveal>
     </div>
   </section>

@@ -256,7 +256,7 @@
   }
 
   .font-inter {
-    font-family: 'Courier Prime', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: Inter, system-ui, sans-serif;
   }
 
   .tabular-nums {

@@ -288,7 +288,7 @@ const WhatItIsSection = () => (
   <section className="section-container">
     <SectionReveal className="text-center mb-12 md:mb-16">
       <h2 className="section-heading">A tool, not a service.</h2>
-      <p className="font-courier text-sm text-white/30 tracking-wide">Timer. Player. Nothing more.</p>
+      <p className="font-inter text-sm text-white/30 tracking-wide">Timer. Player. Nothing more.</p>
     </SectionReveal>
 
     <div className="section-two-col">
@@ -360,7 +360,7 @@ const SoundsSection = () => {
     <section className="section-container">
       <SectionReveal className="text-center mb-12 md:mb-16">
         <h2 className="section-heading">Bring your own teacher.</h2>
-        <p className="font-courier text-sm text-white/30 tracking-wide">
+        <p className="font-inter text-sm text-white/30 tracking-wide">
           Or try <span className="text-opus-green">{typedSound}</span><span className="typing-cursor text-opus-green/50">|</span>
         </p>
       </SectionReveal>
@@ -411,13 +411,13 @@ const useCases = [
 const UseCasesSection = () => (
   <section className="section-container">
     <SectionReveal className="text-center mb-10 md:mb-14">
-      <p className="font-courier text-xs text-white/25 tracking-[0.2em] uppercase">One app, many practices</p>
+      <p className="font-inter text-xs text-white/25 tracking-[0.2em] uppercase">One app, many practices</p>
     </SectionReveal>
 
     <div className="max-w-xl mx-auto">
       {useCases.map((line, i) => (
         <SectionReveal key={i} delay={0.05 * i}>
-          <p className="font-courier text-sm md:text-base text-white/40 py-3 border-b border-white/[0.04] last:border-b-0">
+          <p className="font-inter text-sm md:text-base text-white/40 py-3 border-b border-white/[0.04] last:border-b-0">
             {line}
           </p>
         </SectionReveal>
@@ -466,52 +466,76 @@ const HealthSection = () => (
 // ────────────────────────────────────────────────────────────
 
 const ClosingSection = () => (
-  <section className="relative py-24 md:py-32 overflow-hidden">
+  <section className="relative py-28 md:py-36 overflow-hidden">
     <VideoBackground opacity={0.5} />
 
-    <div className="relative z-10 w-full max-w-2xl mx-auto px-6 text-center">
-      <SectionReveal>
-        <h2 className="text-2xl md:text-4xl font-semibold text-white mb-3">
+    {/* Gradient overlays */}
+    <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'linear-gradient(177.3deg, rgba(12,14,12,0.7) 3.67%, rgba(17,18,17,0.7) 45.37%, rgba(14,21,16,0.7) 96.33%)' }} />
+    <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 24% 6% at 50% 110%, rgba(35,26,151,0.18) 0%, rgba(0,168,107,0.06) 40%, transparent 70%)' }} />
+    <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 16% 4% at 50% 100%, rgba(181,175,255,0.05) 0%, transparent 60%)' }} />
+    <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent pointer-events-none" style={{ backgroundSize: '100% 30%', backgroundRepeat: 'no-repeat' }} />
+
+    <div className="relative z-10 w-full max-w-[600px] mx-auto px-6 text-center flex flex-col items-center gap-10">
+      {/* Heading + subtitle */}
+      <SectionReveal className="flex flex-col items-center gap-1">
+        <h2 className="section-heading">
           No account. No server. No tracking.
         </h2>
-        <p className="text-white/40 text-base md:text-lg max-w-md mx-auto mb-16">
+        <p className="text-white/45 text-base leading-relaxed max-w-[360px]">
           Your practice stays yours. We don't know who you are, and we prefer it that way.
         </p>
       </SectionReveal>
 
-      <SectionReveal delay={0.15}>
-        <p className="text-5xl md:text-6xl font-semibold text-white mb-2">$4.99</p>
-        <p className="text-white/40 text-base mb-8">One-time. Everything included.</p>
-        <AppStoreButton />
-        <p className="text-xs text-white/25 mt-4 font-courier">
-          Refundable through{' '}
-          <a
-            href="https://reportaproblem.apple.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-2 hover:text-white/40 transition-colors"
-          >
-            Apple
-          </a>
-          {' · '}
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="underline underline-offset-2 hover:text-white/40 transition-colors"
-          >
-            Try free on the web
-          </button>
-        </p>
+      {/* Pricing card */}
+      <SectionReveal delay={0.15} className="w-full">
+        <div className="rounded-[20px] border border-white/[0.07] bg-white/[0.04]">
+          {/* Price block */}
+          <div className="flex flex-col items-center gap-1.5 pt-9 px-10">
+            <p className="text-[52px] font-semibold text-white tracking-[-2.5px] leading-none">$4.99</p>
+            <p className="text-[13px] text-white/35 tracking-[0.2px]">One-time purchase — everything included</p>
+          </div>
+
+          {/* Divider */}
+          <div className="h-px bg-white/[0.06] mx-10 mt-7 mb-7" />
+
+          {/* CTA */}
+          <div className="flex flex-col items-center gap-3.5 pb-9 px-10">
+            <AppStoreButton />
+            <div className="flex items-center gap-1.5 text-[12px]">
+              <span className="text-white/30">
+                {'Refundable through '}
+                <a
+                  href="https://reportaproblem.apple.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white/45 underline underline-offset-2 hover:text-white/60 transition-colors"
+                >
+                  Apple
+                </a>
+              </span>
+              <span className="text-white/15">·</span>
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="text-white/45 underline underline-offset-2 hover:text-white/60 transition-colors"
+              >
+                Try free on the web
+              </button>
+            </div>
+          </div>
+        </div>
       </SectionReveal>
 
-      <SectionReveal delay={0.25} className="mt-16">
-        <p className="text-[11px] text-white/25 font-courier mb-1">Available in 14 languages</p>
-        <p className="text-xs text-white/15 font-courier leading-relaxed">
+      {/* Languages */}
+      <SectionReveal delay={0.25} className="flex flex-col items-center gap-2">
+        <p className="text-[10px] font-medium text-white/20 tracking-[1px] uppercase">Available in 14 languages</p>
+        <p className="text-[12px] text-white/25 leading-relaxed max-w-[488px]">
           English · Deutsch · Español · Français · Nederlands · Norsk · Suomi · Filipino · Magyar · Română · Telugu · 日本語 · 简体中文 · 繁體中文
         </p>
       </SectionReveal>
 
-      <SectionReveal delay={0.3} className="mt-2">
-        <p className="text-xs text-white/20 italic">
+      {/* Tagline */}
+      <SectionReveal delay={0.3}>
+        <p className="text-[12px] text-white/20 italic tracking-[0.1px]">
           No philosophy imposed. No tradition assumed.
         </p>
       </SectionReveal>
@@ -525,7 +549,7 @@ const ClosingSection = () => (
 
 const Footer = () => (
   <footer className="py-10 px-6 text-center">
-    <p className="text-xs text-white/25 font-courier mb-4">
+    <p className="text-xs text-white/25 font-inter mb-4">
       Made in Romania by{' '}
       <a
         href="https://www.opus.ro"

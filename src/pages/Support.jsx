@@ -47,7 +47,7 @@ const Accordion = ({ title, children, defaultOpen = false }) => {
 
 const SupportSection = ({ title, children }) => (
   <div className="mb-10">
-    <h2 className="font-courier text-[11px] tracking-[0.2em] uppercase text-white/25 mb-4">{title}</h2>
+    <h2 className="font-inter text-[11px] tracking-[0.2em] uppercase text-white/25 mb-4">{title}</h2>
     <div>{children}</div>
   </div>
 );
@@ -59,7 +59,7 @@ const Support = () => (
       <nav className="mb-12">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-white/40 hover:text-white/60 transition-colors text-sm font-courier"
+          className="inline-flex items-center gap-2 text-white/40 hover:text-white/60 transition-colors text-sm font-inter"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />

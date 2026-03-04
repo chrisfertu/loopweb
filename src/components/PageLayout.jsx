@@ -7,7 +7,7 @@ const PageLayout = ({ title, lastUpdated, children }) => (
       <nav className="mb-12">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-white/40 hover:text-white/60 transition-colors text-sm font-courier"
+          className="inline-flex items-center gap-2 text-white/40 hover:text-white/60 transition-colors text-sm font-inter"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -20,7 +20,7 @@ const PageLayout = ({ title, lastUpdated, children }) => (
       <div className="mb-10">
         <h1 className="text-2xl md:text-3xl font-semibold text-white mb-2">{title}</h1>
         {lastUpdated && (
-          <p className="text-sm text-white/30 font-courier">{lastUpdated}</p>
+          <p className="text-sm text-white/30 font-inter">{lastUpdated}</p>
         )}
       </div>
 

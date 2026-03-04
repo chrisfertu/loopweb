@@ -41,7 +41,7 @@ const AppPreview = ({ type = 'phone', src, srcs, crossfadeInterval = 3000, alt =
           <rect x="5" y="2" width="14" height="20" rx="3" />
           <line x1="5" y1="18" x2="19" y2="18" />
         </svg>
-        <span className="text-[10px] font-courier text-white/15 tracking-wider uppercase">{alt}</span>
+        <span className="text-[10px] font-inter text-white/15 tracking-wider uppercase">{alt}</span>
       </div>
     </div>
   );

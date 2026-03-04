@@ -14,7 +14,7 @@ const APP_STORE_URL = 'https://apps.apple.com/app/opus-loop-meditation-timer/id6
 const VideoBackground = ({ opacity = 0.35 }) => (
   <div className="absolute inset-0 overflow-hidden">
     <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
-      <source src="/videos/pastelmountains.mp4" type="video/mp4" />
+      <source src="/videos/pastelmountainshd.mp4" type="video/mp4" />
     </video>
     <div className="absolute inset-0 bg-black" style={{ opacity: 1 - opacity }} />
   </div>
@@ -195,47 +195,40 @@ const HeroSection = () => {
       <VideoBackground opacity={0.6} />
 
       <div className="relative z-10 flex flex-col items-center text-center w-full h-screen">
-        <div className="flex-1 flex flex-col items-center justify-center px-6 max-w-2xl mx-auto w-full">
-          <img
-            src="/images/logo.svg"
-            alt="OPUS Loop"
-            className={`mb-4 transition-all duration-700 ease-in-out ${
-              isActive ? 'w-10 h-10 opacity-40' : 'w-20 h-20 md:w-24 md:h-24'
-            }`}
-          />
+      <div className="flex-1 flex flex-col items-center justify-center px-6 max-w-4xl mx-auto w-full">
+  {/* Logo */}
+  <img
+    src="/images/logo-new.svg"
+    alt="OPUS Loop"
+    className={`transition-all duration-700 ease-in-out ${
+      isActive ? 'w-16 h-16 opacity-40 mb-8' : 'w-20 h-20 md:w-24 md:h-24 mb-14'
+    }`}
+  />
 
-          <h2
-            className={`font-courier tracking-[0.3em] uppercase mb-6 transition-all duration-700 ease-in-out ${
-              isActive ? 'text-[10px] text-white/30' : 'text-sm md:text-base text-white/50'
-            }`}
-          >
-            opus loop
-          </h2>
+  {/* Idle: tagline */}
+  <div className={`flex flex-col items-center transition-all duration-700 ease-in-out ${
+    isActive ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'
+  }`}>
+    <h1 className="text-3xl md:text-5xl lg:text-6xl font-semibold leading-tight mb-4 text-white">
+      Your rituals, without<br />the monthly sacrifice.
+    </h1>
+    <p className="text-lg md:text-xl text-white/50 mb-0 max-w-lg">
+      For meditation, prayer, or whatever centers you.
+    </p>
+  </div>
 
-          {/* Idle: tagline */}
-          <div className={`flex flex-col items-center transition-all duration-700 ease-in-out ${
-            isActive ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'
-          }`}>
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-semibold leading-tight mb-4 text-white">
-              Your rituals, without the monthly sacrifice.
-            </h1>
-            <p className="text-lg md:text-xl text-white/50 mb-8 max-w-lg">
-              For meditation, prayer, or whatever centers you.
-            </p>
-          </div>
-
-          {/* Active: timer */}
-          <div className={`flex flex-col items-center transition-all duration-700 ease-in-out ${
-            isActive ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'
-          }`}>
-            <div className="timer-display">
-              {formatTime(elapsedSeconds)}
-            </div>
-          </div>
-        </div>
+  {/* Active: timer */}
+  <div className={`flex flex-col items-center transition-all duration-700 ease-in-out ${
+    isActive ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'
+  }`}>
+    <div className="timer-display">
+      {formatTime(elapsedSeconds)}
+    </div>
+  </div>
+</div>
 
         {/* Bottom controls */}
-        <div className="pt-6 pb-8 md:pb-12 flex flex-col items-center gap-4 w-full px-6">
+        <div className="pt-6 pb-8 md:pb-12 flex flex-col items-center gap-8 w-full px-6">
           <div className="flex items-center justify-center gap-5 min-h-[60px]">
             <AnimatePresence mode="wait">
               {!isActive ? (
@@ -278,7 +271,7 @@ const HeroSection = () => {
 
           <button onClick={onToggleSoundPicker} className="sound-bar">
             <SoundIcon />
-            <span className="font-courier text-sm">{selectedSound.label}</span>
+            <span className="text-sm">{selectedSound.label}</span>
           </button>
         </div>
       </div>

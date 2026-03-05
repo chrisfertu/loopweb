@@ -5,7 +5,7 @@ import AppPreview from '../components/AppPreview';
 import { useTimerContext } from '../contexts/TimerContext';
 import { formatTime } from '../hooks/useTimer';
 
-const APP_STORE_URL = 'https://apps.apple.com/app/opus-loop-meditation-timer/id6740513432';
+const APP_STORE_URL = 'https://apps.apple.com/ro/app/loop-meditation-focus/id6756740657';
 
 // ────────────────────────────────────────────────────────────
 // Shared components
@@ -285,15 +285,22 @@ const HeroSection = () => {
 // ────────────────────────────────────────────────────────────
 
 const WhatItIsSection = () => (
-  <section className="section-container">
+  <section className="section-container pt-[140px] md:pt-[158px]">
+    <SectionReveal className="hidden md:block text-center mb-12 md:mb-16">
+      <h2 className="section-heading">A tool, not a service.</h2>
+      <p className="font-inter text-sm text-white/30 tracking-wide">Timer. Player. Nothing more.</p>
+    </SectionReveal>
+
     <div className="section-two-col">
       <SectionReveal className="flex justify-center" delay={0.1}>
         <AppPreview src="/images/app/timer.m4v" alt="Timer screen" />
       </SectionReveal>
 
       <SectionReveal className="flex flex-col justify-center" delay={0.2}>
-        <h2 className="section-heading text-left mb-1">A tool, not a service.</h2>
-        <p className="font-inter text-sm text-white/30 tracking-wide mb-6">Timer. Player. Nothing more.</p>
+        <div className="md:hidden mb-6">
+          <h2 className="section-heading text-left mb-1">A tool, not a service.</h2>
+          <p className="font-inter text-sm text-white/30 tracking-wide">Timer. Player. Nothing more.</p>
+        </div>
         <p className="text-white/50 text-sm md:text-base leading-relaxed mb-4">
           You set a duration, choose a soundtrack or silence, and tap play. That's it.
         </p>
@@ -316,6 +323,11 @@ const WhatItIsSection = () => (
 
 const PresetsSection = () => (
   <section className="section-container">
+    <SectionReveal className="hidden md:block text-center mb-12 md:mb-16">
+      <h2 className="section-heading">Set it up your way. Keep it forever.</h2>
+      <p className="font-inter text-sm text-white/30 tracking-wide">Make unlimited presets.</p>
+    </SectionReveal>
+
     <div className="section-two-col">
       <SectionReveal className="flex justify-center" delay={0.1}>
         <AppPreview
@@ -326,8 +338,10 @@ const PresetsSection = () => (
       </SectionReveal>
 
       <SectionReveal className="flex flex-col justify-center" delay={0.2}>
-        <h2 className="section-heading text-left mb-1">Set it up your way. Keep it forever.</h2>
-        <p className="font-inter text-sm text-white/30 tracking-wide mb-6">Make unlimited presets.</p>
+        <div className="md:hidden mb-6">
+          <h2 className="section-heading text-left mb-1">Set it up your way. Keep it forever.</h2>
+          <p className="font-inter text-sm text-white/30 tracking-wide">Make unlimited presets.</p>
+        </div>
         <p className="text-white/50 text-sm md:text-base leading-relaxed mb-4">
           Each preset saves everything: duration, soundtrack, bells, background, and health toggles.
           One for morning meditation, one for deep work, one for prayer. Your call.
@@ -353,10 +367,10 @@ const SoundsSection = () => {
 
   return (
     <section className="section-container">
-      <SectionReveal className="text-center mb-12 md:mb-16">
+      <SectionReveal className="hidden md:block text-center mb-12 md:mb-16">
         <h2 className="section-heading">Bring your own teacher.</h2>
         <p className="font-inter text-sm text-white/30 tracking-wide">
-          Or try <span className="text-opus-green">{typedSound}</span><span className="typing-cursor text-opus-green/50">|</span>
+          Or try <span className="text-opus-green">{typedSound}</span><span className="typing-cursor text-opus-green/100">|</span>
         </p>
       </SectionReveal>
 
@@ -370,6 +384,12 @@ const SoundsSection = () => {
       </SectionReveal>
 
         <SectionReveal className="flex flex-col justify-center" delay={0.2}>
+          <div className="md:hidden mb-6">
+            <h2 className="section-heading text-left mb-1">Bring your own teacher.</h2>
+            <p className="font-inter text-sm text-white/30 tracking-wide">
+              Or try <span className="text-opus-green">{typedSound}</span><span className="typing-cursor text-opus-green/100">|</span>
+            </p>
+          </div>
           <p className="text-white/50 text-sm md:text-base leading-relaxed mb-4">
             Import guided meditations, mantras, or music from your files or iCloud Drive.
             Use Apple Music. Or use the built-in procedural soundscapes: binaural beats,
@@ -411,8 +431,9 @@ const CheckIcon = () => (
 
 const UseCasesSection = () => (
   <section className="section-container">
-    <SectionReveal className="text-center mb-12 md:mb-16">
+    <SectionReveal className="hidden md:block text-center mb-12 md:mb-16">
       <h2 className="section-heading">One app, many practices.</h2>
+      <p className="font-inter text-sm text-white/30 tracking-wide">Whatever your practice looks like.</p>
     </SectionReveal>
 
     <div className="section-two-col">
@@ -425,6 +446,10 @@ const UseCasesSection = () => (
       </SectionReveal>
 
       <SectionReveal className="flex flex-col justify-center" delay={0.2}>
+        <div className="md:hidden mb-6">
+          <h2 className="section-heading text-left mb-1">One app, many practices.</h2>
+          <p className="font-inter text-sm text-white/30 tracking-wide">Whatever your practice looks like.</p>
+        </div>
         <ul className="flex flex-col gap-3">
           {useCases.map((line, i) => (
             <li key={i} className="flex items-start gap-2.5">
@@ -478,7 +503,7 @@ const HealthSection = () => (
 // ────────────────────────────────────────────────────────────
 
 const ClosingSection = () => (
-  <section className="relative py-28 md:py-36 overflow-hidden">
+  <section className="relative mt-14 md:mt-20 py-28 md:py-36 overflow-hidden">
     <VideoBackground opacity={0.5} />
 
     {/* Gradient overlays */}
@@ -574,9 +599,9 @@ const Footer = () => (
     </p>
     <div className="flex items-center justify-center gap-4 text-xs text-white/25">
       <Link to="/privacy" className="hover:text-white/50 transition-colors">Privacy</Link>
-      <span className="text-white/10">·</span>
+      <span className="text-white/25 text-sm">·</span>
       <Link to="/terms" className="hover:text-white/50 transition-colors">Terms</Link>
-      <span className="text-white/10">·</span>
+      <span className="text-white/25 text-sm">·</span>
       <Link to="/support" className="hover:text-white/50 transition-colors">Support</Link>
     </div>
   </footer>

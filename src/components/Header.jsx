@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const APP_STORE_URL = 'https://apps.apple.com/app/opus-loop-meditation-timer/id6740513432';
+const APP_STORE_URL = 'https://apps.apple.com/ro/app/loop-meditation-focus/id6756740657';
 
 const Header = () => {
   const [visible, setVisible] = useState(false);
@@ -35,7 +35,7 @@ const Header = () => {
           transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className="max-w-6xl mx-auto w-full px-5 flex items-center justify-between h-full">
-            <Link to="/" className="flex items-center group">
+            <Link to="/" className="flex items-center group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
               <img src="/images/logonavbar.svg" alt="OPUS Loop" className="w-28 h-28" />
             </Link>
 

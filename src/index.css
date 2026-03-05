@@ -88,7 +88,7 @@
 
   /* ── Sections ── */
   .section-container {
-    @apply w-full max-w-5xl mx-auto px-6 py-24 md:py-32;
+    @apply w-full max-w-5xl mx-auto px-6 py-[85px] md:py-[88px];
   }
 
   .section-heading {
@@ -96,7 +96,7 @@
   }
 
   .section-two-col {
-    @apply grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center;
+    @apply grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-16 items-center;
   }
 
   @media (min-width: 768px) {
@@ -234,7 +234,7 @@
   }
 
   .legal-page a {
-    @apply text-green-400 hover:text-green-300 transition-colors underline underline-offset-2;
+    @apply text-opus-green hover:text-opus-green-dim transition-colors underline underline-offset-2;
   }
 
   .legal-section {

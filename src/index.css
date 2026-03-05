@@ -31,7 +31,7 @@
   }
 
   ::selection {
-    background-color: rgba(20, 228, 104, 0.3);
+    background-color: rgba(0, 168, 107, 0.3);
     color: #fff;
   }
 }
@@ -88,11 +88,15 @@
 
   /* ── Sections ── */
   .section-container {
-    @apply w-full max-w-5xl mx-auto px-6 py-24 md:py-32;
+    @apply w-full max-w-5xl mx-auto px-8 md:px-6 py-20 md:py-28;
   }
 
   .section-heading {
-    @apply text-2xl md:text-3xl font-semibold text-white mb-2;
+    @apply text-2xl md:text-[2rem] font-medium text-white tracking-[-0.02em] mb-2;
+  }
+
+  .section-body {
+    @apply text-[15px] md:text-base text-white/45 leading-[1.7];
   }
 
   .section-two-col {
@@ -107,6 +111,7 @@
       order: 1;
     }
   }
+
 
   /* ── App Preview ── */
   .app-preview {
@@ -213,11 +218,15 @@
 
   /* ── Sound picker bottom sheet ── */
   .sound-picker-sheet {
-    @apply fixed bottom-0 left-0 right-0 z-[60];
+    @apply fixed bottom-0 z-[60];
+    left: max(0px, calc(50% - 300px));
+    width: min(600px, 100%);
     background: rgba(20, 20, 20, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 16px 16px 0 0;
     max-height: 85vh;
     overflow: hidden;

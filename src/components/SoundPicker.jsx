@@ -58,6 +58,14 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            drag="y"
+            dragConstraints={{ top: 0 }}
+            dragElastic={{ top: 0.05, bottom: 0.3 }}
+            onDragEnd={(_, info) => {
+              if (info.offset.y > 80 || info.velocity.y > 400) {
+                onClose();
+              }
+            }}
           >
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-2">
@@ -186,7 +194,7 @@ const SoundRow = ({ sound, selected, onSelect }) => (
       )}
     </div>
     {selected && (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#14E468" strokeWidth="2.5">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00A86B" strokeWidth="2.5">
         <polyline points="20 6 9 17 4 12" />
       </svg>
     )}

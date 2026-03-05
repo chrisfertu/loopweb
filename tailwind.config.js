@@ -13,7 +13,7 @@ export default {
       },
       colors: {
         'opus-green': '#00A86B',
-        'opus-green-dim': '#00db8a',
+        'opus-green-dim': '#00B271',
         'opus-teal': '#162828',
       },
       animation: {

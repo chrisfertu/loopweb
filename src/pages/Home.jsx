@@ -116,6 +116,31 @@ const useTypingEffect = () => {
   return text;
 };
 
+const ScrollChevron = () => (
+  <motion.div
+    className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ delay: 1.5, duration: 0.8 }}
+  >
+    <motion.svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="white"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="opacity-30"
+      animate={{ y: [0, 6, 0] }}
+      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+    >
+      <path d="M6 9l6 6 6-6" />
+    </motion.svg>
+  </motion.div>
+);
+
 // ────────────────────────────────────────────────────────────
 // Section 1: Hero
 // ────────────────────────────────────────────────────────────
@@ -195,7 +220,7 @@ const HeroSection = () => {
       <VideoBackground opacity={0.6} />
 
       <div className="relative z-10 flex flex-col items-center text-center w-full h-screen">
-        <div className="flex-1 flex flex-col items-center justify-center px-6 max-w-2xl mx-auto w-full">
+        <div className="flex-1 flex flex-col items-center justify-center px-8 max-w-2xl mx-auto w-full">
           <img
             src="/images/logo.svg"
             alt="OPUS Loop"
@@ -216,11 +241,11 @@ const HeroSection = () => {
           <div className={`flex flex-col items-center transition-all duration-700 ease-in-out ${
             isActive ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'
           }`}>
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-semibold leading-tight mb-4 text-white">
+            <h1 className="text-[1.75rem] md:text-5xl lg:text-6xl font-semibold leading-[1.2] tracking-[-0.02em] mb-5 text-white">
               Your rituals, without the monthly sacrifice.
             </h1>
-            <p className="text-lg md:text-xl text-white/50 mb-8 max-w-lg">
-              For meditation, prayer, or whatever centers you.
+            <p className="text-base md:text-lg text-white/40 mb-8 max-w-md leading-relaxed">
+              A meditation timer you own forever. Try it right now.
             </p>
           </div>
 
@@ -235,24 +260,33 @@ const HeroSection = () => {
         </div>
 
         {/* Bottom controls */}
-        <div className="pt-6 pb-8 md:pb-12 flex flex-col items-center gap-4 w-full px-6">
-          <div className="flex items-center justify-center gap-5 min-h-[60px]">
+        <div className="pt-6 pb-8 md:pb-12 flex flex-col items-center gap-4 w-full px-8">
+          <div className="flex flex-col items-center gap-3 min-h-[60px]">
             <AnimatePresence mode="wait">
               {!isActive ? (
-                <motion.button
-                  key="play-big"
-                  onClick={onPlayPause}
-                  className="play-button"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.6 }}
-                  whileTap={{ scale: 0.93 }}
-                  whileHover={{ scale: 1.03 }}
-                  transition={controlBtnSpring}
-                  aria-label="Play"
-                >
-                  <PlayIcon size={36} />
-                </motion.button>
+                <motion.div key="play-wrapper" className="flex flex-col items-center gap-3">
+                  <motion.button
+                    onClick={onPlayPause}
+                    className="play-button"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.6 }}
+                    whileTap={{ scale: 0.93 }}
+                    whileHover={{ scale: 1.03 }}
+                    transition={controlBtnSpring}
+                    aria-label="Play"
+                  >
+                    <PlayIcon size={36} />
+                  </motion.button>
+                  <motion.p
+                    className="text-[11px] text-white/25 font-courier tracking-widest uppercase"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 2, duration: 1 }}
+                  >
+                    Press play
+                  </motion.p>
+                </motion.div>
               ) : (
                 <motion.div
                   key="controls-active"
@@ -283,116 +317,42 @@ const HeroSection = () => {
         </div>
       </div>
 
+      {!isActive && <ScrollChevron />}
     </section>
   );
 };
 
 // ────────────────────────────────────────────────────────────
-// Section 2: What It Is
+// Section 2: The Tool (image LEFT, text right)
 // ────────────────────────────────────────────────────────────
 
-const WhatItIsSection = () => (
-  <section className="section-container">
-    <SectionReveal className="text-center mb-12 md:mb-16">
-      <h2 className="section-heading">A tool, not a service.</h2>
-      <p className="font-courier text-sm text-white/30 tracking-wide">Timer. Player. Nothing more.</p>
-    </SectionReveal>
-
-    <div className="section-two-col">
-      <SectionReveal className="flex justify-center" delay={0.1}>
-        <AppPreview src="/images/app/timer.m4v" alt="Timer screen" />
-      </SectionReveal>
-
-      <SectionReveal className="flex flex-col justify-center" delay={0.2}>
-        <p className="text-white/50 text-base leading-relaxed mb-4">
-          You set a duration, choose a soundtrack or silence, and tap play. That's it.
-        </p>
-        <p className="text-white/50 text-base leading-relaxed mb-4">
-          Underneath that simplicity: unlimited presets, each with its own soundtrack, bell
-          configuration, background visuals, and reminder schedule. Set them up once. Switch
-          between them with a swipe.
-        </p>
-        <p className="text-white/50 text-base leading-relaxed">
-          No locked features. No tiers. No upsells. You get the whole thing.
-        </p>
-      </SectionReveal>
-    </div>
-  </section>
-);
-
-// ────────────────────────────────────────────────────────────
-// Section 3: Presets
-// ────────────────────────────────────────────────────────────
-
-const PresetsSection = () => (
-  <section className="section-container">
-    <SectionReveal className="text-center mb-12 md:mb-16">
-      <h2 className="section-heading">Set it up your way. Keep it forever.</h2>
-    </SectionReveal>
-
-    <div className="section-two-col section-two-col-reverse">
-      <SectionReveal className="flex flex-col justify-center" delay={0.1}>
-        <p className="text-white/50 text-base leading-relaxed mb-4">
-          Each preset saves everything: duration, soundtrack, bells, background, and health toggles.
-          One for morning meditation, one for deep work, one for prayer. Your call.
-        </p>
-        <p className="text-white/50 text-base leading-relaxed mb-4">
-          Custom icons, video or image backgrounds, individual reminder schedules. Make each one feel
-          like its own app.
-        </p>
-        <p className="text-white/50 text-base leading-relaxed">
-          Set it up once, then it's one tap.
-        </p>
-      </SectionReveal>
-
-      <SectionReveal className="flex justify-center" delay={0.2}>
-        <AppPreview
-          srcs={['/images/app/preset1.jpeg', '/images/app/preset2.jpeg', '/images/app/preset3.jpeg']}
-          crossfadeInterval={5000}
-          alt="Presets"
-        />
-      </SectionReveal>
-    </div>
-  </section>
-);
-
-// ────────────────────────────────────────────────────────────
-// Section 4: Sounds
-// ────────────────────────────────────────────────────────────
-
-const SoundsSection = () => {
+const ToolSection = () => {
   const typedSound = useTypingEffect();
 
   return (
     <section className="section-container">
-      <SectionReveal className="text-center mb-12 md:mb-16">
-        <h2 className="section-heading">Bring your own teacher.</h2>
-        <p className="font-courier text-sm text-white/30 tracking-wide">
-          Or try <span className="text-opus-green">{typedSound}</span><span className="typing-cursor text-opus-green/50">|</span>
-        </p>
-      </SectionReveal>
-
       <div className="section-two-col">
-      <SectionReveal className="flex justify-center" delay={0.1}>
-        <AppPreview
-          srcs={['/images/app/soundtracks.jpeg', '/images/app/playlist.jpeg']}
-          crossfadeInterval={6000}
-          alt="Sound picker"
-        />
-      </SectionReveal>
+        <SectionReveal className="flex justify-center" delay={0.1}>
+          <AppPreview
+            srcs={['/images/app/soundtracks.jpeg', '/images/app/playlist.jpeg']}
+            crossfadeInterval={6000}
+            alt="Meditation timer sound picker and audio import"
+          />
+        </SectionReveal>
 
-        <SectionReveal className="flex flex-col justify-center" delay={0.2}>
-          <p className="text-white/50 text-base leading-relaxed mb-4">
-            Import guided meditations, mantras, or music from your files or iCloud Drive.
-            Use Apple Music. Or use the built-in procedural soundscapes: binaural beats,
-            white noise, pink noise, brown noise, dark noise.
+        <SectionReveal className="flex flex-col justify-center gap-5 text-center md:text-left" delay={0.2}>
+          <h2 className="section-heading">A tool, not a service.</h2>
+          <p className="section-body">
+            Set a duration. Choose a sound or silence. Tap play.
           </p>
-          <p className="text-white/50 text-base leading-relaxed mb-4">
-            Imported tracks can loop or play once. Switch sounds mid-session without
-            stopping the timer.
+          <p className="section-body">
+            Import your own guided meditations, mantras, or music from your files or Apple Music.
           </p>
-          <p className="text-white/50 text-base leading-relaxed">
-            Or just sit in silence. The app doesn't mind.
+          <p className="section-body">
+            No catalog to browse. No content you didn't choose. Just your practice, your way.
+          </p>
+          <p className="font-courier text-sm text-white/20 tracking-wide mt-1">
+            Now playing: <span className="text-opus-green">{typedSound}</span><span className="typing-cursor text-opus-green/50">|</span>
           </p>
         </SectionReveal>
       </div>
@@ -401,124 +361,256 @@ const SoundsSection = () => {
 };
 
 // ────────────────────────────────────────────────────────────
-// Section 5: Use Cases (rhythm break)
+// Section 3: Presets (text LEFT, image right)
 // ────────────────────────────────────────────────────────────
 
-const useCases = [
-  '5 minutes of guided breathing before a meeting.',
-  'Brown noise on repeat for the entire night.',
-  'A 25-minute interval bell for deep work sessions.',
-  'Your favorite song from Apple Music, on loop, for an hour.',
-  'A 3-minute guided meditation inside a 20-minute silent session.',
-  'Ecstatic dance with heart rate tracking and active calories.',
-  'Set up a phone with guided meditations for your mom.',
-  'A silent timer that lets your podcast keep playing.',
-];
-
-const UseCasesSection = () => (
+const PresetsSection = () => (
   <section className="section-container">
-    <SectionReveal className="text-center mb-10 md:mb-14">
-      <p className="font-courier text-xs text-white/25 tracking-[0.2em] uppercase">One app, many practices</p>
-    </SectionReveal>
-
-    <div className="max-w-xl mx-auto">
-      {useCases.map((line, i) => (
-        <SectionReveal key={i} delay={0.05 * i}>
-          <p className="font-courier text-sm md:text-base text-white/40 py-3 border-b border-white/[0.04] last:border-b-0">
-            {line}
-          </p>
-        </SectionReveal>
-      ))}
-    </div>
-  </section>
-);
-
-// ────────────────────────────────────────────────────────────
-// Section 6: Health, Watch, Live Activities
-// ────────────────────────────────────────────────────────────
-
-const HealthSection = () => (
-  <section className="section-container">
-    <SectionReveal className="text-center mb-12 md:mb-16">
-      <h2 className="section-heading">Track your practice, not your spending.</h2>
-    </SectionReveal>
-
     <div className="section-two-col section-two-col-reverse">
-      <SectionReveal className="flex flex-col justify-center" delay={0.1}>
-        <p className="text-white/50 text-base leading-relaxed mb-4">
-          Sessions sync to Apple Health as mindful minutes. Automatically. No extra steps.
+      <SectionReveal className="flex flex-col justify-center gap-5 text-center md:text-left" delay={0.1}>
+        <h2 className="section-heading">Configure once. Unlimited presets. Yours forever.</h2>
+        <p className="section-body">
+          Each preset saves everything: duration, soundtrack, bells, background, and health settings. Meditation, prayer, deep work, sleep, movement. Every practice gets its own space.
         </p>
-        <p className="text-white/50 text-base leading-relaxed mb-4">
-          Apple Watch companion with heart rate monitoring. Start, pause, and track sessions
-          from your wrist. Mind & Body mode turns any session into a workout.
-        </p>
-        <p className="text-white/50 text-base leading-relaxed mb-4">
-          Live Activities put your session on the Lock Screen. Your presets, soundtracks,
-          and history sync across devices through iCloud.
-        </p>
-        <p className="text-white/50 text-base leading-relaxed">
-          All of this is included. There's nothing to unlock.
+        <p className="section-body">
+          Custom icons, video backgrounds, individual reminders. Set them up once, then switch with a swipe.
         </p>
       </SectionReveal>
 
       <SectionReveal className="flex justify-center" delay={0.2}>
-        <AppPreview type="wide" alt="Apple Watch" />
+        <AppPreview
+          srcs={['/images/app/preset1.jpeg', '/images/app/preset2.jpeg', '/images/app/preset3.jpeg']}
+          crossfadeInterval={5000}
+          alt="Customizable meditation presets with backgrounds and settings"
+        />
       </SectionReveal>
     </div>
   </section>
 );
 
 // ────────────────────────────────────────────────────────────
-// Section 7: Closing (Privacy + Pricing + CTA)
+// Section 4: Use Cases (video interlude carousel)
+// ────────────────────────────────────────────────────────────
+
+const useCases = [
+  'Five minutes of stillness before the day begins.',
+  'Brown noise. All night. Every night.',
+  'Your teacher\'s guided meditation, wrapped in twenty minutes of silence.',
+  'That one song on repeat, for an hour.',
+  'A phone set up with guided meditations for your mom.',
+  'Ecstatic dance with heart rate tracking on Apple Watch.',
+  'A Pomodoro timer that doesn\'t pretend to be a productivity app.',
+];
+
+const UseCasesSection = () => {
+  const [current, setCurrent] = useState(0);
+  const [direction, setDirection] = useState(1);
+
+  const go = (next) => {
+    setDirection(next > current ? 1 : -1);
+    setCurrent(next);
+  };
+
+  const prev = () => go((current - 1 + useCases.length) % useCases.length);
+  const next = () => go((current + 1) % useCases.length);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setDirection(1);
+      setCurrent((c) => (c + 1) % useCases.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [current]);
+
+  const variants = {
+    enter: (d) => ({ opacity: 0, y: d > 0 ? 24 : -24 }),
+    center: { opacity: 1, y: 0 },
+    exit: (d) => ({ opacity: 0, y: d > 0 ? -24 : 24 }),
+  };
+
+  return (
+    <section className="relative py-24 md:py-32 overflow-hidden">
+      <VideoBackground opacity={0.25} />
+
+      <div className="relative z-10 flex flex-col items-center">
+        <SectionReveal className="text-center mb-12 md:mb-16">
+          <h2 className="section-heading">How people use it.</h2>
+        </SectionReveal>
+
+        <div
+          className="w-full max-w-lg mx-auto px-8 relative"
+          style={{ minHeight: '5rem' }}
+        >
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.p
+              key={current}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="font-courier text-lg md:text-xl text-white/50 leading-relaxed text-center"
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.15}
+              onDragEnd={(_, info) => {
+                if (info.offset.x < -40 || info.velocity.x < -200) next();
+                else if (info.offset.x > 40 || info.velocity.x > 200) prev();
+              }}
+            >
+              {useCases[current]}
+            </motion.p>
+          </AnimatePresence>
+        </div>
+
+        {/* Navigation */}
+        <div className="flex items-center gap-6 mt-10">
+          <button
+            onClick={prev}
+            className="w-9 h-9 rounded-full flex items-center justify-center bg-white/[0.06] hover:bg-white/[0.12] transition-colors"
+            aria-label="Previous"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-50">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+
+          <div className="flex items-center gap-1.5">
+            {useCases.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => go(i)}
+                className={`rounded-full transition-all duration-300 ${
+                  i === current
+                    ? 'w-5 h-1.5 bg-white/40'
+                    : 'w-1.5 h-1.5 bg-white/15 hover:bg-white/25'
+                }`}
+                aria-label={`Slide ${i + 1}`}
+              />
+            ))}
+          </div>
+
+          <button
+            onClick={next}
+            className="w-9 h-9 rounded-full flex items-center justify-center bg-white/[0.06] hover:bg-white/[0.12] transition-colors"
+            aria-label="Next"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-50">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ────────────────────────────────────────────────────────────
+// Section 5: Apple Ecosystem (image LEFT, text right)
+// ────────────────────────────────────────────────────────────
+
+const HealthSection = () => (
+  <section className="section-container">
+    <div className="section-two-col">
+      <SectionReveal className="flex justify-center" delay={0.1}>
+        <AppPreview type="wide" alt="Apple Watch heart rate monitoring and Apple Health integration" />
+      </SectionReveal>
+
+      <SectionReveal className="flex flex-col justify-center gap-5 text-center md:text-left" delay={0.2}>
+        <h2 className="section-heading">Built for the Apple ecosystem.</h2>
+        <p className="section-body">
+          Apple Watch companion with heart rate monitoring. Mindful minutes synced to Apple Health. Mind & Body mode for active sessions.
+        </p>
+        <p className="section-body">
+          Live Activities on your Lock Screen. iCloud sync across all your devices. Everything included. Nothing to unlock.
+        </p>
+        <p className="text-[12px] text-white/20 mt-2 leading-relaxed">
+          Not on Apple? Save this website to your home screen for a free PWA timer. Android is on the roadmap.
+        </p>
+      </SectionReveal>
+    </div>
+  </section>
+);
+
+// ────────────────────────────────────────────────────────────
+// Section 6: Privacy (breather)
+// ────────────────────────────────────────────────────────────
+
+const PrivacySection = () => (
+  <section className="w-full max-w-2xl mx-auto px-8 py-20 md:py-24 text-center">
+    <SectionReveal>
+      <h2 className="text-2xl md:text-3xl font-medium tracking-[-0.02em] text-white mb-4">
+        No account. No tracking. No data collection.
+      </h2>
+      <p className="text-white/35 text-base md:text-lg leading-relaxed mb-2">
+        Your practice stays on your device and your iCloud.
+      </p>
+      <p className="text-white/25 text-base md:text-lg leading-relaxed">
+        We don't know who you are. We prefer it that way.
+      </p>
+    </SectionReveal>
+  </section>
+);
+
+// ────────────────────────────────────────────────────────────
+// Section 7: Closing (video bg, pricing card)
 // ────────────────────────────────────────────────────────────
 
 const ClosingSection = () => (
-  <section className="relative py-24 md:py-32 overflow-hidden">
+  <section className="relative py-28 md:py-36 overflow-hidden">
     <VideoBackground opacity={0.5} />
 
-    <div className="relative z-10 w-full max-w-2xl mx-auto px-6 text-center">
-      <SectionReveal>
-        <h2 className="text-2xl md:text-4xl font-semibold text-white mb-3">
-          No account. No server. No tracking.
-        </h2>
-        <p className="text-white/40 text-base md:text-lg max-w-md mx-auto mb-16">
-          Your practice stays yours. We don't know who you are, and we prefer it that way.
-        </p>
+    <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'linear-gradient(177.3deg, rgba(12,14,12,0.7) 3.67%, rgba(17,18,17,0.7) 45.37%, rgba(14,21,16,0.7) 96.33%)' }} />
+    <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 24% 6% at 50% 110%, rgba(35,26,151,0.18) 0%, rgba(0,168,107,0.06) 40%, transparent 70%)' }} />
+    <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 16% 4% at 50% 100%, rgba(181,175,255,0.05) 0%, transparent 60%)' }} />
+    <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent pointer-events-none" style={{ backgroundSize: '100% 30%', backgroundRepeat: 'no-repeat' }} />
+
+    <div className="relative z-10 w-full max-w-[600px] mx-auto px-6 text-center flex flex-col items-center gap-10">
+      <SectionReveal className="w-full">
+        <div className="rounded-[20px] border border-white/[0.07] bg-white/[0.04]">
+          <div className="flex flex-col items-center gap-1.5 pt-9 px-10">
+            <p className="text-[52px] font-semibold text-white tracking-[-2.5px] leading-none">$4.99</p>
+            <p className="text-[13px] text-white/35 tracking-[0.2px]">One-time purchase. Every feature. Every update. Forever.</p>
+          </div>
+
+          <div className="h-px bg-white/[0.06] mx-10 mt-7 mb-7" />
+
+          <div className="flex flex-col items-center gap-3.5 pb-9 px-10">
+            <AppStoreButton />
+            <div className="flex items-center gap-1.5 text-[12px]">
+              <span className="text-white/30">
+                {'Refundable through '}
+                <a
+                  href="https://reportaproblem.apple.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white/45 underline underline-offset-2 hover:text-white/60 transition-colors"
+                >
+                  Apple
+                </a>
+              </span>
+              <span className="text-white/15">·</span>
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="text-white/45 underline underline-offset-2 hover:text-white/60 transition-colors"
+              >
+                Try free on the web
+              </button>
+            </div>
+          </div>
+        </div>
       </SectionReveal>
 
-      <SectionReveal delay={0.15}>
-        <p className="text-5xl md:text-6xl font-semibold text-white mb-2">$4.99</p>
-        <p className="text-white/40 text-base mb-8">One-time. Everything included.</p>
-        <AppStoreButton />
-        <p className="text-xs text-white/25 mt-4 font-courier">
-          Refundable through{' '}
-          <a
-            href="https://reportaproblem.apple.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-2 hover:text-white/40 transition-colors"
-          >
-            Apple
-          </a>
-          {' · '}
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="underline underline-offset-2 hover:text-white/40 transition-colors"
-          >
-            Try free on the web
-          </button>
-        </p>
-      </SectionReveal>
-
-      <SectionReveal delay={0.25} className="mt-16">
-        <p className="text-[11px] text-white/25 font-courier mb-1">Available in 14 languages</p>
-        <p className="text-xs text-white/15 font-courier leading-relaxed">
+      <SectionReveal delay={0.15} className="flex flex-col items-center gap-2">
+        <p className="text-[10px] font-medium text-white/20 tracking-[1px] uppercase font-courier">Available in 14 languages</p>
+        <p className="text-[12px] text-white/25 leading-relaxed max-w-[488px] font-courier">
           English · Deutsch · Español · Français · Nederlands · Norsk · Suomi · Filipino · Magyar · Română · Telugu · 日本語 · 简体中文 · 繁體中文
         </p>
       </SectionReveal>
 
-      <SectionReveal delay={0.3} className="mt-2">
-        <p className="text-xs text-white/20 italic">
+      <SectionReveal delay={0.2}>
+        <p className="text-[12px] text-white/20 italic tracking-[0.1px]">
           No philosophy imposed. No tradition assumed.
         </p>
       </SectionReveal>
@@ -531,24 +623,24 @@ const ClosingSection = () => (
 // ────────────────────────────────────────────────────────────
 
 const Footer = () => (
-  <footer className="py-10 px-6 text-center">
-    <p className="text-xs text-white/25 font-courier mb-4">
+  <footer className="py-10 px-8 text-center">
+    <p className="text-xs text-white/20 font-courier mb-4">
       Made in Romania by{' '}
       <a
         href="https://www.opus.ro"
         target="_blank"
         rel="noopener noreferrer"
-        className="text-white/40 hover:text-white/60 transition-colors underline underline-offset-2"
+        className="text-white/35 hover:text-white/55 transition-colors underline underline-offset-2"
       >
         OPUS
       </a>
     </p>
-    <div className="flex items-center justify-center gap-4 text-xs text-white/25">
-      <Link to="/privacy" className="hover:text-white/50 transition-colors">Privacy</Link>
+    <div className="flex items-center justify-center gap-4 text-xs text-white/20">
+      <Link to="/privacy" className="hover:text-white/45 transition-colors">Privacy</Link>
       <span className="text-white/10">·</span>
-      <Link to="/terms" className="hover:text-white/50 transition-colors">Terms</Link>
+      <Link to="/terms" className="hover:text-white/45 transition-colors">Terms</Link>
       <span className="text-white/10">·</span>
-      <Link to="/support" className="hover:text-white/50 transition-colors">Support</Link>
+      <Link to="/support" className="hover:text-white/45 transition-colors">Support</Link>
     </div>
   </footer>
 );
@@ -561,11 +653,11 @@ const Home = () => {
   return (
     <div>
       <HeroSection />
-      <WhatItIsSection />
+      <ToolSection />
       <PresetsSection />
-      <SoundsSection />
       <UseCasesSection />
       <HealthSection />
+      <PrivacySection />
       <ClosingSection />
       <Footer />
     </div>

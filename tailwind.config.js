@@ -11,8 +11,8 @@ export default {
         courier: ['"Courier Prime"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
       },
       colors: {
-        'opus-green': '#14E468',
-        'opus-green-dim': '#64D262',
+        'opus-green': '#00A86B',
+        'opus-green-dim': '#00B271',
         'opus-teal': '#162828',
       },
       animation: {

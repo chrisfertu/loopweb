@@ -494,7 +494,7 @@ const Footer = () => (
     <p className="text-xs text-white/20 font-courier mb-4">
       Made in Romania by{' '}
       <a
-        href="https://www.opus.ro"
+        href="http://opus.ro"
         target="_blank"
         rel="noopener noreferrer"
         className="text-white/35 hover:text-white/55 transition-colors underline underline-offset-2"

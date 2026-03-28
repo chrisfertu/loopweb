@@ -92,7 +92,8 @@ const Support = () => (
           </p>
           <p>
             Swipe horizontally on the main screen to switch between presets. The last card
-            lets you add a new one.
+            lets you add a new one. The app comes with one preset for free. Unlock unlimited
+            presets with a one-time purchase of $4.99.
           </p>
         </Accordion>
         <Accordion title="Can I set an infinite timer?">
@@ -199,7 +200,12 @@ const Support = () => (
       <SupportSection title="Purchases & Refunds">
         <Accordion title="Is there a subscription?">
           <p>
-            No. $4.99, one-time. All features included, no in-app purchases.
+            No. OPUS Loop is free to download with all core features included: timer, sound
+            generator, Apple Music import, Apple Watch, Apple Health, and more.
+          </p>
+          <p>
+            If you want to create more than one preset, there's a one-time in-app purchase of
+            $4.99 that unlocks unlimited presets. No subscription, no recurring fees.
           </p>
         </Accordion>
         <Accordion title="How do I get a refund?">
@@ -221,13 +227,13 @@ const Support = () => (
 
       {/* Web Version */}
       <SupportSection title="Using the Web Version">
-        <Accordion title="Can I use OPUS Loop without buying the app?">
+        <Accordion title="Can I use OPUS Loop without downloading the app?">
           <p>
-            The website at{' '}
-            <Link to="/" className="text-opus-green hover:text-opus-green-dim transition-colors underline underline-offset-2">
-              opusloop.co
+            Yes. Visit{' '}
+            <Link to="/player" className="text-opus-green hover:text-opus-green-dim transition-colors underline underline-offset-2">
+              opusloop.co/player
             </Link>
-            {' '}includes a free meditation timer with built-in binaural beats, noise generators,
+            {' '}for a free web-based timer with built-in binaural beats, noise generators,
             and custom audio import. You can use it directly in your browser.
           </p>
         </Accordion>
@@ -243,9 +249,9 @@ const Support = () => (
         </Accordion>
         <Accordion title="What's different from the native app?">
           <p>
-            The web version is a basic timer with sound playback. The native app adds presets,
-            Apple Health, Apple Watch, Live Activities, interval bells, custom backgrounds,
-            iCloud sync, reminders, and Apple Music.
+            The web version is a basic timer with sound playback and a duration selector. The
+            native app adds presets, Apple Health, Apple Watch, Live Activities, interval bells,
+            custom backgrounds, iCloud sync, reminders, and Apple Music integration.
           </p>
         </Accordion>
       </SupportSection>

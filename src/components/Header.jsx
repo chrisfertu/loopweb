@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const APP_STORE_URL = 'https://apps.apple.com/app/opus-loop-meditation-timer/id6740513432';
+const APP_STORE_URL = 'https://apps.apple.com/ro/app/loop-meditation-focus/id6756740657';
 
 const Header = () => {
   const [visible, setVisible] = useState(false);

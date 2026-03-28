@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const APP_STORE_URL = 'https://apps.apple.com/app/opus-loop-meditation-timer/id6740513432';
+const APP_STORE_URL = 'https://apps.apple.com/ro/app/loop-meditation-focus/id6756740657';
 
 const Accordion = ({ title, children, defaultOpen = false }) => {
   const [open, setOpen] = useState(defaultOpen);

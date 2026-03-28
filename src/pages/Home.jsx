@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import PhoneFrame from '../components/PhoneFrame';
 
-const APP_STORE_URL = 'https://apps.apple.com/app/opus-loop-meditation-timer/id6740513432';
+const APP_STORE_URL = 'https://apps.apple.com/ro/app/loop-meditation-focus/id6756740657';
 
 // ────────────────────────────────────────────────────────────
 // Shared components

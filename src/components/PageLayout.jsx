@@ -41,7 +41,7 @@ const PageLayout = ({ title, lastUpdated, children }) => (
           <Link to="/support" className="hover:text-white/50 transition-colors">Support</Link>
           <span className="flex-1" />
           <a
-            href="https://www.opus.ro"
+            href="http://opus.ro"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-white/50 transition-colors"

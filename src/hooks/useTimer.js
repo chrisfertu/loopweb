@@ -18,13 +18,18 @@ export function formatTime(totalSeconds) {
 }
 
 /**
- * Simple count-up timer hook.
+ * Timer hook with count-up and countdown modes.
  * States: idle, running, paused.
+ *
+ * start()          — infinite count-up (default)
+ * start(duration)  — countdown from duration seconds to 0
  */
 export function useTimer() {
   const [timerState, setTimerState] = useState('idle'); // 'idle' | 'running' | 'paused'
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [duration, setDuration] = useState(null); // null = infinite count-up
   const intervalRef = useRef(null);
+  const onCompleteRef = useRef(null);
 
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
@@ -33,12 +38,27 @@ export function useTimer() {
     }
   }, []);
 
-  const start = useCallback(() => {
+  const start = useCallback((durationSeconds = null, onComplete = null) => {
     clearTimer();
     setElapsedSeconds(0);
+    setDuration(durationSeconds);
     setTimerState('running');
+    onCompleteRef.current = onComplete;
     intervalRef.current = setInterval(() => {
-      setElapsedSeconds((prev) => prev + 1);
+      setElapsedSeconds((prev) => {
+        const next = prev + 1;
+        // Check if countdown is done
+        if (durationSeconds && next >= durationSeconds) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+          setTimerState('idle');
+          setElapsedSeconds(0);
+          setDuration(null);
+          if (onCompleteRef.current) onCompleteRef.current();
+          return 0;
+        }
+        return next;
+      });
     }, 1000);
   }, [clearTimer]);
 
@@ -51,21 +71,39 @@ export function useTimer() {
     clearTimer();
     setTimerState('running');
     intervalRef.current = setInterval(() => {
-      setElapsedSeconds((prev) => prev + 1);
+      setElapsedSeconds((prev) => {
+        const next = prev + 1;
+        if (duration && next >= duration) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+          setTimerState('idle');
+          setElapsedSeconds(0);
+          setDuration(null);
+          if (onCompleteRef.current) onCompleteRef.current();
+          return 0;
+        }
+        return next;
+      });
     }, 1000);
-  }, [clearTimer]);
+  }, [clearTimer, duration]);
 
   const stop = useCallback(() => {
     clearTimer();
-    const finalSeconds = 0;
     setTimerState('idle');
     setElapsedSeconds(0);
-    return finalSeconds;
+    setDuration(null);
+    onCompleteRef.current = null;
+    return 0;
   }, [clearTimer]);
+
+  // Display seconds: for countdown, show remaining; for count-up, show elapsed
+  const displaySeconds = duration ? Math.max(0, duration - elapsedSeconds) : elapsedSeconds;
 
   return {
     timerState,
     elapsedSeconds,
+    displaySeconds,
+    duration,
     start,
     pause,
     resume,

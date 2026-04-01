@@ -96,7 +96,7 @@
   }
 
   .section-body {
-    @apply text-[15px] md:text-base text-white/45 leading-[1.7];
+    @apply text-[15px] md:text-base text-white/55 leading-[1.7];
   }
 
   .section-two-col {
@@ -233,6 +233,89 @@
     max-height: 85vh;
     overflow: hidden;
     padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* ── Player page ── */
+  .player-page {
+    @apply fixed inset-0 w-screen h-screen overflow-hidden bg-black;
+  }
+
+  /* ── Phone frame ── */
+  .phone-frame {
+    @apply relative;
+    aspect-ratio: 9 / 19.5;
+    border-radius: 40px;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    background: #000;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+  }
+
+  /* ── Duration wheel ── */
+  .duration-wheel-wrapper {
+    @apply relative;
+    width: 140px;
+  }
+
+  .duration-wheel-highlight {
+    @apply absolute left-0 right-0 pointer-events-none z-10;
+    top: calc(50% - 28px);
+    height: 56px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .duration-wheel-scroll {
+    @apply overflow-y-auto;
+    scroll-snap-type: y mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      black 30%,
+      black 70%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      black 30%,
+      black 70%,
+      transparent 100%
+    );
+  }
+
+  .duration-wheel-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .duration-wheel-item {
+    @apply flex items-center justify-center gap-1.5 cursor-pointer select-none;
+    scroll-snap-align: center;
+    transition: opacity 0.2s, transform 0.2s;
+    opacity: 0.25;
+  }
+
+  .duration-wheel-item.selected {
+    opacity: 1;
+  }
+
+  .duration-wheel-number {
+    font-family: 'Courier Prime', ui-monospace, monospace;
+    font-weight: 700;
+    font-size: 32px;
+    color: white;
+    letter-spacing: 0.02em;
+  }
+
+  .duration-wheel-unit {
+    font-family: 'Courier Prime', ui-monospace, monospace;
+    font-weight: 400;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.35);
+    letter-spacing: 0.05em;
   }
 
   /* ── Legal pages ── */

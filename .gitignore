@@ -13,6 +13,10 @@ dist/
 # Allow website video assets
 # *.mp4 removed - pastelmountains.mp4 needed for the site
 
+# Temporary / working files
+_TEMP/
+.claude/
+
 # System files
 .DS_Store
 .DS_Store?

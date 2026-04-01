@@ -14,9 +14,13 @@ export function TimerProvider({ children }) {
   const timer = useTimer();
   const audio = useAudioEngine();
 
-  const handlePlayPause = useCallback(() => {
+  const handlePlayPause = useCallback((durationSeconds = null) => {
     if (timer.timerState === 'idle') {
-      timer.start();
+      timer.start(durationSeconds, async () => {
+        // countdown completed — stop audio
+        await audio.stop();
+        setIsMuted(false);
+      });
       audio.play(selectedSound);
       setIsMuted(false);
     } else if (timer.timerState === 'running') {
@@ -85,6 +89,8 @@ export function TimerProvider({ children }) {
   const value = {
     timerState: timer.timerState,
     elapsedSeconds: timer.elapsedSeconds,
+    displaySeconds: timer.displaySeconds,
+    duration: timer.duration,
     selectedSound,
     showSoundPicker,
     customTrack,

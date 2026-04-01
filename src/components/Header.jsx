@@ -35,7 +35,16 @@ const Header = () => {
           transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className="max-w-6xl mx-auto w-full px-5 flex items-center justify-between h-full">
-            <Link to="/" className="flex items-center gap-2.5 group">
+            <Link
+              to="/"
+              className="flex items-center gap-2.5 group"
+              onClick={(e) => {
+                if (isHome) {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
+            >
               <img src="/images/logo.svg" alt="OPUS Loop" className="w-6 h-6" />
               <span className="font-courier text-[11px] tracking-[0.2em] uppercase text-white/50 group-hover:text-white/70 transition-colors">
                 OPUS Loop

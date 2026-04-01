@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -47,19 +47,26 @@ const Accordion = ({ title, children, defaultOpen = false }) => {
 
 const SupportSection = ({ title, children }) => (
   <div className="mb-10">
-    <h2 className="font-courier text-[11px] tracking-[0.2em] uppercase text-white/25 mb-4">{title}</h2>
+    <h2 className="font-inter text-[11px] tracking-[0.2em] uppercase text-white/25 mb-4">{title}</h2>
     <div>{children}</div>
   </div>
 );
 
-const Support = () => (
+const Support = () => {
+  useLayoutEffect(() => {
+    document.documentElement.style.scrollBehavior = 'auto';
+    window.scrollTo(0, 0);
+    document.documentElement.style.scrollBehavior = '';
+  }, []);
+
+  return (
   <div className="min-h-screen bg-black text-white">
     <div className="max-w-2xl mx-auto px-6 pt-24 pb-16">
       {/* Back nav */}
       <nav className="mb-12">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-white/40 hover:text-white/60 transition-colors text-sm font-courier"
+          className="inline-flex items-center gap-2 text-white/40 hover:text-white/60 transition-colors text-sm font-inter"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -79,7 +86,7 @@ const Support = () => (
 
       {/* Getting Started */}
       <SupportSection title="Getting Started">
-        <Accordion title="How does OPUS Loop work?" defaultOpen>
+        <Accordion title="How does OPUS Loop work?">
           <p>
             Set a duration with the scroll wheel, choose a soundtrack (or silence), and tap play.
             The app times your session and plays your chosen sound. When the session ends, you hear a bell.
@@ -318,6 +325,7 @@ const Support = () => (
       </footer>
     </div>
   </div>
-);
+  );
+};
 
 export default Support;

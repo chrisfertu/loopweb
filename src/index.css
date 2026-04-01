@@ -100,7 +100,7 @@
   }
 
   .section-two-col {
-    @apply grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center;
+    @apply grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-16 items-center;
   }
 
   @media (min-width: 768px) {
@@ -220,7 +220,7 @@
   .sound-picker-sheet {
     @apply fixed bottom-0 z-[60];
     left: max(0px, calc(50% - 300px));
-    width: min(600px, 100%);
+    width: min(600px, 100%);  
     background: rgba(20, 20, 20, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -228,6 +228,8 @@
     border-left: 1px solid rgba(255, 255, 255, 0.06);
     border-right: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 16px 16px 0 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
     max-height: 85vh;
     overflow: hidden;
     padding-bottom: env(safe-area-inset-bottom);
@@ -322,7 +324,7 @@
   }
 
   .legal-page a {
-    @apply text-green-400 hover:text-green-300 transition-colors underline underline-offset-2;
+    @apply text-opus-green hover:text-opus-green-dim transition-colors underline underline-offset-2;
   }
 
   .legal-section {
@@ -343,8 +345,8 @@
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
   }
 
-  .font-courier {
-    font-family: 'Courier Prime', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  .font-inter {
+    font-family: Inter, system-ui, sans-serif;
   }
 
   .tabular-nums {

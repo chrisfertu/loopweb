@@ -171,7 +171,7 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
 const SoundGroup = ({ label, children }) => (
   <div className="mb-2">
     {label && (
-      <p className="text-[11px] uppercase tracking-wider text-white/25 px-4 pt-3 pb-1 font-courier">
+      <p className="text-[11px] uppercase tracking-wider text-white/25 px-4 pt-3 pb-1 font-inter">
         {label}
       </p>
     )}

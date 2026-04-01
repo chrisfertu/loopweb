@@ -77,7 +77,7 @@ const MiniPlayer = () => {
 
               <button
                 onClick={handleTimerTap}
-                className="font-courier text-sm text-white/80 tabular-nums tracking-wide hover:text-white transition-colors"
+                className="font-inter text-sm text-white/80 tabular-nums tracking-wide hover:text-white transition-colors"
               >
                 {formatTime(elapsedSeconds)}
               </button>

@@ -89,9 +89,35 @@ const HeroSection = () => (
     <div className="relative z-10 w-full max-w-6xl mx-auto px-8 py-20 md:py-0">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center min-h-[80vh]">
 
+        {/* Right: Copy (logo + title + subtitle) */}
+        <motion.div
+          className="flex flex-col items-center md:items-start text-center md:text-left gap-6 order-1 md:order-2"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <img src="/images/logo.svg" alt="OPUS Loop" className="w-12 h-12" />
+            <span className="font-courier tracking-[0.3em] uppercase text-sm text-white/50">opus loop</span>
+          </div>
+
+          <h1 className="text-[1.75rem] md:text-5xl lg:text-6xl font-semibold leading-[1.15] tracking-[-0.02em] text-white">
+            Your rituals, without <span className="whitespace-nowrap md:whitespace-normal">a monthly sacrifice.</span>
+          </h1>
+
+          <p className="text-base md:text-lg text-white/40 max-w-md leading-relaxed">
+            A simple tool for meditation, prayer <span className="whitespace-nowrap md:whitespace-normal">or whatever centers you.</span>
+          </p>
+
+          <div className="hidden md:flex flex-col sm:flex-row items-center gap-3 mt-2">
+            <AppStoreButton label="Download for free" />
+            <WebAppButton />
+          </div>
+        </motion.div>
+
         {/* Left: Mockup image */}
         <motion.div
-          className="flex justify-center order-1 md:order-1"
+          className="flex justify-center order-2 md:order-1"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -105,30 +131,15 @@ const HeroSection = () => (
           />
         </motion.div>
 
-        {/* Right: Copy + CTA */}
+        {/* Buttons: mobile only, below mockup */}
         <motion.div
-          className="flex flex-col items-center md:items-start text-center md:text-left gap-6 order-2 md:order-2"
+          className="flex md:hidden flex-col sm:flex-row items-center gap-3 order-3"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="flex items-center gap-3 mb-2">
-            <img src="/images/logo.svg" alt="OPUS Loop" className="w-12 h-12" />
-            <span className="font-courier tracking-[0.3em] uppercase text-sm text-white/50">opus loop</span>
-          </div>
-
-          <h1 className="text-[1.75rem] md:text-5xl lg:text-6xl font-semibold leading-[1.15] tracking-[-0.02em] text-white">
-            Your rituals, without a monthly sacrifice.
-          </h1>
-
-          <p className="text-base md:text-lg text-white/40 max-w-md leading-relaxed">
-            A simple tool for meditation, prayer or whatever centers you.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
-            <AppStoreButton label="Download for free" />
-            <WebAppButton />
-          </div>
+          <AppStoreButton label="Download for free" />
+          <WebAppButton />
         </motion.div>
       </div>
     </div>
@@ -413,9 +424,10 @@ const PrivacySection = () => (
 // ────────────────────────────────────────────────────────────
 
 const ClosingSection = () => (
-  <section className="relative py-28 md:py-36 overflow-hidden">
+  <section className="relative mt-14 md:mt-20 py-28 md:py-36 overflow-hidden">
     <VideoBackground opacity={0.5} />
 
+    {/* Gradient overlays */}
     <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'linear-gradient(177.3deg, rgba(12,14,12,0.7) 3.67%, rgba(17,18,17,0.7) 45.37%, rgba(14,21,16,0.7) 96.33%)' }} />
     <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 24% 6% at 50% 110%, rgba(35,26,151,0.18) 0%, rgba(0,168,107,0.06) 40%, transparent 70%)' }} />
     <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 16% 4% at 50% 100%, rgba(181,175,255,0.05) 0%, transparent 60%)' }} />
@@ -490,24 +502,24 @@ const ClosingSection = () => (
 // ────────────────────────────────────────────────────────────
 
 const Footer = () => (
-  <footer className="py-10 px-8 text-center">
-    <p className="text-xs text-white/20 font-courier mb-4">
+  <footer className="py-10 px-6 text-center">
+    <p className="text-xs text-white/25 font-inter mb-4">
       Made in Romania by{' '}
       <a
         href="http://opus.ro"
         target="_blank"
         rel="noopener noreferrer"
-        className="text-white/35 hover:text-white/55 transition-colors underline underline-offset-2"
+        className="text-white/40 hover:text-white/60 transition-colors underline underline-offset-2"
       >
         OPUS
       </a>
     </p>
-    <div className="flex items-center justify-center gap-4 text-xs text-white/20">
-      <Link to="/privacy" className="hover:text-white/45 transition-colors">Privacy</Link>
-      <span className="text-white/10">·</span>
-      <Link to="/terms" className="hover:text-white/45 transition-colors">Terms</Link>
-      <span className="text-white/10">·</span>
-      <Link to="/support" className="hover:text-white/45 transition-colors">Support</Link>
+    <div className="flex items-center justify-center gap-4 text-xs text-white/25">
+      <Link to="/privacy" className="hover:text-white/50 transition-colors">Privacy</Link>
+      <span className="text-white/25 text-sm">·</span>
+      <Link to="/terms" className="hover:text-white/50 transition-colors">Terms</Link>
+      <span className="text-white/25 text-sm">·</span>
+      <Link to="/support" className="hover:text-white/50 transition-colors">Support</Link>
     </div>
   </footer>
 );

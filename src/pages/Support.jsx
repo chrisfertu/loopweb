@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const APP_STORE_URL = 'https://apps.apple.com/ro/app/loop-meditation-focus/id6756740657';
-
 const Accordion = ({ title, children, defaultOpen = false }) => {
   const [open, setOpen] = useState(defaultOpen);
 
@@ -302,18 +300,11 @@ const Support = () => (
         <div className="flex flex-wrap items-center gap-4 text-xs text-white/25">
           <Link to="/" className="hover:text-white/50 transition-colors">Home</Link>
           <span className="text-white/10">·</span>
+          <Link to="/player" className="hover:text-white/50 transition-colors">Web Player</Link>
+          <span className="text-white/10">·</span>
           <Link to="/privacy" className="hover:text-white/50 transition-colors">Privacy</Link>
           <span className="text-white/10">·</span>
           <Link to="/terms" className="hover:text-white/50 transition-colors">Terms</Link>
-          <span className="flex-1" />
-          <a
-            href={APP_STORE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white/50 transition-colors"
-          >
-            App Store
-          </a>
         </div>
       </footer>
     </div>

@@ -89,9 +89,35 @@ const HeroSection = () => (
     <div className="relative z-10 w-full max-w-6xl mx-auto px-8 py-20 md:py-0">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center min-h-[80vh]">
 
+        {/* Right: Copy (logo + title + subtitle) */}
+        <motion.div
+          className="flex flex-col items-center md:items-start text-center md:text-left gap-6 order-1 md:order-2"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="flex items-center gap-3 mb-2">
+            <img src="/images/logo.svg" alt="OPUS Loop" className="w-12 h-12" />
+            <span className="font-courier tracking-[0.3em] uppercase text-sm text-white/50">opus loop</span>
+          </div>
+
+          <h1 className="text-[1.75rem] md:text-5xl lg:text-6xl font-semibold leading-[1.15] tracking-[-0.02em] text-white">
+            Your rituals, without <span className="whitespace-nowrap md:whitespace-normal">a monthly sacrifice.</span>
+          </h1>
+
+          <p className="text-base md:text-lg text-white/40 max-w-md leading-relaxed">
+            A simple tool for meditation, prayer <span className="whitespace-nowrap md:whitespace-normal">or whatever centers you.</span>
+          </p>
+
+          <div className="hidden md:flex flex-col sm:flex-row items-center gap-3 mt-2">
+            <AppStoreButton label="Download for free" />
+            <WebAppButton />
+          </div>
+        </motion.div>
+
         {/* Left: Mockup image */}
         <motion.div
-          className="flex justify-center order-1 md:order-1"
+          className="flex justify-center order-2 md:order-1"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -105,30 +131,15 @@ const HeroSection = () => (
           />
         </motion.div>
 
-        {/* Right: Copy + CTA */}
+        {/* Buttons: mobile only, below mockup */}
         <motion.div
-          className="flex flex-col items-center md:items-start text-center md:text-left gap-6 order-2 md:order-2"
+          className="flex md:hidden flex-col sm:flex-row items-center gap-3 order-3"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="flex items-center gap-3 mb-2">
-            <img src="/images/logo.svg" alt="OPUS Loop" className="w-12 h-12" />
-            <span className="font-courier tracking-[0.3em] uppercase text-sm text-white/50">opus loop</span>
-          </div>
-
-          <h1 className="text-[1.75rem] md:text-5xl lg:text-6xl font-semibold leading-[1.15] tracking-[-0.02em] text-white">
-            Your rituals, without a monthly sacrifice.
-          </h1>
-
-          <p className="text-base md:text-lg text-white/40 max-w-md leading-relaxed">
-            A simple tool for meditation, prayer or whatever centers you.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
-            <AppStoreButton label="Download for free" />
-            <WebAppButton />
-          </div>
+          <AppStoreButton label="Download for free" />
+          <WebAppButton />
         </motion.div>
       </div>
     </div>
@@ -360,10 +371,6 @@ const UseCasesSection = () => {
 
 const EcosystemSection = () => (
   <section className="section-container">
-    <SectionReveal className="text-center mb-12 md:mb-16">
-      <h2 className="section-heading">Track your practice, not your spending.</h2>
-    </SectionReveal>
-
     <div className="section-two-col">
       <SectionReveal className="flex justify-center" delay={0.1}>
         <img
@@ -373,17 +380,13 @@ const EcosystemSection = () => (
         />
       </SectionReveal>
 
-      <SectionReveal className="flex flex-col justify-center" delay={0.2}>
-        <p className="text-white/50 text-sm md:text-base leading-relaxed mb-4">
-          Sessions sync to Apple Health as mindful minutes. Automatically. No extra steps.
+      <SectionReveal className="flex flex-col justify-center gap-5 text-center md:text-left" delay={0.2}>
+        <h2 className="section-heading">Built for the Apple ecosystem.</h2>
+        <p className="section-body">
+          Apple Watch companion with heart rate monitoring. Mindful minutes synced to Apple Health. Mind & Body mode for active sessions.
         </p>
-        <p className="text-white/50 text-sm md:text-base leading-relaxed mb-4">
-          Apple Watch companion with heart rate monitoring. Start, pause, and track sessions
-          from your wrist. Mind & Body mode turns any session into a workout.
-        </p>
-        <p className="text-white/50 text-sm md:text-base leading-relaxed mb-4">
-          Live Activities put your session on the Lock Screen. Your presets, soundtracks,
-          and history sync across devices through iCloud.
+        <p className="section-body">
+          Live Activities on your Lock Screen. iCloud sync across all your devices. Everything included. Nothing to unlock.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center gap-3 mt-4">

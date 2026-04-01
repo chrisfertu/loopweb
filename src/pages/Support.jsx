@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -52,7 +52,14 @@ const SupportSection = ({ title, children }) => (
   </div>
 );
 
-const Support = () => (
+const Support = () => {
+  useLayoutEffect(() => {
+    document.documentElement.style.scrollBehavior = 'auto';
+    window.scrollTo(0, 0);
+    document.documentElement.style.scrollBehavior = '';
+  }, []);
+
+  return (
   <div className="min-h-screen bg-black text-white">
     <div className="max-w-2xl mx-auto px-6 pt-24 pb-16">
       {/* Back nav */}
@@ -79,7 +86,7 @@ const Support = () => (
 
       {/* Getting Started */}
       <SupportSection title="Getting Started">
-        <Accordion title="How does OPUS Loop work?" defaultOpen>
+        <Accordion title="How does OPUS Loop work?">
           <p>
             Set a duration with the scroll wheel, choose a soundtrack (or silence), and tap play.
             The app times your session and plays your chosen sound. When the session ends, you hear a bell.
@@ -318,6 +325,7 @@ const Support = () => (
       </footer>
     </div>
   </div>
-);
+  );
+};
 
 export default Support;

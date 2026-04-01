@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { TimerProvider, useTimerContext } from './contexts/TimerContext';
 import Header from './components/Header';
@@ -23,6 +23,12 @@ function AppContent() {
 
   const location = useLocation();
   const isPlayerPage = location.pathname === '/player';
+
+  useLayoutEffect(() => {
+    document.documentElement.style.scrollBehavior = 'auto';
+    window.scrollTo(0, 0);
+    document.documentElement.style.scrollBehavior = '';
+  }, [location.pathname]);
 
   useEffect(() => {
     document.body.style.overflow = showSoundPicker ? 'hidden' : '';

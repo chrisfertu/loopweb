@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { TimerProvider, useTimerContext } from './contexts/TimerContext';
 import Header from './components/Header';
@@ -9,6 +9,14 @@ import Player from './pages/Player';
 import Support from './pages/Support';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
 
 function AppContent() {
   const {
@@ -31,6 +39,7 @@ function AppContent() {
 
   return (
     <>
+      <ScrollToTop />
       {!isPlayerPage && <Header />}
       <Routes>
         <Route path="/" element={<Home />} />

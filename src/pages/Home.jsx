@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import PhoneFrame from '../components/PhoneFrame';
+import { useTimerContext } from '../contexts/TimerContext';
 
 const APP_STORE_URL = 'https://apps.apple.com/ro/app/loop-meditation-focus/id6756740657';
 
@@ -18,17 +19,20 @@ const VideoBackground = ({ src = '/videos/pastelmountains.mp4', opacity = 0.35 }
   </div>
 );
 
-const AppStoreButton = ({ label = 'Download on the App Store', className = '' }) => (
+const AppStoreBadge = ({ className = '' }) => (
   <a
     href={APP_STORE_URL}
     target="_blank"
     rel="noopener noreferrer"
-    className={`app-store-btn ${className}`}
+    className={`inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white text-black transition-all duration-300 hover:bg-white/90 ${className}`}
   >
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+    <svg className="w-6 h-6 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
       <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
     </svg>
-    <span className="text-sm font-semibold">{label}</span>
+    <span className="flex flex-col leading-tight text-left">
+      <span className="text-[10px] font-normal">Download on the</span>
+      <span className="text-base font-semibold -mt-0.5">App Store</span>
+    </span>
   </a>
 );
 
@@ -37,7 +41,7 @@ const WebAppButton = ({ className = '' }) => (
     to="/player"
     className={`inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium text-sm transition-all duration-300 border border-white/15 text-white/70 hover:border-white/30 hover:text-white hover:bg-white/[0.06] ${className}`}
   >
-    Try on the web
+    Try the web player
   </Link>
 );
 
@@ -53,89 +57,113 @@ const SectionReveal = ({ children, className = '', delay = 0 }) => (
   </motion.div>
 );
 
-const ScrollChevron = () => (
-  <motion.div
-    className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ delay: 1.5, duration: 0.8 }}
-  >
-    <motion.svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="white"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="opacity-30"
-      animate={{ y: [0, 6, 0] }}
-      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+const ScrollChevron = ({ hidden = false }) => {
+  const prefersReduced = useReducedMotion();
+
+  if (hidden) return null;
+
+  return (
+    <motion.div
+      className="absolute bottom-16 left-1/2 -translate-x-1/2 z-10"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 1.5, duration: 0.8 }}
     >
-      <path d="M6 9l6 6 6-6" />
-    </motion.svg>
-  </motion.div>
-);
+      <motion.svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="white"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="opacity-30"
+        animate={prefersReduced ? undefined : { y: [0, 6, 0] }}
+        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+      >
+        <path d="M6 9l6 6 6-6" />
+      </motion.svg>
+    </motion.div>
+  );
+};
 
 // ────────────────────────────────────────────────────────────
 // Section 1: Hero (split layout)
 // ────────────────────────────────────────────────────────────
 
-const HeroSection = () => (
-  <section id="hero" className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden">
-    <VideoBackground src="/videos/pastelmountains.mp4" opacity={0.3} />
+const HeroSection = () => {
+  const prefersReduced = useReducedMotion();
+  const { timerState } = useTimerContext();
+  const isTimerActive = timerState === 'running' || timerState === 'paused';
 
-    <div className="relative z-10 w-full max-w-6xl mx-auto px-8 py-20 md:py-0">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center min-h-[80vh]">
+  return (
+    <section id="hero" className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden">
+      <VideoBackground src="/videos/pastelmountains.mp4" opacity={0.3} />
 
-        {/* Left: Mockup image */}
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-8 py-20 md:py-0">
+        {/* Mobile-only logo above grid */}
         <motion.div
-          className="flex justify-center order-1 md:order-1"
-          initial={{ opacity: 0, y: 20 }}
+          className="flex items-center justify-center gap-3 mb-8 md:hidden"
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          <motion.img
-            src="/images/mockup-price.png"
-            alt="OPUS Loop meditation timer app"
-            className="max-w-[320px] md:max-w-[460px] w-full drop-shadow-2xl"
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-          />
+          <img src="/images/logo.svg" alt="OPUS Loop" className="w-10 h-10" />
+          <span className="font-courier tracking-[0.3em] uppercase text-sm text-white/50">opus loop</span>
         </motion.div>
 
-        {/* Right: Copy + CTA */}
-        <motion.div
-          className="flex flex-col items-center md:items-start text-center md:text-left gap-6 order-2 md:order-2"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <div className="flex items-center gap-3 mb-2">
-            <img src="/images/logo.svg" alt="OPUS Loop" className="w-12 h-12" />
-            <span className="font-courier tracking-[0.3em] uppercase text-sm text-white/50">opus loop</span>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center min-h-[60vh] md:min-h-[80vh]">
 
-          <h1 className="text-[1.75rem] md:text-5xl lg:text-6xl font-semibold leading-[1.15] tracking-[-0.02em] text-white">
-            Your rituals, without a monthly sacrifice.
-          </h1>
+          {/* Phone mockup -- appears after logo on mobile, left on desktop */}
+          <motion.div
+            className="flex justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <motion.img
+              src="/images/mockup-price.png"
+              alt="OPUS Loop meditation timer app"
+              className="max-w-[280px] md:max-w-[460px] w-full drop-shadow-2xl"
+              animate={prefersReduced ? undefined : { y: [0, -8, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          </motion.div>
 
-          <p className="text-base md:text-lg text-white/40 max-w-md leading-relaxed">
-            A simple tool for meditation, prayer or whatever centers you.
-          </p>
+          {/* Copy + CTA -- below phone on mobile, right on desktop */}
+          <motion.div
+            className="flex flex-col items-center md:items-start text-center md:text-left gap-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {/* Desktop-only logo inline with copy */}
+            <div className="hidden md:flex items-center gap-3 mb-2">
+              <img src="/images/logo.svg" alt="OPUS Loop" className="w-12 h-12" />
+              <span className="font-courier tracking-[0.3em] uppercase text-sm text-white/50">opus loop</span>
+            </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
-            <AppStoreButton label="Download for free" />
-            <WebAppButton />
-          </div>
-        </motion.div>
+            <h1 className="text-[1.75rem] md:text-5xl lg:text-6xl font-semibold leading-[1.15] tracking-[-0.02em] text-white">
+              Your rituals, without a monthly sacrifice.
+            </h1>
+
+            <p className="text-base md:text-lg text-white/40 max-w-md leading-relaxed">
+              A simple tool for meditation, prayer or whatever centers you.
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
+              <AppStoreBadge />
+              <WebAppButton />
+            </div>
+          </motion.div>
+        </div>
       </div>
-    </div>
 
-    <ScrollChevron />
-  </section>
-);
+      <ScrollChevron hidden={isTimerActive} />
+    </section>
+  );
+};
 
 // ────────────────────────────────────────────────────────────
 // Section 2: Bring your own teacher (video LEFT, text right)
@@ -144,23 +172,7 @@ const HeroSection = () => (
 const TeacherSection = () => (
   <section className="section-container">
     <div className="section-two-col">
-      <SectionReveal className="flex flex-col justify-center gap-5 text-center md:text-left" delay={0.1}>
-        <h2 className="section-heading">Bring your own teacher</h2>
-        <p className="section-body">
-          Import your own soundscapes or guided meditation from your own files or from Apple Music*.
-        </p>
-
-        <h3 className="text-lg md:text-xl font-medium text-white/80 mt-4">A tool, not a service.</h3>
-        <p className="section-body">
-          Set a duration, choose a sound and tap to begin. No catalog to browse, no content you didn't choose, no monthly subscription.
-        </p>
-
-        <p className="text-[11px] text-white/30 mt-2 leading-relaxed">
-          * Requires an active Apple Music subscription for streaming content.
-        </p>
-      </SectionReveal>
-
-      <SectionReveal className="flex justify-center" delay={0.2}>
+      <SectionReveal className="flex justify-center order-1 md:order-2" delay={0.1}>
         <PhoneFrame className="max-w-[240px] w-full">
           <video
             autoPlay
@@ -172,6 +184,22 @@ const TeacherSection = () => (
             <source src="/videos/app-demo.mp4" type="video/mp4" />
           </video>
         </PhoneFrame>
+      </SectionReveal>
+
+      <SectionReveal className="flex flex-col justify-center gap-5 text-center md:text-left order-2 md:order-1" delay={0.2}>
+        <h2 className="section-heading">Bring your own teacher</h2>
+        <p className="section-body">
+          Import your own soundscapes or guided meditation from your own files or from Apple Music*.
+        </p>
+
+        <h3 className="text-lg md:text-xl font-medium text-white/80 mt-4">A tool, not a service.</h3>
+        <p className="section-body">
+          Set a duration, choose a sound and tap to begin. No catalog to browse, no content you didn't choose, no monthly subscription.
+        </p>
+
+        <p className="text-[11px] text-white/35 mt-2 leading-relaxed">
+          * Requires an active Apple Music subscription for streaming content.
+        </p>
       </SectionReveal>
     </div>
   </section>
@@ -379,8 +407,7 @@ const EcosystemSection = () => (
         </p>
 
         <div className="flex flex-col sm:flex-row items-center gap-3 mt-4">
-          <AppStoreButton />
-          <span className="text-white/20 text-sm">or</span>
+          <AppStoreBadge />
           <WebAppButton />
         </div>
       </SectionReveal>
@@ -401,7 +428,7 @@ const PrivacySection = () => (
       <p className="text-white/35 text-base md:text-lg leading-relaxed mb-2">
         Your practice stays on your device and your iCloud.
       </p>
-      <p className="text-white/25 text-base md:text-lg leading-relaxed">
+      <p className="text-white/30 text-base md:text-lg leading-relaxed">
         We don't know who you are. We prefer it that way.
       </p>
     </SectionReveal>
@@ -446,22 +473,8 @@ const ClosingSection = () => (
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-3">
-            <AppStoreButton label="Download for free" />
+            <AppStoreBadge />
             <WebAppButton />
-          </div>
-
-          <div className="flex items-center gap-1.5 text-[12px]">
-            <span className="text-white/30">
-              {'Refundable through '}
-              <a
-                href="https://reportaproblem.apple.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white/45 underline underline-offset-2 hover:text-white/60 transition-colors"
-              >
-                Apple
-              </a>
-            </span>
           </div>
         </SectionReveal>
       </div>
@@ -469,14 +482,14 @@ const ClosingSection = () => (
       {/* Languages + philosophy */}
       <div className="mt-20 flex flex-col items-center gap-6">
         <SectionReveal delay={0.15} className="flex flex-col items-center gap-2">
-          <p className="text-[10px] font-medium text-white/20 tracking-[1px] uppercase font-courier">Available in 14 languages</p>
-          <p className="text-[12px] text-white/25 leading-relaxed max-w-[488px] font-courier text-center">
+          <p className="text-[10px] font-medium text-white/25 tracking-[1px] uppercase font-courier">Available in 14 languages</p>
+          <p className="text-[12px] text-white/30 leading-relaxed max-w-[488px] font-courier text-center">
             English · Deutsch · Español · Français · Nederlands · Norsk · Suomi · Filipino · Magyar · Română · Telugu · 日本語 · 简体中文 · 繁體中文
           </p>
         </SectionReveal>
 
         <SectionReveal delay={0.2}>
-          <p className="text-[12px] text-white/20 italic tracking-[0.1px]">
+          <p className="text-[12px] text-white/25 italic tracking-[0.1px]">
             No philosophy imposed. No tradition assumed.
           </p>
         </SectionReveal>
@@ -491,10 +504,10 @@ const ClosingSection = () => (
 
 const Footer = () => (
   <footer className="py-10 px-8 text-center">
-    <p className="text-xs text-white/20 font-courier mb-4">
+    <p className="text-xs text-white/25 font-courier mb-4">
       Made in Romania by{' '}
       <a
-        href="http://opus.ro"
+        href="https://opus.ro"
         target="_blank"
         rel="noopener noreferrer"
         className="text-white/35 hover:text-white/55 transition-colors underline underline-offset-2"
@@ -502,12 +515,14 @@ const Footer = () => (
         OPUS
       </a>
     </p>
-    <div className="flex items-center justify-center gap-4 text-xs text-white/20">
+    <div className="flex items-center justify-center gap-4 text-xs text-white/25">
+      <Link to="/player" className="hover:text-white/45 transition-colors">Web Player</Link>
+      <span className="text-white/10">·</span>
+      <Link to="/support" className="hover:text-white/45 transition-colors">Support</Link>
+      <span className="text-white/10">·</span>
       <Link to="/privacy" className="hover:text-white/45 transition-colors">Privacy</Link>
       <span className="text-white/10">·</span>
       <Link to="/terms" className="hover:text-white/45 transition-colors">Terms</Link>
-      <span className="text-white/10">·</span>
-      <Link to="/support" className="hover:text-white/45 transition-colors">Support</Link>
     </div>
   </footer>
 );

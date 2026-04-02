@@ -34,20 +34,13 @@ const PageLayout = ({ title, lastUpdated, children }) => (
         <div className="flex flex-wrap items-center gap-4 text-xs text-white/25">
           <Link to="/" className="hover:text-white/50 transition-colors">Home</Link>
           <span className="text-white/10">·</span>
+          <Link to="/player" className="hover:text-white/50 transition-colors">Web Player</Link>
+          <span className="text-white/10">·</span>
+          <Link to="/support" className="hover:text-white/50 transition-colors">Support</Link>
+          <span className="text-white/10">·</span>
           <Link to="/privacy" className="hover:text-white/50 transition-colors">Privacy</Link>
           <span className="text-white/10">·</span>
           <Link to="/terms" className="hover:text-white/50 transition-colors">Terms</Link>
-          <span className="text-white/10">·</span>
-          <Link to="/support" className="hover:text-white/50 transition-colors">Support</Link>
-          <span className="flex-1" />
-          <a
-            href="http://opus.ro"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white/50 transition-colors"
-          >
-            OPUS
-          </a>
         </div>
       </footer>
     </div>

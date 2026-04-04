@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-const PageLayout = ({ title, lastUpdated, children }) => (
+const PageLayout = ({ title, lastUpdated, subtitle, children }) => (
   <div className="legal-page">
     <div className="max-w-2xl mx-auto px-6 pt-20 pb-16 md:pt-28 md:pb-24">
       {/* Header */}
@@ -22,6 +22,7 @@ const PageLayout = ({ title, lastUpdated, children }) => (
         {lastUpdated && (
           <p className="text-sm text-white/30 font-courier">{lastUpdated}</p>
         )}
+        {subtitle}
       </div>
 
       {/* Content */}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import PhoneFrame from '../components/PhoneFrame';
@@ -265,6 +265,7 @@ const useCases = [
 const UseCasesSection = () => {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
+  const pausedRef = useRef(false);
 
   const go = (next) => {
     setDirection(next > current ? 1 : -1);
@@ -276,6 +277,7 @@ const UseCasesSection = () => {
 
   useEffect(() => {
     const timer = setInterval(() => {
+      if (pausedRef.current) return;
       setDirection(1);
       setCurrent((c) => (c + 1) % useCases.length);
     }, 5000);
@@ -308,7 +310,11 @@ const UseCasesSection = () => {
         </AnimatePresence>
       </div>
 
-      <div className="relative z-10 flex flex-col items-center">
+      <div
+        className="relative z-10 flex flex-col items-center"
+        onMouseEnter={() => { pausedRef.current = true; }}
+        onMouseLeave={() => { pausedRef.current = false; }}
+      >
         <SectionReveal className="text-center mb-12 md:mb-16">
           <h2 className="section-heading">How people use it.</h2>
         </SectionReveal>
@@ -532,6 +538,10 @@ const Footer = () => (
 // ────────────────────────────────────────────────────────────
 
 const Home = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div>
       <HeroSection />

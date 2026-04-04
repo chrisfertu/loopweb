@@ -268,5 +268,33 @@ export function useAudioEngine() {
     }
   }, []);
 
-  return { play, stop, pause, resume };
+  /**
+   * Play a gentle bell tone (for interval bells).
+   * Bypasses master gain so it plays even when muted.
+   */
+  const playBell = useCallback(() => {
+    const ctx = getContext();
+
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    osc1.type = 'sine';
+    osc1.frequency.value = 528;
+    osc2.type = 'sine';
+    osc2.frequency.value = 528 * 2.01; // slight detune for shimmer
+
+    const bellGain = ctx.createGain();
+    bellGain.gain.setValueAtTime(0.3, ctx.currentTime);
+    bellGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 3);
+
+    osc1.connect(bellGain);
+    osc2.connect(bellGain);
+    bellGain.connect(ctx.destination);
+
+    osc1.start();
+    osc2.start();
+    osc1.stop(ctx.currentTime + 3);
+    osc2.stop(ctx.currentTime + 3);
+  }, [getContext]);
+
+  return { play, stop, pause, resume, playBell };
 }

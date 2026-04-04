@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { useAudioEngine } from '../hooks/useAudioEngine';
 import { useTimer, formatTime } from '../hooks/useTimer';
 import { DEFAULT_SOUND } from '../components/SoundPicker';
@@ -10,12 +10,17 @@ export function TimerProvider({ children }) {
   const [showSoundPicker, setShowSoundPicker] = useState(false);
   const [customTrack, setCustomTrack] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
+  const [bellEnabled, setBellEnabled] = useState(false);
+  const [bellInterval, setBellInterval] = useState(5);
+  const [showBellPicker, setShowBellPicker] = useState(false);
+  const lastBellRef = useRef(0);
 
   const timer = useTimer();
   const audio = useAudioEngine();
 
   const handlePlayPause = useCallback((durationSeconds = null) => {
     if (timer.timerState === 'idle') {
+      lastBellRef.current = 0;
       timer.start(durationSeconds, async () => {
         // countdown completed — stop audio
         await audio.stop();
@@ -38,6 +43,7 @@ export function TimerProvider({ children }) {
     timer.stop();
     await audio.stop();
     setIsMuted(false);
+    lastBellRef.current = 0;
   }, [timer, audio]);
 
   const handleSelectSound = useCallback((sound) => {
@@ -86,6 +92,29 @@ export function TimerProvider({ children }) {
     setShowSoundPicker((v) => !v);
   }, []);
 
+  const toggleBellPicker = useCallback(() => {
+    setShowBellPicker((v) => !v);
+  }, []);
+
+  const handleSetBellEnabled = useCallback((enabled) => {
+    setBellEnabled(enabled);
+  }, []);
+
+  const handleSetBellInterval = useCallback((minutes) => {
+    setBellInterval(minutes);
+  }, []);
+
+  // Play bell at interval during active timer
+  useEffect(() => {
+    if (timer.timerState !== 'running' || !bellEnabled || !bellInterval) return;
+    const intervalSec = bellInterval * 60;
+    const elapsed = timer.elapsedSeconds;
+    if (elapsed > 0 && elapsed % intervalSec === 0 && elapsed !== lastBellRef.current) {
+      lastBellRef.current = elapsed;
+      audio.playBell();
+    }
+  }, [timer.elapsedSeconds, timer.timerState, bellEnabled, bellInterval, audio]);
+
   const value = {
     timerState: timer.timerState,
     elapsedSeconds: timer.elapsedSeconds,
@@ -103,6 +132,12 @@ export function TimerProvider({ children }) {
     onToggleLoop: handleToggleLoop,
     onToggleMute: handleToggleMute,
     onToggleSoundPicker: toggleSoundPicker,
+    bellEnabled,
+    bellInterval,
+    showBellPicker,
+    onToggleBellPicker: toggleBellPicker,
+    onSetBellEnabled: handleSetBellEnabled,
+    onSetBellInterval: handleSetBellInterval,
   };
 
   return (

@@ -4,6 +4,7 @@ import { TimerProvider, useTimerContext } from './contexts/TimerContext';
 import Header from './components/Header';
 import MiniPlayer from './components/MiniPlayer';
 import SoundPicker from './components/SoundPicker';
+import BellPicker from './components/BellPicker';
 import Home from './pages/Home';
 import Player from './pages/Player';
 import Support from './pages/Support';
@@ -27,15 +28,21 @@ function AppContent() {
     customTrack,
     onImportTrack,
     onToggleLoop,
+    showBellPicker,
+    onToggleBellPicker,
+    bellEnabled,
+    onSetBellEnabled,
+    bellInterval,
+    onSetBellInterval,
   } = useTimerContext();
 
   const location = useLocation();
   const isPlayerPage = location.pathname === '/player';
 
   useEffect(() => {
-    document.body.style.overflow = showSoundPicker ? 'hidden' : '';
+    document.body.style.overflow = (showSoundPicker || showBellPicker) ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
-  }, [showSoundPicker]);
+  }, [showSoundPicker, showBellPicker]);
 
   return (
     <>
@@ -58,6 +65,14 @@ function AppContent() {
         customTrack={customTrack}
         onImportTrack={onImportTrack}
         onToggleLoop={onToggleLoop}
+      />
+      <BellPicker
+        isOpen={showBellPicker}
+        onClose={onToggleBellPicker}
+        bellEnabled={bellEnabled}
+        onSetBellEnabled={onSetBellEnabled}
+        bellInterval={bellInterval}
+        onSetBellInterval={onSetBellInterval}
       />
     </>
   );

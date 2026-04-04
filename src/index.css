@@ -196,6 +196,25 @@
     color: rgba(255, 255, 255, 0.6);
   }
 
+  /* ── Toolbar circle button (App Store, Bell) ── */
+  .toolbar-circle-btn {
+    @apply flex items-center justify-center flex-shrink-0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    outline: none;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .toolbar-circle-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.6);
+  }
+
   /* ── Sound picker bottom sheet ── */
   .sound-picker-sheet {
     @apply fixed bottom-0 z-[60];

@@ -524,7 +524,7 @@ const Footer = () => (
     <div className="flex items-center justify-center gap-4 text-xs text-white/25">
       <Link to="/player" className="hover:text-white/45 transition-colors">Web Player</Link>
       <span className="text-white/10">·</span>
-      <Link to="/support" className="hover:text-white/45 transition-colors">Support</Link>
+      <Link to="/support" className="hover:text-white/45 transition-colors">Help</Link>
       <span className="text-white/10">·</span>
       <Link to="/privacy" className="hover:text-white/45 transition-colors">Privacy</Link>
       <span className="text-white/10">·</span>

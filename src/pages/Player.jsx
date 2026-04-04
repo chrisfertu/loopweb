@@ -239,10 +239,10 @@ const Player = () => {
                     href={APP_STORE_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-white/30 hover:text-white/50 transition-colors mb-6 text-xs tracking-wide"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] border border-white/[0.06] text-white/40 hover:bg-white/[0.08] hover:text-white/60 transition-colors mb-6 text-xs tracking-wide"
                   >
                     <AppleIcon size={14} />
-                    <span>Download the app free</span>
+                    <span>Get the app</span>
                   </a>
                 )}
                 <DurationWheel
@@ -318,7 +318,7 @@ const Player = () => {
         </div>
 
         {/* Bottom toolbar */}
-        <div className="pb-[max(32px,env(safe-area-inset-bottom))] pt-4 flex items-center justify-center gap-3 w-full px-8">
+        <div className="pb-[max(32px,env(safe-area-inset-bottom))] pt-4 flex items-center justify-center gap-6 w-full px-8">
           <a
             href={APP_STORE_URL}
             target="_blank"

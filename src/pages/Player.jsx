@@ -197,10 +197,10 @@ const Player = () => {
           <div className="w-16" /> {/* Spacer for centering */}
         </div>
 
-        {/* Main area — three equal sections: spacer, wheel/timer, controls */}
+        {/* Main area - three equal sections: spacer, wheel/timer, controls */}
         <div className="flex-1 flex flex-col items-center w-full px-8">
 
-          {/* Top spacer — pushes wheel/timer toward center */}
+          {/* Top spacer - pushes wheel/timer toward center */}
           <div className="flex-[2]" />
 
           {/* Duration wheel (idle) / Timer display (active) */}
@@ -241,7 +241,7 @@ const Player = () => {
           {/* Middle spacer */}
           <div className="flex-[1]" />
 
-          {/* Controls — centered between wheel and sound bar */}
+          {/* Controls - centered between wheel and sound bar */}
           <div className="flex flex-col items-center gap-3 min-h-[60px]">
             <AnimatePresence mode="wait">
               {!isActive ? (
@@ -287,7 +287,7 @@ const Player = () => {
           <div className="flex-[1]" />
         </div>
 
-        {/* Sound bar — pinned to bottom */}
+        {/* Sound bar - pinned to bottom */}
         <div className="pb-[max(32px,env(safe-area-inset-bottom))] pt-4 flex flex-col items-center w-full px-8">
           <button onClick={onToggleSoundPicker} className="sound-bar">
             <SoundIcon />

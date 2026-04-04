@@ -17,7 +17,7 @@ export function TimerProvider({ children }) {
   const handlePlayPause = useCallback((durationSeconds = null) => {
     if (timer.timerState === 'idle') {
       timer.start(durationSeconds, async () => {
-        // countdown completed — stop audio
+        // countdown completed - stop audio
         await audio.stop();
         setIsMuted(false);
       });

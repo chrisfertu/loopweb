@@ -21,8 +21,8 @@ export function formatTime(totalSeconds) {
  * Timer hook with count-up and countdown modes.
  * States: idle, running, paused.
  *
- * start()          — infinite count-up (default)
- * start(duration)  — countdown from duration seconds to 0
+ * start()          - infinite count-up (default)
+ * start(duration)  - countdown from duration seconds to 0
  */
 export function useTimer() {
   const [timerState, setTimerState] = useState('idle'); // 'idle' | 'running' | 'paused'

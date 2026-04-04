@@ -228,7 +228,7 @@ const OptionsSection = () => (
 
         <h3 className="font-courier text-lg md:text-xl italic text-white/60 mt-4">Use it for more than one thing?</h3>
         <p className="section-body">
-          Save different configurations for meditation, deep work, sleep or anything else — and swipe between them. A one-time purchase of $4.99 if the app earns its place in your life.
+          Save different configurations for meditation, deep work, sleep or anything else, and swipe between them. A one-time purchase of $4.99 if the app earns its place in your life.
         </p>
       </SectionReveal>
     </div>

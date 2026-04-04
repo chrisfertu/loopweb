@@ -90,10 +90,12 @@ export function TimerProvider({ children }) {
 
   const toggleSoundPicker = useCallback(() => {
     setShowSoundPicker((v) => !v);
+    setShowBellPicker(false);
   }, []);
 
   const toggleBellPicker = useCallback(() => {
     setShowBellPicker((v) => !v);
+    setShowSoundPicker(false);
   }, []);
 
   const handleSetBellEnabled = useCallback((enabled) => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import PhoneFrame from '../components/PhoneFrame';
@@ -144,11 +144,11 @@ const HeroSection = () => {
               <span className="font-courier tracking-[0.3em] uppercase text-sm text-white/50">opus loop</span>
             </div>
 
-            <h1 className="text-[1.75rem] md:text-5xl lg:text-6xl font-semibold leading-[1.15] tracking-[-0.02em] text-white">
-              Your rituals, without a monthly sacrifice.
+            <h1 className="text-[1.75rem] md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-[-0.02em] text-white">
+              Your rituals, without <span className="text-opus-green">a monthly sacrifice.</span>
             </h1>
 
-            <p className="text-base md:text-lg text-white/40 max-w-md leading-relaxed">
+            <p className="text-base md:text-lg text-white/50 max-w-md leading-relaxed">
               A simple tool for meditation, prayer or whatever centers you.
             </p>
 
@@ -192,7 +192,7 @@ const TeacherSection = () => (
           Import your own soundscapes or guided meditation from your own files or from Apple Music*.
         </p>
 
-        <h3 className="text-lg md:text-xl font-medium text-white/80 mt-4">A tool, not a service.</h3>
+        <h3 className="font-courier text-lg md:text-xl italic text-white/60 mt-4">A <span className="text-opus-green not-italic">tool</span>, not a service.</h3>
         <p className="section-body">
           Set a duration, choose a sound and tap to begin. No catalog to browse, no content you didn't choose, no monthly subscription.
         </p>
@@ -221,12 +221,12 @@ const OptionsSection = () => (
       </SectionReveal>
 
       <SectionReveal className="flex flex-col justify-center gap-5 text-center md:text-left" delay={0.2}>
-        <h2 className="section-heading">Unlimited options.<br />Yours forever.</h2>
+        <h2 className="section-heading">Unlimited options.<br /><span className="text-opus-green">Yours forever.</span></h2>
         <p className="section-body">
           Loop lets you create your library of soundscapes, add your own background images or videos, track your heart rate or mindful minutes. All for free.
         </p>
 
-        <h3 className="text-lg md:text-xl font-medium text-white/80 mt-4">A small price for a useful app.</h3>
+        <h3 className="font-courier text-lg md:text-xl italic text-white/60 mt-4">A small price for a useful app.</h3>
         <p className="section-body">
           If you find more than one use for Loop in your life, consider unlocking presets with a one-time purchase of $5 and create unlimited configurations that you can easily swipe between.
         </p>
@@ -265,6 +265,7 @@ const useCases = [
 const UseCasesSection = () => {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
+  const pausedRef = useRef(false);
 
   const go = (next) => {
     setDirection(next > current ? 1 : -1);
@@ -276,6 +277,7 @@ const UseCasesSection = () => {
 
   useEffect(() => {
     const timer = setInterval(() => {
+      if (pausedRef.current) return;
       setDirection(1);
       setCurrent((c) => (c + 1) % useCases.length);
     }, 5000);
@@ -308,7 +310,11 @@ const UseCasesSection = () => {
         </AnimatePresence>
       </div>
 
-      <div className="relative z-10 flex flex-col items-center">
+      <div
+        className="relative z-10 flex flex-col items-center"
+        onMouseEnter={() => { pausedRef.current = true; }}
+        onMouseLeave={() => { pausedRef.current = false; }}
+      >
         <SectionReveal className="text-center mb-12 md:mb-16">
           <h2 className="section-heading">How people use it.</h2>
         </SectionReveal>
@@ -422,7 +428,7 @@ const EcosystemSection = () => (
 const PrivacySection = () => (
   <section className="w-full max-w-2xl mx-auto px-8 py-20 md:py-24 text-center">
     <SectionReveal>
-      <h2 className="text-2xl md:text-3xl font-medium tracking-[-0.02em] text-white mb-4">
+      <h2 className="text-2xl md:text-[2.25rem] font-bold tracking-[-0.02em] text-opus-green mb-4">
         No account. No tracking. No data collection.
       </h2>
       <p className="text-white/35 text-base md:text-lg leading-relaxed mb-2">
@@ -463,7 +469,7 @@ const ClosingSection = () => (
         {/* Right: Pricing + CTA */}
         <SectionReveal className="flex flex-col items-center md:items-start text-center md:text-left gap-6" delay={0.2}>
           <div>
-            <h2 className="section-heading mb-3">Free to download.<br />Yours to keep.</h2>
+            <h2 className="section-heading mb-3"><span className="text-opus-green">Free</span> to download.<br />Yours to keep.</h2>
             <p className="section-body">
               OPUS Loop is free with a fully functional timer, sound generator, and Apple Music import. No account, no trial.
             </p>
@@ -518,7 +524,7 @@ const Footer = () => (
     <div className="flex items-center justify-center gap-4 text-xs text-white/25">
       <Link to="/player" className="hover:text-white/45 transition-colors">Web Player</Link>
       <span className="text-white/10">·</span>
-      <Link to="/support" className="hover:text-white/45 transition-colors">Support</Link>
+      <Link to="/support" className="hover:text-white/45 transition-colors">Help</Link>
       <span className="text-white/10">·</span>
       <Link to="/privacy" className="hover:text-white/45 transition-colors">Privacy</Link>
       <span className="text-white/10">·</span>
@@ -532,6 +538,10 @@ const Footer = () => (
 // ────────────────────────────────────────────────────────────
 
 const Home = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div>
       <HeroSection />

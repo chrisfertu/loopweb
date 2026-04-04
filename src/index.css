@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-family: 'DM Sans', system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
     color-scheme: dark;
@@ -327,7 +327,7 @@
   }
 
   .legal-page a {
-    @apply text-green-400 hover:text-green-300 transition-colors underline underline-offset-2;
+    @apply text-opus-green hover:text-opus-green-dim transition-colors underline underline-offset-2;
   }
 
   .legal-section {

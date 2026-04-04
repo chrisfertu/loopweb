@@ -183,7 +183,7 @@ const Player = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center h-full w-full">
+      <div className="relative z-10 flex flex-col items-center h-full w-full overflow-hidden">
 
         {/* Top bar */}
         <div className="w-full flex items-center justify-between px-6 pt-[max(16px,env(safe-area-inset-top))] pb-2">

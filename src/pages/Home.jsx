@@ -145,7 +145,7 @@ const HeroSection = () => {
             </div>
 
             <h1 className="text-[1.75rem] md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-[-0.02em] text-white">
-              Your rituals, without <span className="text-opus-green">a monthly sacrifice.</span>
+              Your rituals, without a <span className="text-opus-green">monthly sacrifice.</span>
             </h1>
 
             <p className="text-base md:text-lg text-white/50 max-w-md leading-relaxed">
@@ -223,12 +223,12 @@ const OptionsSection = () => (
       <SectionReveal className="flex flex-col justify-center gap-5 text-center md:text-left" delay={0.2}>
         <h2 className="section-heading">Unlimited options.<br /><span className="text-opus-green">Yours forever.</span></h2>
         <p className="section-body">
-          Loop lets you create your library of soundscapes, add your own background images or videos, track your heart rate or mindful minutes. All for free.
+          Create your own library of soundscapes, add custom backgrounds, track your heart rate or mindful minutes. Every feature included from day one.
         </p>
 
-        <h3 className="font-courier text-lg md:text-xl italic text-white/60 mt-4">A small price for a useful app.</h3>
+        <h3 className="font-courier text-lg md:text-xl italic text-white/60 mt-4">Use it for more than one thing?</h3>
         <p className="section-body">
-          If you find more than one use for Loop in your life, consider unlocking presets with a one-time purchase of $5 and create unlimited configurations that you can easily swipe between.
+          Save different configurations for meditation, deep work, sleep or anything else, and swipe between them. A one-time purchase of $4.99 if the app earns its place in your life.
         </p>
       </SectionReveal>
     </div>
@@ -471,10 +471,10 @@ const ClosingSection = () => (
           <div>
             <h2 className="section-heading mb-3"><span className="text-opus-green">Free</span> to download.<br />Yours to keep.</h2>
             <p className="section-body">
-              OPUS Loop is free with a fully functional timer, sound generator, and Apple Music import. No account, no trial.
+              OPUS Loop is free with a fully functional timer, sound generator, and Apple Music import. No account, no trial, no limits.
             </p>
             <p className="section-body mt-3">
-              Love it? Unlock unlimited presets with a one-time purchase of $4.99. Every feature. Every update. Forever.
+              Love it enough to support development? $4.99 once, and you can save unlimited configurations. Every update, forever.
             </p>
           </div>
 

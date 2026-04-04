@@ -22,7 +22,7 @@ export function TimerProvider({ children }) {
     if (timer.timerState === 'idle') {
       lastBellRef.current = 0;
       timer.start(durationSeconds, async () => {
-        // countdown completed — stop audio
+        // countdown completed - stop audio
         await audio.stop();
         setIsMuted(false);
       });

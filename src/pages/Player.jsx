@@ -22,6 +22,12 @@ const DURATION_OPTIONS = [
     label: String(i + 1),
     minutes: i + 1,
   })),
+  { label: '75', minutes: 75 },
+  { label: '90', minutes: 90 },
+  { label: '105', minutes: 105 },
+  { label: '120', minutes: 120 },
+  { label: '150', minutes: 150 },
+  { label: '180', minutes: 180 },
 ];
 
 const ITEM_HEIGHT = 56;
@@ -36,28 +42,36 @@ const DurationWheel = ({ selectedIndex, onSelect, disabled }) => {
   const containerRef = useRef(null);
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef(null);
+  const rafRef = useRef(null);
+  const [scrollTop, setScrollTop] = useState(selectedIndex * ITEM_HEIGHT);
 
   // Scroll to selected index on mount and when selection changes externally
   useEffect(() => {
     const container = containerRef.current;
     if (!container || isScrollingRef.current) return;
-    // Use requestAnimationFrame to ensure DOM is ready (avoids browser scroll restoration)
     requestAnimationFrame(() => {
       container.scrollTop = selectedIndex * ITEM_HEIGHT;
     });
   }, [selectedIndex]);
 
   const handleScroll = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Throttled scroll position tracking for visual effects
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      setScrollTop(container.scrollTop);
+    });
+
     if (disabled) return;
     isScrollingRef.current = true;
 
     if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
     scrollTimeoutRef.current = setTimeout(() => {
-      const container = containerRef.current;
       if (!container) return;
       const index = Math.round(container.scrollTop / ITEM_HEIGHT);
       const clampedIndex = Math.max(0, Math.min(index, DURATION_OPTIONS.length - 1));
-      // Snap
       container.scrollTop = clampedIndex * ITEM_HEIGHT;
       if (clampedIndex !== selectedIndex) {
         onSelect(clampedIndex);
@@ -65,6 +79,9 @@ const DurationWheel = ({ selectedIndex, onSelect, disabled }) => {
       isScrollingRef.current = false;
     }, 80);
   }, [selectedIndex, onSelect, disabled]);
+
+  // Compute the floating-point center index from scroll position
+  const centerIndex = scrollTop / ITEM_HEIGHT;
 
   return (
     <div className="duration-wheel-wrapper">
@@ -85,12 +102,19 @@ const DurationWheel = ({ selectedIndex, onSelect, disabled }) => {
         ))}
 
         {DURATION_OPTIONS.map((opt, i) => {
-          const isSelected = i === selectedIndex;
+          const centerOffset = Math.abs(i - centerIndex);
+          const opacity = Math.max(0.15, 1 - centerOffset * 0.3);
+          const scale = centerOffset < 0.1 ? 1.08 : Math.max(0.88, 1 - centerOffset * 0.06);
+
           return (
             <div
               key={opt.label}
-              className={`duration-wheel-item ${isSelected ? 'selected' : ''}`}
-              style={{ height: ITEM_HEIGHT }}
+              className="duration-wheel-item"
+              style={{
+                height: ITEM_HEIGHT,
+                opacity,
+                transform: `scale(${scale})`,
+              }}
               onClick={() => {
                 if (!disabled) {
                   onSelect(i);
@@ -184,7 +208,8 @@ const Player = () => {
             {!isActive ? (
               <motion.div
                 key="duration"
-                className="flex flex-col items-center"
+                className="flex flex-col items-center justify-center"
+                style={{ minHeight: ITEM_HEIGHT * VISIBLE_ITEMS }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -199,7 +224,8 @@ const Player = () => {
             ) : (
               <motion.div
                 key="timer"
-                className="flex flex-col items-center"
+                className="flex flex-col items-center justify-center"
+                style={{ minHeight: ITEM_HEIGHT * VISIBLE_ITEMS }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}

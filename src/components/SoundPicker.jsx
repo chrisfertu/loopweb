@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Sound definitions
@@ -18,6 +18,29 @@ export const DEFAULT_SOUND = SOUNDS[0]; // Silence
 
 const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrack, onImportTrack, onToggleLoop }) => {
   const fileInputRef = useRef(null);
+
+  // Intercept browser back button to close the sheet instead of navigating away
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const closedByBack = { current: false };
+
+    window.history.pushState({ soundPicker: true }, '');
+
+    const handlePopState = () => {
+      closedByBack.current = true;
+      onClose();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      if (!closedByBack.current) {
+        window.history.back();
+      }
+    };
+  }, [isOpen, onClose]);
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];

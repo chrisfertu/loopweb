@@ -1,4 +1,4 @@
-const CACHE_NAME = 'opus-loop-v1';
+const CACHE_NAME = 'opus-loop-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

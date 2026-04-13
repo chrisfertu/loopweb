@@ -106,17 +106,14 @@ const Support = () => (
 
     {/* Sounds */}
     <SupportSection title="Sounds & Audio">
-      <Accordion title="How do I import my own audio?">
+      <Accordion title="How do I add my own audio?">
         <p>
-          Tap the sound icon on the main screen, then tap "Add Sound."
-          You can import audio files from your device, iCloud Drive, or the Files app.
-          Supported formats: MP3, M4A, WAV, AAC, FLAC, AIFF.
+          Tap the sound icon on the main screen, then tap "Add Soundtrack" at the bottom
+          of your sound library. From there you can import an audio file, paste a track or
+          playlist link from Apple Music, or search Apple Music and your iTunes library directly.
         </p>
-      </Accordion>
-      <Accordion title="Can I use Apple Music?">
         <p>
-          Yes. In the sound picker, choose "Apple Music" to browse and select tracks
-          from your Apple Music library. Requires an active Apple Music subscription.
+          Supported file formats: MP3, M4A, WAV, AAC, FLAC, AIFF. Apple Music requires an active subscription.
         </p>
       </Accordion>
       <Accordion title="What are the built-in sounds?">
@@ -138,11 +135,15 @@ const Support = () => (
           meditations that are shorter than your session.
         </p>
       </Accordion>
+      <Accordion title="Can I change the soundtrack during a session?">
+        <p>
+          Yes. Tap and hold the sound/mute button while a session is running to change your
+          soundtrack without stopping the timer.
+        </p>
+      </Accordion>
       <Accordion title="Can I play other media during a session?">
         <p>
-          Yes, if the soundtrack is set to Silence. OPUS Loop won't interrupt audio from other
-          apps, so your podcast or music keeps playing. You can quickly switch any preset to
-          silence by tapping and holding the mute button in the sound view.
+          Yes, if the soundtrack is set to Silence. OPUS Loop won't interrupt audio from other apps.
         </p>
       </Accordion>
     </SupportSection>
@@ -174,9 +175,8 @@ const Support = () => (
     <SupportSection title="Guides">
       <Accordion title="What are interval bells?">
         <p>
-          Interval bells ring at regular points during your session. You can set them to
-          midpoint, thirds, quarters, or a custom interval (e.g. every 25 minutes). Choose
-          from several included bell sounds, or import your own.
+          Interval bells play a sound at a regular interval during your session (e.g. every
+          10 minutes). Choose from several included bell sounds, or import your own.
         </p>
       </Accordion>
       <Accordion title="Set up guided meditations">

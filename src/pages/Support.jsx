@@ -28,11 +28,12 @@ const Accordion = ({ title, children, defaultOpen = false }) => {
           {title}
         </span>
         <svg
-          className={`w-4 h-4 text-white/30 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 text-white/60 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
           strokeWidth={2}
+          aria-hidden="true"
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
@@ -46,7 +47,7 @@ const Accordion = ({ title, children, defaultOpen = false }) => {
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <div className="pb-5 px-1 text-sm text-white/40 leading-relaxed space-y-3">
+            <div className="pb-5 px-1 text-sm text-white/75 leading-relaxed space-y-3">
               {children}
             </div>
           </motion.div>
@@ -59,7 +60,7 @@ const Accordion = ({ title, children, defaultOpen = false }) => {
 const SupportSection = ({ title, children }) => (
   <Reveal>
     <div className="mb-10">
-      <h2 className="font-courier text-[11px] tracking-[0.2em] uppercase text-white/25 mb-4">{title}</h2>
+      <h2 className="font-courier text-[11px] tracking-[0.2em] uppercase text-white/70 mb-4">{title}</h2>
       <div>{children}</div>
     </div>
   </Reveal>
@@ -69,7 +70,7 @@ const Support = () => (
   <PageLayout
     title="Help"
     subtitle={
-      <p className="text-white/40 text-sm mt-2">
+      <p className="text-white/75 text-sm mt-2">
         Answers to common questions. If yours isn't here, write to{' '}
         <a href="mailto:hello@opus.ro" className="text-opus-green hover:text-opus-green-dim transition-colors">
           hello@opus.ro
@@ -286,7 +287,7 @@ const Support = () => (
     {/* Contact */}
     <Reveal>
       <div className="mt-6 pt-8 border-t border-white/[0.06] text-center">
-        <p className="text-white/40 text-sm mb-2">
+        <p className="text-white/75 text-sm mb-2">
           Still have a question?
         </p>
         <a
@@ -295,7 +296,7 @@ const Support = () => (
         >
           hello@opus.ro
         </a>
-        <p className="text-white/20 text-xs mt-1">We read every message.</p>
+        <p className="text-white/70 text-xs mt-1">We read every message.</p>
       </div>
     </Reveal>
   </PageLayout>

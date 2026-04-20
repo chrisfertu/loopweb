@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { trapFocusKeyDown, focusFirstIn, restoreFocusOnClose } from './pickerUtils';
 
 // Sound definitions
 export const SOUNDS = [
@@ -17,7 +18,8 @@ export const SOUNDS = [
 export const DEFAULT_SOUND = SOUNDS[0]; // Silence
 
 const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrack, onImportTrack, onToggleLoop }) => {
-  const fileInputRef = useRef(null);
+  const sheetRef = useRef(null);
+  const prefersReduced = useReducedMotion();
 
   // Intercept browser back button to close the sheet instead of navigating away
   useEffect(() => {
@@ -42,6 +44,14 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
     };
   }, [isOpen, onClose]);
 
+  // Focus management: focus first interactive element on open, restore on close
+  useEffect(() => {
+    if (!isOpen) return;
+    const restore = restoreFocusOnClose();
+    focusFirstIn(sheetRef.current);
+    return restore;
+  }, [isOpen]);
+
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -49,6 +59,15 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
     }
     // Reset so the same file can be re-selected
     e.target.value = '';
+  };
+
+  const handleSheetKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      onClose();
+      return;
+    }
+    trapFocusKeyDown(e, sheetRef.current);
   };
 
   const isSelected = (sound) => {
@@ -72,16 +91,22 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
+            aria-hidden="true"
           />
 
           {/* Sheet */}
           <motion.div
+            ref={sheetRef}
             className="sound-picker-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="sound-picker-title"
+            onKeyDown={handleSheetKeyDown}
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            drag="y"
+            transition={prefersReduced ? { duration: 0 } : { type: 'spring', damping: 30, stiffness: 300 }}
+            drag={prefersReduced ? false : 'y'}
             dragConstraints={{ top: 0 }}
             dragElastic={{ top: 0.05, bottom: 0.3 }}
             onDragEnd={(_, info) => {
@@ -91,23 +116,27 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
             }}
           >
             {/* Handle */}
-            <div className="flex justify-center pt-3 pb-2">
-              <div className="w-10 h-1 rounded-full bg-white/20" />
+            <div className="flex justify-center pt-3 pb-2" aria-hidden="true">
+              <div className="w-10 h-1 rounded-full bg-white/30" />
             </div>
 
             {/* Header */}
             <div className="flex items-center justify-between px-5 pb-3">
-              <h3 className="text-base font-semibold text-white">Sound</h3>
+              <h3 id="sound-picker-title" className="text-base font-semibold text-white">Sound</h3>
               <button
                 onClick={onClose}
-                className="text-white/40 hover:text-white/70 transition-colors text-sm"
+                className="text-white/75 hover:text-white transition-colors text-sm"
               >
                 Done
               </button>
             </div>
 
             {/* Sound list */}
-            <div className="px-3 pb-10 space-y-1 max-h-[70vh] overflow-y-auto overscroll-contain">
+            <div
+              role="radiogroup"
+              aria-label="Ambient sound"
+              className="px-3 pb-10 space-y-1 max-h-[70vh] overflow-y-auto overscroll-contain"
+            >
               {/* Silence */}
               <SoundGroup label={null}>
                 <SoundRow
@@ -152,9 +181,12 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
                     />
                     {/* Loop toggle */}
                     <div className="flex items-center justify-between px-4 py-2">
-                      <span className="text-xs text-white/40">Loop</span>
+                      <span id="sound-loop-label" className="text-xs text-white/70">Loop</span>
                       <button
                         onClick={onToggleLoop}
+                        role="switch"
+                        aria-checked={!!customTrack.loop}
+                        aria-labelledby="sound-loop-label"
                         className={`w-9 h-5 rounded-full transition-colors relative ${
                           customTrack.loop ? 'bg-opus-green/60' : 'bg-white/10'
                         }`}
@@ -163,24 +195,21 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
                           className={`w-4 h-4 rounded-full bg-white absolute top-0.5 transition-transform ${
                             customTrack.loop ? 'translate-x-4' : 'translate-x-0.5'
                           }`}
+                          aria-hidden="true"
                         />
                       </button>
                     </div>
                   </div>
                 ) : null}
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full text-left px-4 py-3 rounded-lg text-sm text-opus-green hover:bg-white/5 transition-colors"
-                >
+                <label className="block w-full text-left px-4 py-3 rounded-lg text-sm text-opus-green hover:bg-white/5 transition-colors cursor-pointer">
                   {customTrack ? 'Replace track' : 'Import a track'}
-                </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/wav,audio/aac,audio/flac,audio/aiff,.mp3,.m4a,.wav,.aac,.flac,.aiff"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
+                  <input
+                    type="file"
+                    accept="audio/mpeg,audio/mp4,audio/x-m4a,audio/wav,audio/aac,audio/flac,audio/aiff,.mp3,.m4a,.wav,.aac,.flac,.aiff"
+                    className="sr-only"
+                    onChange={handleFileChange}
+                  />
+                </label>
               </SoundGroup>
             </div>
           </motion.div>
@@ -194,7 +223,7 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
 const SoundGroup = ({ label, children }) => (
   <div className="mb-2">
     {label && (
-      <p className="text-[11px] uppercase tracking-wider text-white/25 px-4 pt-3 pb-1 font-courier">
+      <p className="text-[11px] uppercase tracking-wider text-white/70 px-4 pt-3 pb-1 font-courier">
         {label}
       </p>
     )}
@@ -206,6 +235,8 @@ const SoundGroup = ({ label, children }) => (
 const SoundRow = ({ sound, selected, onSelect }) => (
   <button
     onClick={onSelect}
+    role="radio"
+    aria-checked={selected}
     className={`w-full text-left flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${
       selected ? 'bg-white/10' : 'hover:bg-white/5'
     }`}
@@ -213,11 +244,11 @@ const SoundRow = ({ sound, selected, onSelect }) => (
     <div>
       <span className="text-sm text-white">{sound.label}</span>
       {sound.subtitle && (
-        <span className="text-xs text-white/30 ml-2">{sound.subtitle}</span>
+        <span className="text-xs text-white/60 ml-2">{sound.subtitle}</span>
       )}
     </div>
     {selected && (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00A86B" strokeWidth="2.5">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00A86B" strokeWidth="2.5" aria-hidden="true">
         <polyline points="20 6 9 17 4 12" />
       </svg>
     )}

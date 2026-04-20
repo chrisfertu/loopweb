@@ -47,6 +47,12 @@ function AppContent() {
   return (
     <>
       <ScrollToTop />
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:text-black focus:px-3 focus:py-2 focus:rounded"
+      >
+        Skip to main content
+      </a>
       {!isPlayerPage && <Header />}
       <Routes>
         <Route path="/" element={<Home />} />

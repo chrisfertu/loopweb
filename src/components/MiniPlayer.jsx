@@ -77,16 +77,18 @@ const MiniPlayer = () => {
 
               <button
                 onClick={handleTimerTap}
+                aria-label={`Elapsed time ${formatTime(elapsedSeconds)}. Tap to show timer.`}
                 className="font-courier text-sm text-white/80 tabular-nums tracking-wide hover:text-white transition-colors"
               >
                 {formatTime(elapsedSeconds)}
               </button>
 
-              <span className="text-white/20 text-xs">·</span>
+              <span className="text-white/30 text-xs" aria-hidden="true">·</span>
 
               <button
                 onClick={onToggleSoundPicker}
-                className="text-[13px] text-white/40 hover:text-white/60 transition-colors truncate min-w-0"
+                aria-label={`Sound: ${selectedSound.label}. Tap to change.`}
+                className="text-[13px] text-white/70 hover:text-white transition-colors truncate min-w-0"
               >
                 {selectedSound.label}
               </button>

@@ -98,18 +98,77 @@ const DurationWheel = ({ selectedIndex, onSelect, disabled }) => {
     }, 80);
   }, [selectedIndex, onSelect, disabled]);
 
+  const selectIndex = useCallback((nextIndex) => {
+    if (disabled) return;
+    const clamped = Math.max(0, Math.min(nextIndex, DURATION_OPTIONS.length - 1));
+    onSelect(clamped);
+    const container = containerRef.current;
+    if (container) container.scrollTop = clamped * ITEM_HEIGHT;
+  }, [onSelect, disabled]);
+
+  const handleKeyDown = useCallback((e) => {
+    if (disabled) return;
+    switch (e.key) {
+      case 'ArrowUp':
+      case 'ArrowLeft':
+        e.preventDefault();
+        selectIndex(selectedIndex - 1);
+        break;
+      case 'ArrowDown':
+      case 'ArrowRight':
+        e.preventDefault();
+        selectIndex(selectedIndex + 1);
+        break;
+      case 'PageUp':
+        e.preventDefault();
+        selectIndex(selectedIndex - 5);
+        break;
+      case 'PageDown':
+        e.preventDefault();
+        selectIndex(selectedIndex + 5);
+        break;
+      case 'Home':
+        e.preventDefault();
+        selectIndex(0);
+        break;
+      case 'End':
+        e.preventDefault();
+        selectIndex(DURATION_OPTIONS.length - 1);
+        break;
+      default:
+        break;
+    }
+  }, [selectedIndex, selectIndex, disabled]);
+
   // Compute the floating-point center index from scroll position
   const centerIndex = scrollTop / ITEM_HEIGHT;
 
+  const selectedOption = DURATION_OPTIONS[selectedIndex];
+  const valueText = selectedOption.minutes == null
+    ? 'Infinite duration'
+    : `${selectedOption.minutes} minute${selectedOption.minutes === 1 ? '' : 's'}`;
+
   return (
-    <div className="duration-wheel-wrapper">
+    <div
+      className="duration-wheel-wrapper"
+      role="slider"
+      tabIndex={disabled ? -1 : 0}
+      aria-label="Session duration"
+      aria-valuemin={0}
+      aria-valuemax={DURATION_OPTIONS.length - 1}
+      aria-valuenow={selectedIndex}
+      aria-valuetext={valueText}
+      aria-disabled={disabled || undefined}
+      onKeyDown={handleKeyDown}
+    >
       {/* Selection highlight */}
-      <div className="duration-wheel-highlight" />
+      <div className="duration-wheel-highlight" aria-hidden="true" />
 
       <div
         ref={containerRef}
         className="duration-wheel-scroll"
         onScroll={handleScroll}
+        aria-hidden="true"
         style={{
           height: ITEM_HEIGHT * VISIBLE_ITEMS,
         }}
@@ -121,7 +180,7 @@ const DurationWheel = ({ selectedIndex, onSelect, disabled }) => {
 
         {DURATION_OPTIONS.map((opt, i) => {
           const centerOffset = Math.abs(i - centerIndex);
-          const opacity = Math.max(0.15, 1 - centerOffset * 0.3);
+          const opacity = centerOffset < 0.1 ? 1 : Math.max(0.55, 1 - centerOffset * 0.18);
           const scale = centerOffset < 0.1 ? 1.08 : Math.max(0.88, 1 - centerOffset * 0.06);
 
           return (
@@ -133,13 +192,7 @@ const DurationWheel = ({ selectedIndex, onSelect, disabled }) => {
                 opacity,
                 transform: `scale(${scale})`,
               }}
-              onClick={() => {
-                if (!disabled) {
-                  onSelect(i);
-                  const container = containerRef.current;
-                  if (container) container.scrollTop = i * ITEM_HEIGHT;
-                }
-              }}
+              onClick={() => selectIndex(i)}
             >
               <span className="duration-wheel-number">{opt.label}</span>
             </div>
@@ -192,9 +245,9 @@ const Player = () => {
   };
 
   return (
-    <div className="player-page">
+    <main id="main" className="player-page">
       {/* Background */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
         <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
           <source src="/videos/square-spiral.mp4" type="video/mp4" />
         </video>
@@ -206,13 +259,13 @@ const Player = () => {
 
         {/* Top bar */}
         <div className="w-full flex items-center justify-between px-6 pt-[max(16px,env(safe-area-inset-top))] pb-2">
-          <Link to="/" className="flex items-center gap-2 text-white/40 hover:text-white/60 transition-colors">
+          <Link to="/" className="flex items-center gap-2 text-white/70 hover:text-white/90 transition-colors" aria-label="Back to home">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M15 18l-6-6 6-6" />
             </svg>
             <span className="text-[11px] font-courier tracking-widest uppercase">Back</span>
           </Link>
-          <img src="/images/logo.svg" alt="OPUS Loop" className="w-8 h-8 opacity-40" />
+          <img src="/images/logo.svg" alt="OPUS Loop" className="w-8 h-8 opacity-70" />
           <div className="w-16" /> {/* Spacer for centering */}
         </div>
 
@@ -239,7 +292,7 @@ const Player = () => {
                     href={APP_STORE_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] border border-white/[0.06] text-white/40 hover:bg-white/[0.08] hover:text-white/60 transition-colors mb-6 text-xs tracking-wide"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] border border-white/[0.06] text-white/80 hover:bg-white/[0.08] hover:text-white transition-colors mb-6 text-xs tracking-wide"
                   >
                     <AppleIcon size={14} />
                     <span>Get the app</span>
@@ -343,7 +396,7 @@ const Player = () => {
           </button>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

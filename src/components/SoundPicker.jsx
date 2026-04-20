@@ -100,7 +100,7 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
               <h3 className="text-base font-semibold text-white">Sound</h3>
               <button
                 onClick={onClose}
-                className="text-white/40 hover:text-white/70 transition-colors text-sm"
+                className="text-white/75 hover:text-white transition-colors text-sm"
               >
                 Done
               </button>
@@ -152,7 +152,7 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
                     />
                     {/* Loop toggle */}
                     <div className="flex items-center justify-between px-4 py-2">
-                      <span className="text-xs text-white/40">Loop</span>
+                      <span className="text-xs text-white/70">Loop</span>
                       <button
                         onClick={onToggleLoop}
                         className={`w-9 h-5 rounded-full transition-colors relative ${
@@ -194,7 +194,7 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
 const SoundGroup = ({ label, children }) => (
   <div className="mb-2">
     {label && (
-      <p className="text-[11px] uppercase tracking-wider text-white/25 px-4 pt-3 pb-1 font-courier">
+      <p className="text-[11px] uppercase tracking-wider text-white/70 px-4 pt-3 pb-1 font-courier">
         {label}
       </p>
     )}
@@ -213,7 +213,7 @@ const SoundRow = ({ sound, selected, onSelect }) => (
     <div>
       <span className="text-sm text-white">{sound.label}</span>
       {sound.subtitle && (
-        <span className="text-xs text-white/30 ml-2">{sound.subtitle}</span>
+        <span className="text-xs text-white/60 ml-2">{sound.subtitle}</span>
       )}
     </div>
     {selected && (

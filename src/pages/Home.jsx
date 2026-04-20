@@ -11,7 +11,7 @@ const APP_STORE_URL = 'https://apps.apple.com/ro/app/loop-meditation-focus/id675
 // ────────────────────────────────────────────────────────────
 
 const VideoBackground = ({ src = '/videos/pastelmountains.mp4', opacity = 0.35 }) => (
-  <div className="absolute inset-0 overflow-hidden">
+  <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
     <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
       <source src={src} type="video/mp4" />
     </video>
@@ -192,12 +192,12 @@ const TeacherSection = () => (
           Import your own soundscapes or guided meditation from your own files or from Apple Music*.
         </p>
 
-        <h3 className="font-courier text-lg md:text-xl italic text-white/60 mt-4">A <span className="text-opus-green not-italic">tool</span>, not a service.</h3>
+        <p className="font-courier text-lg md:text-xl italic text-white/70 mt-4">A <span className="text-opus-green not-italic">tool</span>, not a service.</p>
         <p className="section-body">
           Set a duration, choose a sound and tap to begin. No catalog to browse, no content you didn't choose, no monthly subscription.
         </p>
 
-        <p className="text-[11px] text-white/35 mt-2 leading-relaxed">
+        <p className="text-xs text-white/70 mt-2 leading-relaxed">
           * Requires an active Apple Music subscription for streaming content.
         </p>
       </SectionReveal>
@@ -226,7 +226,7 @@ const OptionsSection = () => (
           Create your own library of soundscapes, add custom backgrounds, track your heart rate or mindful minutes. Every feature included from day one.
         </p>
 
-        <h3 className="font-courier text-lg md:text-xl italic text-white/60 mt-4">Use it for more than one thing?</h3>
+        <p className="font-courier text-lg md:text-xl italic text-white/70 mt-4">Use it for more than one thing?</p>
         <p className="section-body">
           Save different configurations for meditation, deep work, sleep or anything else, and swipe between them. A one-time purchase of $4.99 if the app earns its place in your life.
         </p>
@@ -266,6 +266,7 @@ const UseCasesSection = () => {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const pausedRef = useRef(false);
+  const prefersReduced = useReducedMotion();
 
   const go = (next) => {
     setDirection(next > current ? 1 : -1);
@@ -276,26 +277,33 @@ const UseCasesSection = () => {
   const next = () => go((current + 1) % useCases.length);
 
   useEffect(() => {
+    if (prefersReduced) return;
     const timer = setInterval(() => {
       if (pausedRef.current) return;
       setDirection(1);
       setCurrent((c) => (c + 1) % useCases.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [current]);
+  }, [current, prefersReduced]);
 
-  const textVariants = {
-    enter: (d) => ({ opacity: 0, y: d > 0 ? 24 : -24 }),
-    center: { opacity: 1, y: 0 },
-    exit: (d) => ({ opacity: 0, y: d > 0 ? -24 : 24 }),
-  };
+  const textVariants = prefersReduced
+    ? {
+        enter: { opacity: 0, y: 0 },
+        center: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: 0 },
+      }
+    : {
+        enter: (d) => ({ opacity: 0, y: d > 0 ? 24 : -24 }),
+        center: { opacity: 1, y: 0 },
+        exit: (d) => ({ opacity: 0, y: d > 0 ? -24 : 24 }),
+      };
 
   return (
     <section className="relative py-24 md:py-32 overflow-hidden">
       <VideoBackground opacity={0.25} />
 
       {/* Illustration background layer */}
-      <div className="absolute inset-0 z-[1] flex items-center justify-center pointer-events-none">
+      <div className="absolute inset-0 z-[1] flex items-center justify-center pointer-events-none" aria-hidden="true">
         <AnimatePresence mode="wait">
           <motion.img
             key={current}
@@ -314,6 +322,8 @@ const UseCasesSection = () => {
         className="relative z-10 flex flex-col items-center"
         onMouseEnter={() => { pausedRef.current = true; }}
         onMouseLeave={() => { pausedRef.current = false; }}
+        onFocus={() => { pausedRef.current = true; }}
+        onBlur={() => { pausedRef.current = false; }}
       >
         <SectionReveal className="text-center mb-12 md:mb-16">
           <h2 className="section-heading">How people use it.</h2>
@@ -322,6 +332,8 @@ const UseCasesSection = () => {
         <div
           className="w-full max-w-lg mx-auto px-8 relative"
           style={{ minHeight: '5rem' }}
+          aria-live="polite"
+          aria-atomic="true"
         >
           <AnimatePresence mode="wait" custom={direction}>
             <motion.p
@@ -331,9 +343,9 @@ const UseCasesSection = () => {
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="font-courier text-lg md:text-xl text-white/50 leading-relaxed text-center"
-              drag="x"
+              transition={{ duration: prefersReduced ? 0 : 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="font-courier text-lg md:text-xl text-white/70 leading-relaxed text-center"
+              drag={prefersReduced ? false : 'x'}
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.15}
               onDragEnd={(_, info) => {
@@ -431,10 +443,10 @@ const PrivacySection = () => (
       <h2 className="text-2xl md:text-[2.25rem] font-bold tracking-[-0.02em] text-opus-green mb-4">
         No account. No tracking. No data collection.
       </h2>
-      <p className="text-white/35 text-base md:text-lg leading-relaxed mb-2">
+      <p className="text-white/70 text-base md:text-lg leading-relaxed mb-2">
         Your practice stays on your device and your iCloud.
       </p>
-      <p className="text-white/30 text-base md:text-lg leading-relaxed">
+      <p className="text-white/70 text-base md:text-lg leading-relaxed">
         We don't know who you are. We prefer it that way.
       </p>
     </SectionReveal>
@@ -488,14 +500,14 @@ const ClosingSection = () => (
       {/* Languages + philosophy */}
       <div className="mt-20 flex flex-col items-center gap-6">
         <SectionReveal delay={0.15} className="flex flex-col items-center gap-2">
-          <p className="text-[10px] font-medium text-white/25 tracking-[1px] uppercase font-courier">Available in 14 languages</p>
-          <p className="text-[12px] text-white/30 leading-relaxed max-w-[488px] font-courier text-center">
+          <p className="text-[11px] font-medium text-white/70 tracking-[1px] uppercase font-courier">Available in 14 languages</p>
+          <p className="text-xs text-white/70 leading-relaxed max-w-[488px] font-courier text-center">
             English · Deutsch · Español · Français · Nederlands · Norsk · Suomi · Filipino · Magyar · Română · Telugu · 日本語 · 简体中文 · 繁體中文
           </p>
         </SectionReveal>
 
         <SectionReveal delay={0.2}>
-          <p className="text-[12px] text-white/25 italic tracking-[0.1px]">
+          <p className="text-xs text-white/70 italic tracking-[0.1px]">
             No philosophy imposed. No tradition assumed.
           </p>
         </SectionReveal>
@@ -510,25 +522,25 @@ const ClosingSection = () => (
 
 const Footer = () => (
   <footer className="py-10 px-8 text-center">
-    <p className="text-xs text-white/25 font-courier mb-4">
+    <p className="text-xs text-white/70 font-courier mb-4">
       Made in Romania by{' '}
       <a
         href="https://opus.ro"
         target="_blank"
         rel="noopener noreferrer"
-        className="text-white/35 hover:text-white/55 transition-colors underline underline-offset-2"
+        className="text-white/80 hover:text-white transition-colors underline underline-offset-2"
       >
         OPUS
       </a>
     </p>
-    <div className="flex items-center justify-center gap-4 text-xs text-white/25">
-      <Link to="/player" className="hover:text-white/45 transition-colors">Web Player</Link>
-      <span className="text-white/10">·</span>
-      <Link to="/support" className="hover:text-white/45 transition-colors">Help</Link>
-      <span className="text-white/10">·</span>
-      <Link to="/privacy" className="hover:text-white/45 transition-colors">Privacy</Link>
-      <span className="text-white/10">·</span>
-      <Link to="/terms" className="hover:text-white/45 transition-colors">Terms</Link>
+    <div className="flex items-center justify-center gap-4 text-xs text-white/70">
+      <Link to="/player" className="hover:text-white transition-colors">Web Player</Link>
+      <span className="text-white/30" aria-hidden="true">·</span>
+      <Link to="/support" className="hover:text-white transition-colors">Help</Link>
+      <span className="text-white/30" aria-hidden="true">·</span>
+      <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+      <span className="text-white/30" aria-hidden="true">·</span>
+      <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
     </div>
   </footer>
 );
@@ -543,16 +555,18 @@ const Home = () => {
   }, []);
 
   return (
-    <div>
-      <HeroSection />
-      <TeacherSection />
-      <OptionsSection />
-      <UseCasesSection />
-      <EcosystemSection />
-      <PrivacySection />
-      <ClosingSection />
+    <>
+      <main id="main">
+        <HeroSection />
+        <TeacherSection />
+        <OptionsSection />
+        <UseCasesSection />
+        <EcosystemSection />
+        <PrivacySection />
+        <ClosingSection />
+      </main>
       <Footer />
-    </div>
+    </>
   );
 };
 

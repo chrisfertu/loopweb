@@ -67,7 +67,7 @@ const BellPicker = ({ isOpen, onClose, bellEnabled, onSetBellEnabled, bellInterv
               <h3 className="text-base font-semibold text-white">Interval Bell</h3>
               <button
                 onClick={onClose}
-                className="text-white/40 hover:text-white/70 transition-colors text-sm"
+                className="text-white/75 hover:text-white transition-colors text-sm"
               >
                 Done
               </button>
@@ -102,7 +102,7 @@ const BellPicker = ({ isOpen, onClose, bellEnabled, onSetBellEnabled, bellInterv
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden"
                   >
-                    <p className="text-[11px] uppercase tracking-wider text-white/25 px-1 pt-3 pb-2 font-courier">
+                    <p className="text-[11px] uppercase tracking-wider text-white/70 px-1 pt-3 pb-2 font-courier">
                       Every
                     </p>
                     <div className="grid grid-cols-5 gap-2">
@@ -113,14 +113,14 @@ const BellPicker = ({ isOpen, onClose, bellEnabled, onSetBellEnabled, bellInterv
                           className={`py-2.5 rounded-lg text-sm font-courier transition-colors ${
                             bellInterval === min
                               ? 'bg-white/[0.12] text-white'
-                              : 'bg-white/[0.04] text-white/40 hover:bg-white/[0.08]'
+                              : 'bg-white/[0.04] text-white/70 hover:bg-white/[0.08] hover:text-white'
                           }`}
                         >
                           {min}
                         </button>
                       ))}
                     </div>
-                    <p className="text-[11px] text-white/20 px-1 pt-2 font-courier">
+                    <p className="text-xs text-white/70 px-1 pt-2 font-courier">
                       {bellInterval === 1 ? '1 minute' : `${bellInterval} minutes`}
                     </p>
                   </motion.div>

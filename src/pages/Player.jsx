@@ -192,9 +192,9 @@ const Player = () => {
   };
 
   return (
-    <div className="player-page">
+    <main id="main" className="player-page">
       {/* Background */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
         <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
           <source src="/videos/square-spiral.mp4" type="video/mp4" />
         </video>
@@ -206,13 +206,13 @@ const Player = () => {
 
         {/* Top bar */}
         <div className="w-full flex items-center justify-between px-6 pt-[max(16px,env(safe-area-inset-top))] pb-2">
-          <Link to="/" className="flex items-center gap-2 text-white/40 hover:text-white/60 transition-colors">
+          <Link to="/" className="flex items-center gap-2 text-white/70 hover:text-white/90 transition-colors" aria-label="Back to home">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M15 18l-6-6 6-6" />
             </svg>
             <span className="text-[11px] font-courier tracking-widest uppercase">Back</span>
           </Link>
-          <img src="/images/logo.svg" alt="OPUS Loop" className="w-8 h-8 opacity-40" />
+          <img src="/images/logo.svg" alt="OPUS Loop" className="w-8 h-8 opacity-70" />
           <div className="w-16" /> {/* Spacer for centering */}
         </div>
 
@@ -239,7 +239,7 @@ const Player = () => {
                     href={APP_STORE_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] border border-white/[0.06] text-white/40 hover:bg-white/[0.08] hover:text-white/60 transition-colors mb-6 text-xs tracking-wide"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] border border-white/[0.06] text-white/80 hover:bg-white/[0.08] hover:text-white transition-colors mb-6 text-xs tracking-wide"
                   >
                     <AppleIcon size={14} />
                     <span>Get the app</span>
@@ -343,7 +343,7 @@ const Player = () => {
           </button>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

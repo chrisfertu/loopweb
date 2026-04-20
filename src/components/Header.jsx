@@ -42,21 +42,21 @@ const Header = () => {
           <div className="max-w-6xl mx-auto w-full px-5 flex items-center justify-between h-full">
             <Link to="/" onClick={handleLogoClick} className="flex items-center gap-2.5 group">
               <img src="/images/logo.svg" alt="OPUS Loop" className="w-6 h-6" />
-              <span className="font-courier text-[11px] tracking-[0.2em] uppercase text-white/50 group-hover:text-white/70 transition-colors">
+              <span className="font-courier text-[11px] tracking-[0.2em] uppercase text-white/75 group-hover:text-white/90 transition-colors">
                 OPUS Loop
               </span>
             </Link>
 
-            <nav className="flex items-center gap-5">
+            <nav aria-label="Primary" className="flex items-center gap-5">
               <Link
                 to="/player"
-                className="text-[13px] text-white/40 hover:text-white/70 transition-colors"
+                className="text-[13px] text-white/70 hover:text-white/90 transition-colors"
               >
                 Web Player
               </Link>
               <Link
                 to="/support"
-                className="text-[13px] text-white/40 hover:text-white/70 transition-colors"
+                className="text-[13px] text-white/70 hover:text-white/90 transition-colors"
               >
                 Support
               </Link>

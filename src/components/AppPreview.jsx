@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const AppPreview = ({ type = 'phone', src, srcs, crossfadeInterval = 3000, alt = 'App screenshot' }) => {
+const AppPreview = ({ type = 'phone', src, srcs, crossfadeInterval = 3000, alt }) => {
   const aspectClass = type === 'wide'
     ? 'aspect-[16/10]'
     : 'aspect-[9/19.5]';
@@ -37,11 +37,11 @@ const AppPreview = ({ type = 'phone', src, srcs, crossfadeInterval = 3000, alt =
   return (
     <div className={`app-preview app-preview-placeholder ${maxWidthClass} ${aspectClass}`}>
       <div className="flex flex-col items-center justify-center h-full gap-2">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-white/15">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-white/50" aria-hidden="true">
           <rect x="5" y="2" width="14" height="20" rx="3" />
           <line x1="5" y1="18" x2="19" y2="18" />
         </svg>
-        <span className="text-[10px] font-courier text-white/15 tracking-wider uppercase">{alt}</span>
+        <span className="text-[10px] font-courier text-white/50 tracking-wider uppercase">{alt}</span>
       </div>
     </div>
   );

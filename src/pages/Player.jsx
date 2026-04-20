@@ -98,18 +98,77 @@ const DurationWheel = ({ selectedIndex, onSelect, disabled }) => {
     }, 80);
   }, [selectedIndex, onSelect, disabled]);
 
+  const selectIndex = useCallback((nextIndex) => {
+    if (disabled) return;
+    const clamped = Math.max(0, Math.min(nextIndex, DURATION_OPTIONS.length - 1));
+    onSelect(clamped);
+    const container = containerRef.current;
+    if (container) container.scrollTop = clamped * ITEM_HEIGHT;
+  }, [onSelect, disabled]);
+
+  const handleKeyDown = useCallback((e) => {
+    if (disabled) return;
+    switch (e.key) {
+      case 'ArrowUp':
+      case 'ArrowLeft':
+        e.preventDefault();
+        selectIndex(selectedIndex - 1);
+        break;
+      case 'ArrowDown':
+      case 'ArrowRight':
+        e.preventDefault();
+        selectIndex(selectedIndex + 1);
+        break;
+      case 'PageUp':
+        e.preventDefault();
+        selectIndex(selectedIndex - 5);
+        break;
+      case 'PageDown':
+        e.preventDefault();
+        selectIndex(selectedIndex + 5);
+        break;
+      case 'Home':
+        e.preventDefault();
+        selectIndex(0);
+        break;
+      case 'End':
+        e.preventDefault();
+        selectIndex(DURATION_OPTIONS.length - 1);
+        break;
+      default:
+        break;
+    }
+  }, [selectedIndex, selectIndex, disabled]);
+
   // Compute the floating-point center index from scroll position
   const centerIndex = scrollTop / ITEM_HEIGHT;
 
+  const selectedOption = DURATION_OPTIONS[selectedIndex];
+  const valueText = selectedOption.minutes == null
+    ? 'Infinite duration'
+    : `${selectedOption.minutes} minute${selectedOption.minutes === 1 ? '' : 's'}`;
+
   return (
-    <div className="duration-wheel-wrapper">
+    <div
+      className="duration-wheel-wrapper"
+      role="slider"
+      tabIndex={disabled ? -1 : 0}
+      aria-label="Session duration"
+      aria-valuemin={0}
+      aria-valuemax={DURATION_OPTIONS.length - 1}
+      aria-valuenow={selectedIndex}
+      aria-valuetext={valueText}
+      aria-disabled={disabled || undefined}
+      onKeyDown={handleKeyDown}
+    >
       {/* Selection highlight */}
-      <div className="duration-wheel-highlight" />
+      <div className="duration-wheel-highlight" aria-hidden="true" />
 
       <div
         ref={containerRef}
         className="duration-wheel-scroll"
         onScroll={handleScroll}
+        aria-hidden="true"
         style={{
           height: ITEM_HEIGHT * VISIBLE_ITEMS,
         }}
@@ -121,7 +180,7 @@ const DurationWheel = ({ selectedIndex, onSelect, disabled }) => {
 
         {DURATION_OPTIONS.map((opt, i) => {
           const centerOffset = Math.abs(i - centerIndex);
-          const opacity = Math.max(0.15, 1 - centerOffset * 0.3);
+          const opacity = centerOffset < 0.1 ? 1 : Math.max(0.55, 1 - centerOffset * 0.18);
           const scale = centerOffset < 0.1 ? 1.08 : Math.max(0.88, 1 - centerOffset * 0.06);
 
           return (
@@ -133,13 +192,7 @@ const DurationWheel = ({ selectedIndex, onSelect, disabled }) => {
                 opacity,
                 transform: `scale(${scale})`,
               }}
-              onClick={() => {
-                if (!disabled) {
-                  onSelect(i);
-                  const container = containerRef.current;
-                  if (container) container.scrollTop = i * ITEM_HEIGHT;
-                }
-              }}
+              onClick={() => selectIndex(i)}
             >
               <span className="duration-wheel-number">{opt.label}</span>
             </div>

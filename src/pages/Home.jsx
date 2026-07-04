@@ -295,16 +295,16 @@ const HeroSection = () => {
               </span>
             </motion.div>
 
-            <h1 className="text-[2.6rem] md:text-[3.6rem] lg:text-[4.2rem] font-bold leading-[1.04] tracking-[-0.03em] text-white">
-              {['Stillness,', 'on loop.'].map((line, i) => (
+            <h1 className="text-[2.5rem] md:text-[3.4rem] lg:text-[4rem] font-bold leading-[1.06] tracking-[-0.03em] text-white">
+              {['A meditation timer.', 'Nothing more.'].map((line, i) => (
                 <span key={line} className="block overflow-hidden pb-1 -mb-1">
                   <motion.span
-                    className="block"
+                    className={`block ${i === 1 ? 'text-opus-green' : ''}`}
                     initial={{ y: '105%' }}
                     animate={{ y: 0 }}
                     transition={{ duration: 0.9, delay: 0.15 + i * 0.12, ease: EASE }}
                   >
-                    {i === 1 ? (<>on <span className="text-opus-green">loop</span>.</>) : line}
+                    {line}
                   </motion.span>
                 </span>
               ))}
@@ -316,9 +316,8 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5, ease: EASE }}
             >
-              A meditation timer that&apos;s just a timer. Bring your own
-              sounds, or none at all — and no subscription to keep,
-              cancel, or feel bad about.
+              Bring your own guided meditations and music, or use the
+              built-in sounds. It does its job and stays out of the way.
             </motion.p>
 
             <motion.div
@@ -456,8 +455,8 @@ const SetTimeSection = () => (
           A minute to three hours.<br />Or ∞.
         </h2>
         <p className="text-[15px] md:text-base text-white/50 leading-[1.75] max-w-md mx-auto md:mx-0">
-          Interval bells, heart rate, mindful minutes, reminders — all there,
-          all optional. It&apos;s a timer. You already know how to use it.
+          Interval bells, heart rate, session stats, reminders — all there,
+          all optional.
         </p>
       </Reveal>
     </div>
@@ -544,12 +543,11 @@ const SoundSection = () => {
 const MANIFESTO = [
   { text: 'No account.' },
   { text: 'No tracking.' },
-  { text: 'No catalog.' },
-  { text: 'No streak', break: true },
-  { text: 'to keep alive.' },
-  { text: 'Your practice stays on', break: true },
-  { text: 'your device,', accent: true },
-  { text: 'and we prefer it that way.' },
+  { text: 'No ads.' },
+  { text: 'No streaks,', break: true },
+  { text: 'no gamification.' },
+  { text: 'Everything stays on', break: true },
+  { text: 'your device.', accent: true },
 ];
 
 const ManifestoSection = () => {
@@ -621,8 +619,8 @@ const PresetsSection = () => {
             Meditation is<br />just the default.
           </h2>
           <p className="text-[15px] md:text-base text-white/50 leading-[1.75] max-w-md mx-auto md:mx-0">
-            Pomodoro, deep work, sleep, an album on loop while you work.
-            It&apos;s your timer — it doesn&apos;t mind what you point it at.
+            Pomodoro, deep work, sleep, an album on loop. Presets keep a few
+            setups side by side — swipe to switch.
           </p>
 
           {/* Preset chips */}
@@ -715,9 +713,9 @@ const EcosystemSection = () => (
       </Reveal>
 
       <Reveal className="order-1 md:order-2 text-center md:text-left" delay={0.12}>
-        <Eyebrow title="Everywhere you are" />
+        <Eyebrow title="Devices" />
         <h2 className="text-[1.9rem] md:text-[2.5rem] font-bold tracking-[-0.02em] leading-[1.12] text-white mb-5">
-          At home in the<br />Apple ecosystem.
+          Built for iPhone,<br />iPad, and Watch.
         </h2>
         <ul className="text-[15px] md:text-base text-white/50 leading-[1.75] max-w-md mx-auto md:mx-0 space-y-3 text-left">
           {[
@@ -759,15 +757,13 @@ const FinaleSection = () => (
     <div className="relative z-10 max-w-4xl mx-auto px-7 md:px-10 py-28 md:py-40 text-center">
       <Reveal>
         <h2 className="text-[2.2rem] md:text-[3.2rem] font-bold tracking-[-0.03em] leading-[1.08] text-white">
-          Free to download.<br />Yours to keep.
+          <span className="text-opus-green">Free.</span><br />
+          $4.99 once, if you<br className="sm:hidden" /> want presets.
         </h2>
         <p className="mt-6 text-base md:text-lg text-white/50 leading-relaxed max-w-xl mx-auto">
-          The timer, the sounds, the imports, the Watch app — free, no trial,
-          no limits. If you want to keep a few setups side by side, a one-time{' '}
-          <span className="text-white/85">$4.99</span> adds saved presets.
-        </p>
-        <p className="mt-3 font-courier text-[13px] text-white/35 italic">
-          Nothing else to buy. Ever.
+          Free covers everything: the timer, the sounds, the imports, the
+          Watch app. No trial, no limits. The one-time purchase only adds
+          saved presets.
         </p>
       </Reveal>
 

@@ -95,22 +95,19 @@ const Reveal = ({ children, className = '', delay = 0, y = 28 }) => (
   </motion.div>
 );
 
-// Monospace movement label with a line that draws itself in.
-const Movement = ({ numeral, title }) => (
-  <div className="flex items-center gap-4 mb-6">
+// Monospace section label with a line that draws itself in.
+const Eyebrow = ({ title }) => (
+  <div className="flex items-center justify-center md:justify-start gap-4 mb-6">
     <span className="font-courier text-[11px] tracking-[0.35em] uppercase text-opus-green whitespace-nowrap">
-      Mvt. {numeral}
+      {title}
     </span>
     <motion.span
-      className="block h-px flex-1 max-w-[72px] bg-white/20 origin-left"
+      className="block h-px w-[72px] bg-white/20 origin-left"
       initial={{ scaleX: 0 }}
       whileInView={{ scaleX: 1 }}
       viewport={{ once: true, margin: '-90px' }}
       transition={{ duration: 1.1, delay: 0.2, ease: EASE }}
     />
-    <span className="font-courier text-[11px] tracking-[0.35em] uppercase text-white/35 whitespace-nowrap">
-      {title}
-    </span>
   </div>
 );
 
@@ -319,9 +316,9 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5, ease: EASE }}
             >
-              Set a duration, choose a sound, press play. A timer for
-              meditation, focus, prayer, and sleep — set up once,
-              yours forever.
+              A meditation timer that&apos;s just a timer. Bring your own
+              sounds, or none at all — and no subscription to keep,
+              cancel, or feel bad about.
             </motion.p>
 
             <motion.div
@@ -375,7 +372,7 @@ const HeroSection = () => {
 };
 
 // ────────────────────────────────────────────────────────────
-// Movement I — Set the time (living duration wheel)
+// The timer — living duration wheel
 // ────────────────────────────────────────────────────────────
 
 const WHEEL_STOPS = ['1', '5', '10', '25', '45', '90', '∞'];
@@ -454,17 +451,13 @@ const SetTimeSection = () => (
       </Reveal>
 
       <Reveal className="order-1 md:order-2 text-center md:text-left" delay={0.12}>
-        <Movement numeral="I" title="Set the time" />
+        <Eyebrow title="The timer" />
         <h2 className="text-[1.9rem] md:text-[2.5rem] font-bold tracking-[-0.02em] leading-[1.12] text-white mb-5">
-          One dial.<br />All the time you need.
+          A minute to three hours.<br />Or ∞.
         </h2>
         <p className="text-[15px] md:text-base text-white/50 leading-[1.75] max-w-md mx-auto md:mx-0">
-          Spin the wheel to anywhere between a single minute and three hours —
-          or choose ∞ and let the session breathe with no end at all.
-        </p>
-        <p className="text-[15px] md:text-base text-white/50 leading-[1.75] max-w-md mx-auto md:mx-0 mt-4">
-          Interval bells can mark the passage every few minutes, so you stay
-          with your breath instead of the clock.
+          Interval bells, heart rate, mindful minutes, reminders — all there,
+          all optional. It&apos;s a timer. You already know how to use it.
         </p>
       </Reveal>
     </div>
@@ -472,7 +465,7 @@ const SetTimeSection = () => (
 );
 
 // ────────────────────────────────────────────────────────────
-// Movement II — Choose the sound (coverflow + Apple Music)
+// The sound — coverflow + Apple Music import
 // ────────────────────────────────────────────────────────────
 
 const SoundSection = () => {
@@ -482,21 +475,19 @@ const SoundSection = () => {
     <section className="relative w-full max-w-6xl mx-auto px-7 md:px-10 py-24 md:py-36">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-20 items-center">
         <Reveal className="text-center md:text-left" delay={0.12}>
-          <Movement numeral="II" title="Choose the sound" />
+          <Eyebrow title="The sound" />
           <h2 className="text-[1.9rem] md:text-[2.5rem] font-bold tracking-[-0.02em] leading-[1.12] text-white mb-5">
             Bring your own teacher.
           </h2>
           <p className="text-[15px] md:text-base text-white/50 leading-[1.75] max-w-md mx-auto md:mx-0">
-            Binaural beats, colored noise, a bell every five minutes — or
-            nothing at all. Import guided meditations from your own files, or
-            stream anything in your Apple Music library.*
+            Your guided meditations, your playlists, your one song on repeat —
+            from your files or Apple Music.* Or binaural beats, noise, silence.
           </p>
           <p className="font-courier text-lg italic text-white/60 mt-7">
             A <span className="text-opus-green not-italic">tool</span>, not a service.
           </p>
           <p className="text-[15px] md:text-base text-white/50 leading-[1.75] max-w-md mx-auto md:mx-0 mt-3">
-            No catalog to browse. No content you didn&apos;t choose. The sounds
-            that already center you, inside the timer.
+            No catalog. No content you didn&apos;t choose.
           </p>
           <p className="text-[11px] text-white/30 mt-7 leading-relaxed">
             * Streaming requires an active Apple Music subscription.
@@ -547,47 +538,6 @@ const SoundSection = () => {
 };
 
 // ────────────────────────────────────────────────────────────
-// Movement III — Press play (session running)
-// ────────────────────────────────────────────────────────────
-
-const PlaySection = () => (
-  <section className="relative w-full max-w-6xl mx-auto px-7 md:px-10 py-24 md:py-36">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-20 items-center">
-      <Reveal className="order-2 md:order-1 flex justify-center">
-        <div className="relative">
-          <div className="phone-halo" />
-          <PhoneFrame className="w-[240px] md:w-[270px]">
-            <img
-              src="/images/app/session-running.webp"
-              alt="A running session in OPUS Loop"
-              className="w-full h-full object-cover"
-              loading="lazy"
-              decoding="async"
-            />
-          </PhoneFrame>
-        </div>
-      </Reveal>
-
-      <Reveal className="order-1 md:order-2 text-center md:text-left" delay={0.12}>
-        <Movement numeral="III" title="Press play" />
-        <h2 className="text-[1.9rem] md:text-[2.5rem] font-bold tracking-[-0.02em] leading-[1.12] text-white mb-5">
-          Press play.<br />Disappear.
-        </h2>
-        <p className="text-[15px] md:text-base text-white/50 leading-[1.75] max-w-md mx-auto md:mx-0">
-          The interface recedes into a living backdrop — or a photo of your
-          own. A bell opens the session, a bell closes it. In between, there is
-          nothing to look at and nothing to do.
-        </p>
-        <p className="text-[15px] md:text-base text-white/50 leading-[1.75] max-w-md mx-auto md:mx-0 mt-4">
-          Your mindful minutes sync quietly to Apple Health, with heart rate
-          from your Watch if you wear one.
-        </p>
-      </Reveal>
-    </div>
-  </section>
-);
-
-// ────────────────────────────────────────────────────────────
 // Interlude — privacy manifesto, revealed word by word
 // ────────────────────────────────────────────────────────────
 
@@ -618,8 +568,8 @@ const ManifestoSection = () => {
     <section className="relative w-full py-32 md:py-44 overflow-hidden grain">
       <SpiralRings opacity={0.045} />
       <div ref={ref} className="relative z-10 max-w-3xl mx-auto px-8 text-center">
-        <p className="font-courier text-[11px] tracking-[0.35em] uppercase text-white/30 mb-10">
-          — interlude —
+        <p className="font-courier text-[13px] tracking-[0.5em] text-white/30 mb-10">
+          · · ·
         </p>
         <p className="font-courier text-xl md:text-[1.7rem] leading-[1.9] text-white">
           {words.map((word, i) => (
@@ -655,7 +605,7 @@ const ManifestoWord = ({ children, progress, range, accent, lineBreak }) => {
 };
 
 // ────────────────────────────────────────────────────────────
-// Movement IV — Make it yours (interactive preset switcher)
+// The rest — interactive preset switcher
 // ────────────────────────────────────────────────────────────
 
 const PresetsSection = () => {
@@ -666,18 +616,13 @@ const PresetsSection = () => {
     <section className="relative w-full max-w-6xl mx-auto px-7 md:px-10 py-24 md:py-36">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-20 items-center">
         <Reveal className="text-center md:text-left" delay={0.12}>
-          <Movement numeral="IV" title="Make it yours" />
+          <Eyebrow title="The rest" />
           <h2 className="text-[1.9rem] md:text-[2.5rem] font-bold tracking-[-0.02em] leading-[1.12] text-white mb-5">
-            One app.<br />Every ritual.
+            Meditation is<br />just the default.
           </h2>
           <p className="text-[15px] md:text-base text-white/50 leading-[1.75] max-w-md mx-auto md:mx-0">
-            Name your sessions, give them icons and living backgrounds, then
-            swipe between them like presets on an instrument. Morning
-            stillness, deep work, wind-down — each remembers its own
-            duration, sound, and bells.
-          </p>
-          <p className="text-[15px] md:text-base text-white/50 leading-[1.75] max-w-md mx-auto md:mx-0 mt-4">
-            Try one below — this is the actual app.
+            Pomodoro, deep work, sleep, an album on loop while you work.
+            It&apos;s your timer — it doesn&apos;t mind what you point it at.
           </p>
 
           {/* Preset chips */}
@@ -770,9 +715,7 @@ const EcosystemSection = () => (
       </Reveal>
 
       <Reveal className="order-1 md:order-2 text-center md:text-left" delay={0.12}>
-        <p className="font-courier text-[11px] tracking-[0.35em] uppercase text-opus-green mb-6">
-          Everywhere you are
-        </p>
+        <Eyebrow title="Everywhere you are" />
         <h2 className="text-[1.9rem] md:text-[2.5rem] font-bold tracking-[-0.02em] leading-[1.12] text-white mb-5">
           At home in the<br />Apple ecosystem.
         </h2>
@@ -815,17 +758,13 @@ const FinaleSection = () => (
 
     <div className="relative z-10 max-w-4xl mx-auto px-7 md:px-10 py-28 md:py-40 text-center">
       <Reveal>
-        <p className="font-courier text-[11px] tracking-[0.35em] uppercase text-opus-green mb-6">
-          — finale —
-        </p>
         <h2 className="text-[2.2rem] md:text-[3.2rem] font-bold tracking-[-0.03em] leading-[1.08] text-white">
           Free to download.<br />Yours to keep.
         </h2>
         <p className="mt-6 text-base md:text-lg text-white/50 leading-relaxed max-w-xl mx-auto">
-          The timer, the sounds, the imports, the Watch app — free, with no
-          trial and no limits. If OPUS Loop earns a place in your life, a
-          one-time <span className="text-white/85">$4.99</span> unlocks
-          unlimited saved presets.
+          The timer, the sounds, the imports, the Watch app — free, no trial,
+          no limits. If you want to keep a few setups side by side, a one-time{' '}
+          <span className="text-white/85">$4.99</span> adds saved presets.
         </p>
         <p className="mt-3 font-courier text-[13px] text-white/35 italic">
           That&apos;s the whole business model.
@@ -908,7 +847,6 @@ const Home = () => {
       <HeroSection />
       <SetTimeSection />
       <SoundSection />
-      <PlaySection />
       <ManifestoSection />
       <PresetsSection />
       <EcosystemSection />

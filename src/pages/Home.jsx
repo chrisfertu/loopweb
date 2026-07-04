@@ -1,505 +1,791 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+  useMotionValue,
+} from 'framer-motion';
 import { Link } from 'react-router-dom';
 import PhoneFrame from '../components/PhoneFrame';
-import { useTimerContext } from '../contexts/TimerContext';
+import SpiralRings from '../components/SpiralRings';
 
 const APP_STORE_URL = 'https://apps.apple.com/ro/app/loop-meditation-focus/id6756740657';
 
+const EASE = [0.16, 1, 0.3, 1];
+
 // ────────────────────────────────────────────────────────────
-// Shared components
+// Presets — real app captures that cycle through the hero
+// and power the "make it yours" switcher.
 // ────────────────────────────────────────────────────────────
 
-const VideoBackground = ({ src = '/videos/pastelmountains.mp4', opacity = 0.35 }) => (
-  <div className="absolute inset-0 overflow-hidden">
-    <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
-      <source src={src} type="video/mp4" />
-    </video>
-    <div className="absolute inset-0 bg-black" style={{ opacity: 1 - opacity }} />
-  </div>
+const MandalaIcon = ({ size = 15 }) => (
+  <img src="/images/logo.svg" alt="" width={size} height={size} className="opacity-90" />
 );
 
-const AppStoreBadge = ({ className = '' }) => (
-  <a
-    href={APP_STORE_URL}
-    target="_blank"
-    rel="noopener noreferrer"
-    className={`inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white text-black transition-all duration-300 hover:bg-white/90 ${className}`}
-  >
-    <svg className="w-6 h-6 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-    </svg>
-    <span className="flex flex-col leading-tight text-left">
-      <span className="text-[10px] font-normal">Download on the</span>
-      <span className="text-base font-semibold -mt-0.5">App Store</span>
-    </span>
-  </a>
+const TomatoIcon = ({ size = 15 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 3.5c0 4-2 6-2 8.5s2 4.5 2 8.5" strokeLinecap="round" />
+    <circle cx="8.6" cy="9" r="0.4" fill="currentColor" />
+    <circle cx="8.2" cy="14.6" r="0.4" fill="currentColor" />
+    <circle cx="15.4" cy="9.2" r="0.4" fill="currentColor" />
+    <circle cx="15.8" cy="14.8" r="0.4" fill="currentColor" />
+  </svg>
 );
 
-const WebAppButton = ({ className = '' }) => (
-  <Link
-    to="/player"
-    className={`inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium text-sm transition-all duration-300 border border-white/15 text-white/70 hover:border-white/30 hover:text-white hover:bg-white/[0.06] ${className}`}
-  >
-    Try the web player
-  </Link>
+const SpiralIcon = ({ size = 15 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+    <path d="M12 12m-1.5 0a1.5 1.5 0 1 0 3 0 3.2 3.2 0 1 0-6.4 0 5.4 5.4 0 1 0 10.8 0 7.6 7.6 0 1 0-15.2 0 9.8 9.8 0 1 0 19.6 0" />
+  </svg>
 );
 
-const SectionReveal = ({ children, className = '', delay = 0 }) => (
+const InfinityIcon = ({ size = 15 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
+    <path d="M18.5 8.5a3.5 3.5 0 1 1 0 7c-3.5 0-2.5-7-9-7a3.5 3.5 0 1 0 0 7c3.4 0 4-3.5 4.5-3.5" />
+  </svg>
+);
+
+const PRESETS = [
+  {
+    id: 'meditation',
+    name: 'meditation',
+    src: '/images/app/preset-meditation.webp',
+    sound: 'Guided Meditation',
+    Icon: MandalaIcon,
+  },
+  {
+    id: 'pomodoro',
+    name: 'pomodoro',
+    src: '/images/app/preset-pomodoro.webp',
+    sound: 'Victory Lap — Fred again..',
+    Icon: TomatoIcon,
+  },
+  {
+    id: 'sleep',
+    name: 'sleep',
+    src: '/images/app/preset-sleep.webp',
+    sound: 'Pink Noise',
+    Icon: SpiralIcon,
+  },
+  {
+    id: 'noise',
+    name: 'brown noise',
+    src: '/images/app/preset-infinity.webp',
+    sound: 'Brown Noise',
+    Icon: InfinityIcon,
+  },
+];
+
+// ────────────────────────────────────────────────────────────
+// Shared primitives
+// ────────────────────────────────────────────────────────────
+
+const Reveal = ({ children, className = '', delay = 0, y = 28 }) => (
   <motion.div
     className={className}
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: '-80px' }}
-    transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
+    initial={{ opacity: 0, y, filter: 'blur(6px)' }}
+    whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+    viewport={{ once: true, margin: '-90px' }}
+    transition={{ duration: 0.9, delay, ease: EASE }}
   >
     {children}
   </motion.div>
 );
 
-const ScrollChevron = ({ hidden = false }) => {
+// Monospace section label with a line that draws itself in.
+const Eyebrow = ({ title }) => (
+  <div className="flex items-center justify-center md:justify-start gap-4 mb-6">
+    <span className="font-courier text-[11px] tracking-[0.35em] uppercase text-opus-green whitespace-nowrap">
+      {title}
+    </span>
+    <motion.span
+      className="block h-px w-[72px] bg-white/20 origin-left"
+      initial={{ scaleX: 0 }}
+      whileInView={{ scaleX: 1 }}
+      viewport={{ once: true, margin: '-90px' }}
+      transition={{ duration: 1.1, delay: 0.2, ease: EASE }}
+    />
+  </div>
+);
+
+// Buttons drift a few pixels toward the cursor — barely there, but alive.
+const Magnetic = ({ children, className = '' }) => {
+  const ref = useRef(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const sx = useSpring(x, { stiffness: 260, damping: 18 });
+  const sy = useSpring(y, { stiffness: 260, damping: 18 });
   const prefersReduced = useReducedMotion();
 
-  if (hidden) return null;
+  const onMove = useCallback((e) => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    x.set(((e.clientX - rect.left) / rect.width - 0.5) * 10);
+    y.set(((e.clientY - rect.top) / rect.height - 0.5) * 8);
+  }, [x, y]);
+
+  const onLeave = useCallback(() => {
+    x.set(0);
+    y.set(0);
+  }, [x, y]);
+
+  if (prefersReduced) return <div className={className}>{children}</div>;
 
   return (
     <motion.div
-      className="absolute bottom-16 left-1/2 -translate-x-1/2 z-10"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 1.5, duration: 0.8 }}
+      ref={ref}
+      className={className}
+      style={{ x: sx, y: sy }}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
     >
-      <motion.svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="white"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="opacity-30"
-        animate={prefersReduced ? undefined : { y: [0, 6, 0] }}
-        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-      >
-        <path d="M6 9l6 6 6-6" />
-      </motion.svg>
+      {children}
     </motion.div>
   );
 };
 
+const AppStoreBadge = () => (
+  <Magnetic>
+    <a
+      href={APP_STORE_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group inline-flex items-center gap-3 pl-5 pr-6 py-3 rounded-full bg-white text-black transition-colors duration-300 hover:bg-opus-green hover:text-white"
+    >
+      <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+      </svg>
+      <span className="flex flex-col leading-tight text-left">
+        <span className="text-[10px] font-normal opacity-70">Download on the</span>
+        <span className="text-[15px] font-semibold -mt-0.5">App Store</span>
+      </span>
+    </a>
+  </Magnetic>
+);
+
+const WebPlayerLink = () => (
+  <Magnetic>
+    <Link
+      to="/player"
+      className="group inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full text-sm border border-white/15 text-white/70 transition-colors duration-300 hover:border-white/35 hover:text-white hover:bg-white/[0.05]"
+    >
+      <span className="relative flex w-4 h-4 items-center justify-center">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:scale-110">
+          <path d="M8 5.14v13.72L19 12 8 5.14z" />
+        </svg>
+      </span>
+      Try the web player
+    </Link>
+  </Magnetic>
+);
+
 // ────────────────────────────────────────────────────────────
-// Section 1: Hero (split layout)
+// Hero — the app, alive, cycling through real presets
 // ────────────────────────────────────────────────────────────
 
-const HeroSection = () => {
+const HeroPhone = () => {
   const prefersReduced = useReducedMotion();
-  const { timerState } = useTimerContext();
-  const isTimerActive = timerState === 'running' || timerState === 'paused';
+  const [index, setIndex] = useState(0);
+  const pausedRef = useRef(false);
+
+  useEffect(() => {
+    PRESETS.forEach(({ src }) => { new Image().src = src; });
+    const timer = setInterval(() => {
+      if (!pausedRef.current) setIndex((i) => (i + 1) % PRESETS.length);
+    }, 4200);
+    return () => clearInterval(timer);
+  }, []);
+
+  const preset = PRESETS[index];
 
   return (
-    <section id="hero" className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden">
-      <VideoBackground src="/videos/pastelmountains.mp4" opacity={0.3} />
+    <div
+      className="relative flex flex-col items-center"
+      onMouseEnter={() => { pausedRef.current = true; }}
+      onMouseLeave={() => { pausedRef.current = false; }}
+    >
+      <div className="phone-halo" />
 
-      <div className="relative z-10 w-full max-w-6xl mx-auto px-8 py-20 md:py-0">
-        {/* Mobile-only logo above grid */}
-        <motion.div
-          className="flex items-center justify-center gap-3 mb-8 md:hidden"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <img src="/images/logo.svg" alt="OPUS Loop" className="w-10 h-10" />
-          <span className="font-courier tracking-[0.3em] uppercase text-sm text-white/50">opus loop</span>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center min-h-[60vh] md:min-h-[80vh]">
-
-          {/* Phone mockup -- appears after logo on mobile, left on desktop */}
-          <motion.div
-            className="flex justify-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          >
+      <motion.div
+        animate={prefersReduced ? undefined : { y: [0, -10, 0] }}
+        transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+        className="relative"
+      >
+        <PhoneFrame className="w-[240px] md:w-[290px]">
+          <AnimatePresence mode="sync">
             <motion.img
-              src="/images/mockup-price.png"
-              alt="OPUS Loop meditation timer app"
-              className="max-w-[280px] md:max-w-[460px] w-full drop-shadow-2xl"
-              animate={prefersReduced ? undefined : { y: [0, -8, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+              key={preset.id}
+              src={preset.src}
+              alt={`OPUS Loop — ${preset.name} preset`}
+              className="absolute inset-0 w-full h-full object-cover"
+              initial={{ opacity: 0, scale: 1.04 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.1, ease: 'easeInOut' }}
             />
-          </motion.div>
+          </AnimatePresence>
+        </PhoneFrame>
+      </motion.div>
 
-          {/* Copy + CTA -- below phone on mobile, right on desktop */}
-          <motion.div
-            className="flex flex-col items-center md:items-start text-center md:text-left gap-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-          >
-            {/* Desktop-only logo inline with copy */}
-            <div className="hidden md:flex items-center gap-3 mb-2">
-              <img src="/images/logo.svg" alt="OPUS Loop" className="w-12 h-12" />
-              <span className="font-courier tracking-[0.3em] uppercase text-sm text-white/50">opus loop</span>
-            </div>
+      {/* Preset readout, synced with the screen */}
+      <div className="mt-7 flex flex-col items-center gap-3">
+        <div className="h-4 overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={preset.id}
+              className="block font-courier text-[12px] tracking-[0.3em] text-white/45"
+              initial={{ y: 14, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -14, opacity: 0 }}
+              transition={{ duration: 0.45, ease: EASE }}
+            >
+              {preset.name}
+            </motion.span>
+          </AnimatePresence>
+        </div>
+        <div className="flex items-center gap-2">
+          {PRESETS.map((p, i) => (
+            <button
+              key={p.id}
+              onClick={() => setIndex(i)}
+              aria-label={`Show ${p.name} preset`}
+              className={`rounded-full transition-all duration-500 ${
+                i === index ? 'w-5 h-1 bg-white/50' : 'w-1 h-1 bg-white/15 hover:bg-white/30'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
-            <h1 className="text-[1.75rem] md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-[-0.02em] text-white">
-              Your rituals, without a <span className="text-opus-green">monthly sacrifice.</span>
+const HeroSection = () => {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
+  const phoneY = useTransform(scrollYProgress, [0, 1], [0, 90]);
+  const copyOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+
+  return (
+    <section ref={ref} className="relative w-full min-h-screen flex items-center overflow-hidden grain">
+      <SpiralRings opacity={0.07} />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse 60% 45% at 70% 45%, rgba(0,168,107,0.05) 0%, transparent 65%)' }}
+      />
+
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-7 md:px-10 pt-28 pb-16 md:py-24">
+        <div className="grid grid-cols-1 md:grid-cols-[1.05fr,0.95fr] gap-14 md:gap-8 items-center">
+
+          {/* Copy */}
+          <motion.div style={{ opacity: copyOpacity }} className="flex flex-col items-center md:items-start text-center md:text-left">
+            <motion.div
+              className="flex items-center gap-3 mb-8"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: EASE }}
+            >
+              <img src="/images/logo.svg" alt="" className="w-8 h-8" />
+              <span className="font-courier tracking-[0.35em] uppercase text-[11px] text-white/45">
+                opus loop
+              </span>
+            </motion.div>
+
+            <h1 className="text-[2.5rem] md:text-[3.4rem] lg:text-[4rem] font-bold leading-[1.06] tracking-[-0.03em] text-white">
+              {['A meditation timer.', 'Nothing more.'].map((line, i) => (
+                <span key={line} className="block overflow-hidden pb-1 -mb-1">
+                  <motion.span
+                    className={`block ${i === 1 ? 'text-opus-green' : ''}`}
+                    initial={{ y: '105%' }}
+                    animate={{ y: 0 }}
+                    transition={{ duration: 0.9, delay: 0.15 + i * 0.12, ease: EASE }}
+                  >
+                    {line}
+                  </motion.span>
+                </span>
+              ))}
             </h1>
 
-            <p className="text-base md:text-lg text-white/50 max-w-md leading-relaxed">
-              A simple tool for meditation, prayer or whatever centers you.
-            </p>
+            <motion.p
+              className="mt-6 text-base md:text-lg text-white/50 max-w-md leading-relaxed"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5, ease: EASE }}
+            >
+              Bring your own guided meditations and music, or use the
+              built-in sounds. It does its job and stays out of the way.
+            </motion.p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-3 mt-2">
+            <motion.div
+              className="mt-9 flex flex-col sm:flex-row items-center gap-3.5"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.65, ease: EASE }}
+            >
               <AppStoreBadge />
-              <WebAppButton />
-            </div>
+              <WebPlayerLink />
+            </motion.div>
+
+            <motion.p
+              className="mt-7 font-courier text-[11px] tracking-[0.22em] uppercase text-white/30"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 0.9 }}
+            >
+              free · no account · no subscription
+            </motion.p>
+          </motion.div>
+
+          {/* Phone */}
+          <motion.div
+            style={{ y: phoneY }}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.1, delay: 0.3, ease: EASE }}
+            className="flex justify-center"
+          >
+            <HeroPhone />
           </motion.div>
         </div>
       </div>
 
-      <ScrollChevron hidden={isTimerActive} />
+      {/* Scroll cue */}
+      <motion.div
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 hidden md:block"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.8, duration: 1 }}
+      >
+        <motion.div
+          className="w-px h-12 bg-gradient-to-b from-transparent via-white/25 to-transparent"
+          animate={{ scaleY: [1, 0.6, 1] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      </motion.div>
     </section>
   );
 };
 
 // ────────────────────────────────────────────────────────────
-// Section 2: Bring your own teacher (video LEFT, text right)
+// The timer — living duration wheel
 // ────────────────────────────────────────────────────────────
 
-const TeacherSection = () => (
-  <section className="section-container">
-    <div className="section-two-col">
-      <SectionReveal className="flex justify-center order-1 md:order-2" delay={0.1}>
-        <PhoneFrame className="max-w-[240px] w-full">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover"
-          >
-            <source src="/videos/app-demo.mp4" type="video/mp4" />
-          </video>
-        </PhoneFrame>
-      </SectionReveal>
+const WHEEL_STOPS = ['1', '5', '10', '25', '45', '90', '∞'];
+const WHEEL_ITEM_H = 72;
 
-      <SectionReveal className="flex flex-col justify-center gap-5 text-center md:text-left order-2 md:order-1" delay={0.2}>
-        <h2 className="section-heading">Bring your own teacher</h2>
-        <p className="section-body">
-          Import your own soundscapes or guided meditation from your own files or from Apple Music*.
-        </p>
-
-        <h3 className="font-courier text-lg md:text-xl italic text-white/60 mt-4">A <span className="text-opus-green not-italic">tool</span>, not a service.</h3>
-        <p className="section-body">
-          Set a duration, choose a sound and tap to begin. No catalog to browse, no content you didn't choose, no monthly subscription.
-        </p>
-
-        <p className="text-[11px] text-white/35 mt-2 leading-relaxed">
-          * Requires an active Apple Music subscription for streaming content.
-        </p>
-      </SectionReveal>
-    </div>
-  </section>
-);
-
-// ────────────────────────────────────────────────────────────
-// Section 3: Unlimited options (image LEFT, text right)
-// ────────────────────────────────────────────────────────────
-
-const OptionsSection = () => (
-  <section className="section-container">
-    <div className="section-two-col">
-      <SectionReveal className="flex justify-center" delay={0.1}>
-        <img
-          src="/images/mockup-config.png"
-          alt="Multiple preset configurations"
-          className="w-full max-w-md rounded-2xl"
-        />
-      </SectionReveal>
-
-      <SectionReveal className="flex flex-col justify-center gap-5 text-center md:text-left" delay={0.2}>
-        <h2 className="section-heading">Unlimited options.<br /><span className="text-opus-green">Yours forever.</span></h2>
-        <p className="section-body">
-          Create your own library of soundscapes, add custom backgrounds, track your heart rate or mindful minutes. Every feature included from day one.
-        </p>
-
-        <h3 className="font-courier text-lg md:text-xl italic text-white/60 mt-4">Use it for more than one thing?</h3>
-        <p className="section-body">
-          Save different configurations for meditation, deep work, sleep or anything else, and swipe between them. A one-time purchase of $4.99 if the app earns its place in your life.
-        </p>
-      </SectionReveal>
-    </div>
-  </section>
-);
-
-// ────────────────────────────────────────────────────────────
-// Section 4: Use Cases (carousel with illustrations)
-// ────────────────────────────────────────────────────────────
-
-const useCases = [
-  {
-    text: 'Five minutes of stillness before the day begins.',
-    illustration: '/images/illustrations/five-minutes-of-stillness.svg',
-  },
-  {
-    text: '90 min deep work sessions with interval bells at 10 minutes and binaural beats.',
-    illustration: '/images/illustrations/deep-work.svg',
-  },
-  {
-    text: 'Ecstatic dance with a personal playlist from Apple Music.',
-    illustration: '/images/illustrations/ecstatic-dance.svg',
-  },
-  {
-    text: 'Ten minutes of reflection before bed time.',
-    illustration: '/images/illustrations/ten-minutes-reflection.svg',
-  },
-  {
-    text: 'As a brown noise machine for sleep.',
-    illustration: '/images/illustrations/brown-noise.svg',
-  },
-];
-
-const UseCasesSection = () => {
-  const [current, setCurrent] = useState(0);
-  const [direction, setDirection] = useState(1);
-  const pausedRef = useRef(false);
-
-  const go = (next) => {
-    setDirection(next > current ? 1 : -1);
-    setCurrent(next);
-  };
-
-  const prev = () => go((current - 1 + useCases.length) % useCases.length);
-  const next = () => go((current + 1) % useCases.length);
+const DurationWheelDemo = () => {
+  const prefersReduced = useReducedMotion();
+  const [stop, setStop] = useState(2); // rests on "10"
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      if (pausedRef.current) return;
-      setDirection(1);
-      setCurrent((c) => (c + 1) % useCases.length);
-    }, 5000);
+    if (prefersReduced) return undefined;
+    const timer = setInterval(() => setStop((s) => (s + 1) % WHEEL_STOPS.length), 2600);
     return () => clearInterval(timer);
-  }, [current]);
-
-  const textVariants = {
-    enter: (d) => ({ opacity: 0, y: d > 0 ? 24 : -24 }),
-    center: { opacity: 1, y: 0 },
-    exit: (d) => ({ opacity: 0, y: d > 0 ? -24 : 24 }),
-  };
+  }, [prefersReduced]);
 
   return (
-    <section className="relative py-24 md:py-32 overflow-hidden">
-      <VideoBackground opacity={0.25} />
-
-      {/* Illustration background layer */}
-      <div className="absolute inset-0 z-[1] flex items-center justify-center pointer-events-none">
-        <AnimatePresence mode="wait">
-          <motion.img
-            key={current}
-            src={useCases[current].illustration}
-            alt=""
-            className="w-[300px] md:w-[400px] h-auto opacity-[0.18]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.18 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: 'easeInOut' }}
-          />
-        </AnimatePresence>
+    <div className="relative w-[240px] mx-auto select-none" aria-hidden="true">
+      {/* selection lines, like the app */}
+      <div className="absolute left-6 right-6 pointer-events-none z-10" style={{ top: `calc(50% - ${WHEEL_ITEM_H / 2}px)`, height: WHEEL_ITEM_H }}>
+        <div className="absolute top-0 left-0 right-0 h-px bg-white/12" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-white/12" />
       </div>
 
       <div
-        className="relative z-10 flex flex-col items-center"
-        onMouseEnter={() => { pausedRef.current = true; }}
-        onMouseLeave={() => { pausedRef.current = false; }}
+        className="overflow-hidden"
+        style={{
+          height: WHEEL_ITEM_H * 5,
+          maskImage: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.4) 18%, black 38%, black 62%, rgba(0,0,0,0.4) 82%, transparent)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.4) 18%, black 38%, black 62%, rgba(0,0,0,0.4) 82%, transparent)',
+        }}
       >
-        <SectionReveal className="text-center mb-12 md:mb-16">
-          <h2 className="section-heading">How people use it.</h2>
-        </SectionReveal>
-
-        <div
-          className="w-full max-w-lg mx-auto px-8 relative"
-          style={{ minHeight: '5rem' }}
+        <motion.div
+          animate={{ y: WHEEL_ITEM_H * 2 - stop * WHEEL_ITEM_H }}
+          transition={{ type: 'spring', stiffness: 90, damping: 16 }}
         >
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.p
-              key={current}
-              custom={direction}
-              variants={textVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="font-courier text-lg md:text-xl text-white/50 leading-relaxed text-center"
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.15}
-              onDragEnd={(_, info) => {
-                if (info.offset.x < -40 || info.velocity.x < -200) next();
-                else if (info.offset.x > 40 || info.velocity.x > 200) prev();
-              }}
-            >
-              {useCases[current].text}
-            </motion.p>
-          </AnimatePresence>
-        </div>
+          {WHEEL_STOPS.map((label, i) => (
+            <div key={label} className="flex items-baseline justify-center gap-2" style={{ height: WHEEL_ITEM_H }}>
+              <motion.span
+                className="font-courier font-bold text-white"
+                animate={{ opacity: i === stop ? 1 : 0.25, scale: i === stop ? 1 : 0.82 }}
+                transition={{ duration: 0.5, ease: EASE }}
+                style={{ fontSize: 44, lineHeight: `${WHEEL_ITEM_H}px` }}
+              >
+                {label}
+              </motion.span>
+              {label !== '∞' && (
+                <motion.span
+                  className="font-courier text-sm text-white/35"
+                  animate={{ opacity: i === stop ? 1 : 0 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  min
+                </motion.span>
+              )}
+            </div>
+          ))}
+        </motion.div>
+      </div>
+    </div>
+  );
+};
 
-        {/* Navigation */}
-        <div className="flex items-center gap-6 mt-10">
-          <button
-            onClick={prev}
-            className="w-9 h-9 rounded-full flex items-center justify-center bg-white/[0.06] hover:bg-white/[0.12] transition-colors"
-            aria-label="Previous"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-50">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </button>
-
-          <div className="flex items-center gap-1.5">
-            {useCases.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => go(i)}
-                className={`rounded-full transition-all duration-300 ${
-                  i === current
-                    ? 'w-5 h-1.5 bg-white/40'
-                    : 'w-1.5 h-1.5 bg-white/15 hover:bg-white/25'
-                }`}
-                aria-label={`Slide ${i + 1}`}
-              />
-            ))}
+const SetTimeSection = () => (
+  <section className="relative w-full max-w-6xl mx-auto px-7 md:px-10 py-24 md:py-36">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-20 items-center">
+      <Reveal className="order-2 md:order-1">
+        <div className="relative rounded-[32px] border border-white/[0.07] bg-white/[0.015] py-10 overflow-hidden">
+          <SpiralRings opacity={0.05} />
+          <div className="relative">
+            <DurationWheelDemo />
           </div>
-
-          <button
-            onClick={next}
-            className="w-9 h-9 rounded-full flex items-center justify-center bg-white/[0.06] hover:bg-white/[0.12] transition-colors"
-            aria-label="Next"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-50">
-              <path d="M9 18l6-6-6-6" />
-            </svg>
-          </button>
+          <p className="relative text-center font-courier text-[11px] tracking-[0.25em] uppercase text-white/30 mt-2">
+            one minute — three hours — ∞
+          </p>
         </div>
+      </Reveal>
+
+      <Reveal className="order-1 md:order-2 text-center md:text-left" delay={0.12}>
+        <Eyebrow title="The timer" />
+        <h2 className="text-[1.9rem] md:text-[2.5rem] font-bold tracking-[-0.02em] leading-[1.12] text-white mb-5">
+          A minute to three hours.<br />Or ∞.
+        </h2>
+        <p className="text-[15px] md:text-base text-white/50 leading-[1.75] max-w-md mx-auto md:mx-0">
+          Interval bells, heart rate, session stats, reminders — all there,
+          all optional.
+        </p>
+      </Reveal>
+    </div>
+  </section>
+);
+
+// ────────────────────────────────────────────────────────────
+// The sound — coverflow + Apple Music import
+// ────────────────────────────────────────────────────────────
+
+const SoundSection = () => {
+  const prefersReduced = useReducedMotion();
+
+  return (
+    <section className="relative w-full max-w-6xl mx-auto px-7 md:px-10 py-24 md:py-36">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-20 items-center">
+        <Reveal className="text-center md:text-left" delay={0.12}>
+          <Eyebrow title="The sound" />
+          <h2 className="text-[1.9rem] md:text-[2.5rem] font-bold tracking-[-0.02em] leading-[1.12] text-white mb-5">
+            Bring your own teacher.
+          </h2>
+          <p className="text-[15px] md:text-base text-white/50 leading-[1.75] max-w-md mx-auto md:mx-0">
+            Your guided meditations, your playlists, your one song on repeat —
+            from your files or Apple Music.* Or binaural beats, noise, silence.
+          </p>
+          <p className="font-courier text-lg italic text-white/60 mt-7">
+            A <span className="text-opus-green not-italic">tool</span>, not a service.
+          </p>
+          <p className="text-[15px] md:text-base text-white/50 leading-[1.75] max-w-md mx-auto md:mx-0 mt-3">
+            No catalog. No content you didn&apos;t choose.
+          </p>
+          <p className="text-[11px] text-white/30 mt-7 leading-relaxed">
+            * Streaming requires an active Apple Music subscription.
+          </p>
+        </Reveal>
+
+        <Reveal className="relative flex justify-center" delay={0.05}>
+          <div className="relative">
+            <div className="phone-halo" />
+            <PhoneFrame className="w-[240px] md:w-[270px]">
+              <img
+                src="/images/app/sound-coverflow.webp"
+                alt="Choosing a soundtrack in OPUS Loop"
+                className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
+              />
+            </PhoneFrame>
+
+            {/* Floating Apple Music import card */}
+            <motion.div
+              className="absolute -right-10 sm:-right-16 md:-right-24 bottom-6 w-[150px] md:w-[180px]"
+              initial={{ opacity: 0, y: 24, rotate: 6 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 3 }}
+              viewport={{ once: true, margin: '-90px' }}
+              transition={{ duration: 0.9, delay: 0.35, ease: EASE }}
+            >
+              <motion.div
+                className="rounded-2xl overflow-hidden border border-white/12 shadow-[0_20px_60px_rgba(0,0,0,0.6)]"
+                animate={prefersReduced ? undefined : { y: [0, -6, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <img
+                  src="/images/app/import-apple-music.webp"
+                  alt="Importing a track from Apple Music"
+                  className="w-full h-auto"
+                  style={{ objectFit: 'cover', aspectRatio: '9/13', objectPosition: '50% 42%' }}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </motion.div>
+            </motion.div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
 };
 
 // ────────────────────────────────────────────────────────────
-// Section 5: Apple Ecosystem (image LEFT, text right)
+// Interlude — privacy manifesto, revealed word by word
+// ────────────────────────────────────────────────────────────
+
+const MANIFESTO = [
+  { text: 'No account.' },
+  { text: 'No tracking.' },
+  { text: 'No ads.' },
+  { text: 'No streaks,', break: true },
+  { text: 'no gamification.' },
+  { text: 'Everything stays on', break: true },
+  { text: 'your device.', accent: true },
+];
+
+const ManifestoSection = () => {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.85', 'start 0.3'] });
+
+  // flatten into words, tracking accent + line breaks
+  const words = [];
+  MANIFESTO.forEach((seg, si) => {
+    seg.text.split(' ').forEach((w, wi) => {
+      words.push({ w, accent: seg.accent, break: seg.break && wi === 0, key: `${si}-${wi}` });
+    });
+  });
+
+  return (
+    <section className="relative w-full py-32 md:py-44 overflow-hidden grain">
+      <SpiralRings opacity={0.045} />
+      <div ref={ref} className="relative z-10 max-w-3xl mx-auto px-8 text-center">
+        <p className="font-courier text-[13px] tracking-[0.5em] text-white/30 mb-10">
+          · · ·
+        </p>
+        <p className="font-courier text-xl md:text-[1.7rem] leading-[1.9] text-white">
+          {words.map((word, i) => (
+            <ManifestoWord
+              key={word.key}
+              progress={scrollYProgress}
+              range={[i / words.length, Math.min(1, (i + 1.4) / words.length)]}
+              accent={word.accent}
+              lineBreak={word.break}
+            >
+              {word.w}
+            </ManifestoWord>
+          ))}
+        </p>
+      </div>
+    </section>
+  );
+};
+
+const ManifestoWord = ({ children, progress, range, accent, lineBreak }) => {
+  const opacity = useTransform(progress, range, [0.13, 1]);
+  return (
+    <>
+      {lineBreak && <br />}
+      <motion.span
+        style={{ opacity }}
+        className={`inline-block mr-[0.45em] ${accent ? 'text-opus-green' : ''}`}
+      >
+        {children}
+      </motion.span>
+    </>
+  );
+};
+
+// ────────────────────────────────────────────────────────────
+// The rest — interactive preset switcher
+// ────────────────────────────────────────────────────────────
+
+const PresetsSection = () => {
+  const [active, setActive] = useState(0);
+  const preset = PRESETS[active];
+
+  return (
+    <section className="relative w-full max-w-6xl mx-auto px-7 md:px-10 py-24 md:py-36">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-20 items-center">
+        <Reveal className="text-center md:text-left" delay={0.12}>
+          <Eyebrow title="The rest" />
+          <h2 className="text-[1.9rem] md:text-[2.5rem] font-bold tracking-[-0.02em] leading-[1.12] text-white mb-5">
+            Meditation is<br />just the default.
+          </h2>
+          <p className="text-[15px] md:text-base text-white/50 leading-[1.75] max-w-md mx-auto md:mx-0">
+            Pomodoro, deep work, sleep, an album on loop. Presets keep a few
+            setups side by side — swipe to switch.
+          </p>
+
+          {/* Preset chips */}
+          <div className="mt-8 flex flex-wrap justify-center md:justify-start gap-2.5">
+            {PRESETS.map((p, i) => {
+              const ActiveIcon = p.Icon;
+              const isActive = i === active;
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => setActive(i)}
+                  className={`relative inline-flex items-center gap-2 pl-3.5 pr-4 py-2 rounded-full font-courier text-[12px] tracking-[0.12em] transition-colors duration-300 border ${
+                    isActive
+                      ? 'text-white border-transparent'
+                      : 'text-white/40 border-white/10 hover:text-white/70 hover:border-white/25'
+                  }`}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="preset-chip"
+                      className="absolute inset-0 rounded-full bg-white/[0.1] border border-white/25"
+                      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                    />
+                  )}
+                  <span className="relative flex items-center gap-2">
+                    <ActiveIcon size={14} />
+                    {p.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </Reveal>
+
+        <Reveal className="flex flex-col items-center" delay={0.05}>
+          <div className="relative">
+            <div className="phone-halo" />
+            <PhoneFrame className="w-[240px] md:w-[280px]">
+              <AnimatePresence mode="sync">
+                <motion.img
+                  key={preset.id}
+                  src={preset.src}
+                  alt={`OPUS Loop — ${preset.name} preset`}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  initial={{ opacity: 0, scale: 1.05 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.7, ease: 'easeInOut' }}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </AnimatePresence>
+            </PhoneFrame>
+          </div>
+          <div className="h-4 mt-6 overflow-hidden" aria-hidden="true">
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={preset.id}
+                className="block font-courier text-[11px] tracking-[0.25em] text-white/35"
+                initial={{ y: 14, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -14, opacity: 0 }}
+                transition={{ duration: 0.4, ease: EASE }}
+              >
+                ♪ {preset.sound}
+              </motion.span>
+            </AnimatePresence>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+};
+
+// ────────────────────────────────────────────────────────────
+// Ecosystem
 // ────────────────────────────────────────────────────────────
 
 const EcosystemSection = () => (
-  <section className="section-container">
-    <div className="section-two-col">
-      <SectionReveal className="flex justify-center" delay={0.1}>
+  <section className="relative w-full max-w-6xl mx-auto px-7 md:px-10 py-24 md:py-36">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-20 items-center">
+      <Reveal className="order-2 md:order-1 flex justify-center">
         <img
           src="/images/mockup-ecosystem.png"
           alt="OPUS Loop on iPad, iPhone, and Apple Watch"
           className="w-full max-w-lg"
+          loading="lazy"
+          decoding="async"
         />
-      </SectionReveal>
+      </Reveal>
 
-      <SectionReveal className="flex flex-col justify-center gap-5 text-center md:text-left" delay={0.2}>
-        <h2 className="section-heading">Built for the Apple ecosystem.</h2>
-        <p className="section-body">
-          Apple Watch companion with heart rate monitoring. Mindful minutes synced to Apple Health. Mind & Body mode for active sessions.
-        </p>
-        <p className="section-body">
-          Live Activities on your Lock Screen. iCloud sync across all your devices. Everything included. Nothing to unlock.
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center gap-3 mt-4">
-          <AppStoreBadge />
-          <WebAppButton />
-        </div>
-      </SectionReveal>
+      <Reveal className="order-1 md:order-2 text-center md:text-left" delay={0.12}>
+        <Eyebrow title="Devices" />
+        <h2 className="text-[1.9rem] md:text-[2.5rem] font-bold tracking-[-0.02em] leading-[1.12] text-white mb-5">
+          Built for iPhone,<br />iPad, and Watch.
+        </h2>
+        <ul className="text-[15px] md:text-base text-white/50 leading-[1.75] max-w-md mx-auto md:mx-0 space-y-3 text-left">
+          {[
+            ['Apple Watch', 'a full companion app, with heart rate during sessions'],
+            ['Apple Health', 'mindful minutes and Mind & Body workouts, synced'],
+            ['Live Activities', 'your session, quietly on the Lock Screen'],
+            ['iCloud', 'presets follow you across iPhone, iPad, and Mac'],
+          ].map(([title, desc]) => (
+            <li key={title} className="flex gap-3 items-baseline">
+              <span className="w-1 h-1 rounded-full bg-opus-green flex-shrink-0 translate-y-[-2px]" />
+              <span>
+                <span className="text-white/85">{title}</span>
+                <span className="text-white/45"> — {desc}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </Reveal>
     </div>
   </section>
 );
 
 // ────────────────────────────────────────────────────────────
-// Section 6: Privacy (breather)
+// Finale — pricing + closing CTA
 // ────────────────────────────────────────────────────────────
 
-const PrivacySection = () => (
-  <section className="w-full max-w-2xl mx-auto px-8 py-20 md:py-24 text-center">
-    <SectionReveal>
-      <h2 className="text-2xl md:text-[2.25rem] font-bold tracking-[-0.02em] text-opus-green mb-4">
-        No account. No tracking. No data collection.
-      </h2>
-      <p className="text-white/35 text-base md:text-lg leading-relaxed mb-2">
-        Your practice stays on your device and your iCloud.
-      </p>
-      <p className="text-white/30 text-base md:text-lg leading-relaxed">
-        We don't know who you are. We prefer it that way.
-      </p>
-    </SectionReveal>
-  </section>
-);
+const LANGUAGES = 'English · Deutsch · Español · Français · Nederlands · Norsk · Suomi · Filipino · Magyar · Română · Telugu · 日本語 · 简体中文 · 繁體中文 · ';
 
-// ────────────────────────────────────────────────────────────
-// Section 7: Closing (pricing + CTA)
-// ────────────────────────────────────────────────────────────
+const FinaleSection = () => (
+  <section className="relative w-full overflow-hidden grain">
+    {/* ambient video, held way back */}
+    <div className="absolute inset-0 overflow-hidden">
+      <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-[0.22]">
+        <source src="/videos/pastelmountains.mp4" type="video/mp4" />
+      </video>
+      <div className="absolute inset-0 bg-gradient-to-b from-black via-black/70 to-black" />
+    </div>
 
-const ClosingSection = () => (
-  <section className="relative py-28 md:py-36 overflow-hidden">
-    <VideoBackground opacity={0.5} />
+    <div className="relative z-10 max-w-4xl mx-auto px-7 md:px-10 py-28 md:py-40 text-center">
+      <Reveal>
+        <h2 className="text-[2.2rem] md:text-[3.2rem] font-bold tracking-[-0.03em] leading-[1.08] text-white">
+          <span className="text-opus-green">Free.</span><br />
+          $4.99 once, if you<br className="sm:hidden" /> want presets.
+        </h2>
+        <p className="mt-6 text-base md:text-lg text-white/50 leading-relaxed max-w-xl mx-auto">
+          Free covers everything: the timer, the sounds, the imports, the
+          Watch app. No trial, no limits. The one-time purchase only adds
+          saved presets.
+        </p>
+      </Reveal>
 
-    <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'linear-gradient(177.3deg, rgba(12,14,12,0.7) 3.67%, rgba(17,18,17,0.7) 45.37%, rgba(14,21,16,0.7) 96.33%)' }} />
-    <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 24% 6% at 50% 110%, rgba(35,26,151,0.18) 0%, rgba(0,168,107,0.06) 40%, transparent 70%)' }} />
-    <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse 16% 4% at 50% 100%, rgba(181,175,255,0.05) 0%, transparent 60%)' }} />
-    <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent pointer-events-none" style={{ backgroundSize: '100% 30%', backgroundRepeat: 'no-repeat' }} />
+      <Reveal delay={0.15} className="mt-11 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+        <AppStoreBadge />
+        <WebPlayerLink />
+      </Reveal>
 
-    <div className="relative z-10 w-full max-w-5xl mx-auto px-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
-
-        {/* Left: Mockup */}
-        <SectionReveal className="flex justify-center" delay={0.1}>
-          <img
-            src="/images/mockup-price.png"
-            alt="OPUS Loop timer in action"
-            className="max-w-[300px] md:max-w-[360px] w-full drop-shadow-2xl"
-          />
-        </SectionReveal>
-
-        {/* Right: Pricing + CTA */}
-        <SectionReveal className="flex flex-col items-center md:items-start text-center md:text-left gap-6" delay={0.2}>
-          <div>
-            <h2 className="section-heading mb-3"><span className="text-opus-green">Free</span> to download.<br />Yours to keep.</h2>
-            <p className="section-body">
-              OPUS Loop is free with a fully functional timer, sound generator, and Apple Music import. No account, no trial, no limits.
-            </p>
-            <p className="section-body mt-3">
-              Love it enough to support development? $4.99 once, and you can save unlimited configurations. Every update, forever.
-            </p>
+      <Reveal delay={0.25} className="mt-20">
+        <p className="font-courier text-[10px] tracking-[0.3em] uppercase text-white/25 mb-5">
+          Available in 14 languages
+        </p>
+        <div className="marquee-mask overflow-hidden">
+          <div className="marquee-track inline-flex whitespace-nowrap font-courier text-[12px] text-white/35">
+            <span>{LANGUAGES}</span>
+            <span aria-hidden="true">{LANGUAGES}</span>
           </div>
-
-          <div className="flex flex-col sm:flex-row items-center gap-3">
-            <AppStoreBadge />
-            <WebAppButton />
-          </div>
-        </SectionReveal>
-      </div>
-
-      {/* Languages + philosophy */}
-      <div className="mt-20 flex flex-col items-center gap-6">
-        <SectionReveal delay={0.15} className="flex flex-col items-center gap-2">
-          <p className="text-[10px] font-medium text-white/25 tracking-[1px] uppercase font-courier">Available in 14 languages</p>
-          <p className="text-[12px] text-white/30 leading-relaxed max-w-[488px] font-courier text-center">
-            English · Deutsch · Español · Français · Nederlands · Norsk · Suomi · Filipino · Magyar · Română · Telugu · 日本語 · 简体中文 · 繁體中文
-          </p>
-        </SectionReveal>
-
-        <SectionReveal delay={0.2}>
-          <p className="text-[12px] text-white/25 italic tracking-[0.1px]">
-            No philosophy imposed. No tradition assumed.
-          </p>
-        </SectionReveal>
-      </div>
+        </div>
+        <p className="mt-10 text-[12px] text-white/25 italic tracking-[0.1px]">
+          No philosophy imposed. No tradition assumed.
+        </p>
+      </Reveal>
     </div>
   </section>
 );
@@ -509,8 +795,9 @@ const ClosingSection = () => (
 // ────────────────────────────────────────────────────────────
 
 const Footer = () => (
-  <footer className="py-10 px-8 text-center">
-    <p className="text-xs text-white/25 font-courier mb-4">
+  <footer className="py-12 px-8 text-center border-t border-white/[0.05]">
+    <p className="text-xs text-white/25 font-courier mb-4 inline-flex items-center gap-2">
+      <span className="pulse-dot inline-block w-1.5 h-1.5 rounded-full bg-opus-green" />
       Made in Romania by{' '}
       <a
         href="https://opus.ro"
@@ -538,19 +825,28 @@ const Footer = () => (
 // ────────────────────────────────────────────────────────────
 
 const Home = () => {
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 });
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
-    <div>
+    <div className="relative">
+      {/* Scroll progress hairline */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-[2px] z-[70] origin-left bg-gradient-to-r from-opus-green/60 to-opus-green"
+        style={{ scaleX: progress }}
+      />
+
       <HeroSection />
-      <TeacherSection />
-      <OptionsSection />
-      <UseCasesSection />
+      <SetTimeSection />
+      <SoundSection />
+      <ManifestoSection />
+      <PresetsSection />
       <EcosystemSection />
-      <PrivacySection />
-      <ClosingSection />
+      <FinaleSection />
       <Footer />
     </div>
   );

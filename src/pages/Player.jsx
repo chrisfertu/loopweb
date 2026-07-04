@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import SpiralRings from '../components/SpiralRings';
 import { useTimerContext } from '../contexts/TimerContext';
 import { formatTime } from '../hooks/useTimer';
 import {
@@ -199,10 +200,16 @@ const Player = () => {
           <source src="/videos/square-spiral.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-black/60" />
+        <SpiralRings opacity={0.06} />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center h-full w-full overflow-hidden">
+      <motion.div
+        className="relative z-10 flex flex-col items-center h-full w-full overflow-hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+      >
 
         {/* Top bar */}
         <div className="w-full flex items-center justify-between px-6 pt-[max(16px,env(safe-area-inset-top))] pb-2">
@@ -342,7 +349,7 @@ const Player = () => {
             <BellIcon size={18} />
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

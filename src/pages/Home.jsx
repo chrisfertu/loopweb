@@ -767,7 +767,7 @@ const FinaleSection = () => (
           <span className="text-white/85">$4.99</span> adds saved presets.
         </p>
         <p className="mt-3 font-courier text-[13px] text-white/35 italic">
-          That&apos;s the whole business model.
+          Nothing else to buy. Ever.
         </p>
       </Reveal>
 

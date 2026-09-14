@@ -24,7 +24,7 @@ const AppStoreBadge = ({ className = '' }) => (
     href={APP_STORE_URL}
     target="_blank"
     rel="noopener noreferrer"
-    className={`inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white text-black transition-all duration-300 hover:bg-white/90 ${className}`}
+    className={`inline-flex items-center gap-3 px-5 py-2.5 h-12 rounded-full bg-white text-black transition-all duration-300 hover:bg-white/90 ${className}`}
   >
     <svg className="w-6 h-6 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
       <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
@@ -39,7 +39,7 @@ const AppStoreBadge = ({ className = '' }) => (
 const WebAppButton = ({ className = '' }) => (
   <Link
     to="/player"
-    className={`inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium text-sm transition-all duration-300 border border-white/15 text-white/70 hover:border-white/30 hover:text-white hover:bg-white/[0.06] ${className}`}
+    className={`inline-flex items-center gap-2 px-6 py-3 h-12 rounded-full font-medium text-sm transition-all duration-300 border border-white/15 text-white/70 hover:border-white/30 hover:text-white hover:bg-white/[0.06] ${className}`}
   >
     Try the web player
   </Link>
@@ -125,7 +125,7 @@ const HeroSection = () => {
             <motion.img
               src="/images/mockup-price.png"
               alt="OPUS Loop meditation timer app"
-              className="max-w-[280px] md:max-w-[460px] w-full drop-shadow-2xl"
+              className="max-w-[320px] md:max-w-[560px] w-full"
               animate={prefersReduced ? undefined : { y: [0, -8, 0] }}
               transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
             />
@@ -462,7 +462,7 @@ const ClosingSection = () => (
           <img
             src="/images/mockup-price.png"
             alt="OPUS Loop timer in action"
-            className="max-w-[300px] md:max-w-[360px] w-full drop-shadow-2xl"
+            className="max-w-[320px] md:max-w-[520px] w-full"
           />
         </SectionReveal>
 

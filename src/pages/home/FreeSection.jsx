@@ -5,8 +5,8 @@
 // the download row, then the languages and the closing line), the mark in
 // columns 7 to 11, staying centred on screen while the copy scrolls past.
 // Mobile: the copy first, and the mark (240px) last, so the page ends on it.
-// The CTA row carries id="download", the skip link's target. App renders the
-// Footer after <main>.
+// The CTA row carries id="download", the skip link's target, and the "Buy me
+// a coffee" link beside the badge. App renders the Footer after <main>.
 //
 // The tip line only exists with iOS 1.0.3 (the copy resolves it to null
 // otherwise).
@@ -18,6 +18,7 @@ import { APP_103_LIVE, free as COPY, loop as LOOP_COPY } from '../../content/cop
 import SectionHeading from '../../components/landing/SectionHeading';
 import Reveal from '../../components/landing/Reveal';
 import CtaRow from '../../components/landing/CtaRow';
+import CoffeeLink from '../../components/landing/CoffeeLink';
 
 const CONTAINER = 'mx-auto w-full max-w-[1200px] px-4 lg:px-10 xl:px-16';
 const MICRO = 'font-courier text-[11px] leading-4 text-white/55';
@@ -69,9 +70,11 @@ function FreeSection() {
               </Reveal>
             ) : null}
 
-            <Reveal stagger className="mt-10">
-              <CtaRow id="download" />
-              <p className={`mt-6 max-w-[46ch] text-balance ${MICRO}`}>{COPY.requirements}</p>
+            <Reveal stagger className="mt-12">
+              <CtaRow id="download">
+                <CoffeeLink />
+              </CtaRow>
+              <p className={`mt-8 max-w-[46ch] text-balance ${MICRO}`}>{COPY.requirements}</p>
               <p className={`mt-1.5 ${MICRO}`}>{COPY.storeName}</p>
             </Reveal>
 

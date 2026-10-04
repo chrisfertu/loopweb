@@ -3,6 +3,7 @@ import GeometryField from '../geometry/GeometryField';
 import ListenProvider from '../components/landing/ListenProvider';
 import DeviceStory from './home/DeviceStory';
 import SoundSection from './home/SoundSection';
+import YourSoundsSection from './home/YourSoundsSection';
 import BellsSection from './home/BellsSection';
 import PresetsSection from './home/PresetsSection';
 import DevicesSection from './home/DevicesSection';
@@ -27,6 +28,7 @@ const Home = memo(function Home() {
         <div className="relative z-10">
           <DeviceStory />
           <SoundSection />
+          <YourSoundsSection />
           <BellsSection />
           <DevicesSection />
           <PresetsSection />

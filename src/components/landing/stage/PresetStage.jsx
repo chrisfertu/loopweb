@@ -5,14 +5,13 @@
 //
 // Each icon is a black disc inside its rim, showing the icon of a preset
 // (presets.examples): the one the app starts with, then six someone might
-// make: focus, sleep, walk, dance, breathe, evening. `shown` icons are on the figure
-// (1, 2 or 7, following the figure as it grows); the others wait, unseen.
+// make: focus, sleep, walk, dance, breathe, evening. The first `shown` icons
+// are on the figure (the section brings them in one by one); the others
+// wait, unseen.
 //
-// One preset is "on" at a time: bright, with its name and what it could be
-// in the caption under the figure (rendered by the section from `onChange`).
-// With one or two icons it is the newest; with seven, the stage moves from
-// one to the next every few seconds while it is on screen, until a tap
-// chooses one. Reduced motion or Pause motion: no moving on by itself.
+// One preset is "on" at a time (`active`, -1 for none): bright, with its
+// name and what it is set to in the caption under the figure (rendered by
+// the section). A tap calls onChoose with that preset.
 //
 // Props: shown (number of icons), active (index), onChoose(i), className.
 
@@ -46,7 +45,7 @@ export default function PresetStage({ shown, active, onChoose, className = '' })
             style={{ ...at(i), width: `max(44px, ${DISC})`, aspectRatio: '1', x: '-50%', y: '-50%' }}
             initial={false}
             animate={{ opacity: visible ? 1 : 0 }}
-            transition={{ duration: 0.6, delay: visible ? 0.7 : 0, ease: 'easeOut' }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
           >
             <button
               type="button"

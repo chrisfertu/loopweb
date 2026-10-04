@@ -18,7 +18,7 @@
 //
 //   APP_103_LIVE                  boolean
 //   APP_STORE_URL                 string
-//   common      { appName, appStoreUrl, badge { src, alt }, tryInBrowser,
+//   common      { appName, appStoreUrl, tryInBrowser,
 //                 playerPath, requirements, storeName, skipLink,
 //                 header { support, getTheApp, pauseMotion, resumeMotion, home },
 //                 listen { label, stop, hint, sessionPlaying, openPlayer,
@@ -26,29 +26,28 @@
 //   stage       { play, timerAlt, shapesAlt }
 //   hero        { eyebrow, h1, body, micro }
 //   timer       { eyebrow, h2, body, line }
-//   sounds      { eyebrow, h2, body, micro, footnote }
+//   sounds      { eyebrow, h2, body, footnote }
 //   sound       { eyebrow, h2, body, micro, choicesLabel, hint,
 //                 groups [{ key, name, line, honest?, options [{ type,
 //                   frequency?, label, short }] }], playLabel(name), stopLabel(name) }
-//   bells       { eyebrow, h2, body, uses [3], everyLabel, every [{ minutes,
-//                 bells, label }], example(minutes), hear, hearing, micro,
-//                 bellName }
-//   devices     { watch { eyebrow, h2, body, activities [{ key, name, note }],
-//                         finePrint [string] },
-//                 everywhere { h2, body, surfaces [4], requirements } }
-//   presets     { eyebrow, h2, body, steps [4], examples [{ key, name, icon,
+//   bells       { eyebrow, h2, body, uses [3] (minutes => string), every
+//                 [{ minutes, bells, below }], everyAbove, everyLabel,
+//                 shorter, longer, micro }
+//   devices     { watch { eyebrow, h2, body, activities [{ key, name }],
+//                         nextLabel },
+//                 everywhere { h2, body, surfaces [6], prevLabel, nextLabel,
+//                              requirements } }
+//   presets     { eyebrow, h2, body, examples [{ key, name, icon,
 //                 line }] (7), showLabel(name), listLabel }
-//   privacy     { eyebrow, h2, body, exception, closing, website, plateLabel }
+//   privacy     { eyebrow, h2, body, exception, closing, website }
 //   free        { eyebrow, h2, body, tip (null without 1.0.3), requirements,
-//                 storeName }
+//                 storeName, coffee { label, url } }
 //   loop        { languagesLabel, languages [{ name, lang }], tagline }
 //   footer      { madeIn, org, orgUrl, links [{ label, to }], copyright }
 //   COPY        all of the above, keyed by section (also the default export)
 //
 // Eyebrows ("01  TIMER") keep the spec's two spaces: render them with
 // white-space: pre (or pre-wrap).
-
-import { withBase } from '../lib/base';
 
 export const APP_103_LIVE = import.meta.env.VITE_APP_103_LIVE === 'true';
 
@@ -63,7 +62,6 @@ const REQUIREMENTS = 'iPhone and iPad with iOS 18 or later. Apple Watch with wat
 export const common = {
   appName: 'Loop',
   appStoreUrl: APP_STORE_URL,
-  badge: { src: withBase('/images/app-store-badge.svg'), alt: 'Download on the App Store' },
   tryInBrowser: 'Try it in your browser',
   playerPath: '/player',
   requirements: REQUIREMENTS,
@@ -96,27 +94,27 @@ export const hero = {
   h1: 'Your rituals, without a monthly sacrifice.',
   body: 'A simple timer and sound player for meditation, prayer, or whatever centers you.',
   micro: pick(
-    'Free for iPhone and iPad, with an Apple Watch app. Nothing paywalled. No account.',
-    'Free to download for iPhone and iPad, with an Apple Watch app. No account.',
+    'Free for iPhone and iPad, with an Apple Watch app. Nothing paywalled. No subscription. No account.',
+    'Free to download for iPhone and iPad, with an Apple Watch app. No subscription. No account.',
   ),
 };
 
 // ── 2.2 timer ────────────────────────────────────────────────
 
 export const timer = {
-  eyebrow: '01  TIMER',
+  eyebrow: '01  JUST A TIMER',
   h2: 'A tool, not a service.',
-  body: 'Set a duration, choose a sound, and tap to begin. No catalog to browse, no content you didn’t choose, no monthly subscription.',
-  line: 'Any length from one minute to twenty-four hours, or no end at all.',
+  body: 'You probably don’t need a subscription to an overwhelming catalog of guides, nature sounds and daily questionnaires for your silent 10 minutes a day, so Loop was designed to be just a simple tool to track your time and play your favorite background sound or guide.',
+  // The second paragraph, after the figure on phones.
+  line: 'Your iPhone can already do everything you need. Loop just makes it nicer, at no extra cost.',
 };
 
 // ── 2.3 sounds ───────────────────────────────────────────────
 
 export const sounds = {
-  eyebrow: '02  YOUR SOUNDS',
+  eyebrow: '03  YOUR SOUNDS',
   h2: 'Bring your own teacher.',
-  body: 'Import guided meditations, your teacher’s recordings, mantras or music. From Files, from your music library, or from Apple Music.* Pick a folder and it becomes a playlist.',
-  micro: 'Each track can repeat for the whole session or play once. Tracks without artwork get an abstract cover.',
+  body: 'Import guided meditations, your teacher’s recordings, mantras or music. From Files, from your music library, or from Apple Music.* Pick a folder and it becomes a playlist. Each track can loop for a whole session or play once.',
   footnote: '* Playing tracks from Apple Music requires an Apple Music subscription.',
 };
 
@@ -136,9 +134,9 @@ export const stage = {
 // own name for each.
 
 export const sound = {
-  eyebrow: '03  SOUND',
-  h2: 'Silence is enough. Sound is there when it isn’t.',
-  body: 'Most sessions need nothing at all. When the room is loud or your thoughts won’t settle, Loop can play a sound that it makes as it goes.',
+  eyebrow: '02  SOUND',
+  h2: 'Silence is the goal. Sound is there to make room for it.',
+  body: 'Most sessions need nothing at all. When the room is loud or your thoughts won’t settle, Loop can play a sound to absorb the noise.',
   micro: 'Made on your device while it plays. Nothing to download, nothing to stream.',
   choicesLabel: 'Sounds',
   hint: 'Tap one to hear it.',
@@ -178,49 +176,45 @@ export const sound = {
 };
 
 // ── 2.6 bells ────────────────────────────────────────────────
-// Interval bells: what they are for, in plain words. "Hear it ring" plays
-// the app's default bell (/media/bells); the others are only named.
+// Interval bells: what they are for, in plain words.
+
+const everyPhrase = (m) => (m === 1 ? 'every minute' : `every ${m} min`);
 
 export const bells = {
-  eyebrow: '04  BELLS',
+  eyebrow: '04  INTERVAL BELLS',
   h2: 'Know where you are without opening your eyes.',
-  body: 'Set a bell to ring every few minutes, from every minute to every two hours. It tells you how far along you are, so there is no clock to check.',
+  body: 'Set a bell to ring every few minutes, from every minute to every two hours. It can help you tell how far along you are without checking the time.',
+  // Under the figure, one at a time, with the interval that is set.
   uses: [
-    'Come back to the breath when your mind has wandered off.',
-    'Check your posture on a long sit.',
-    'Move on to the next part: a body scan, walking, the other side.',
+    (m) => `Come back to the breath ${everyPhrase(m)}, if your mind has wandered off.`,
+    (m) => `Check your posture on a long sit ${everyPhrase(m)}.`,
+    (m) => `Move on to the next part ${everyPhrase(m)}: a body scan, walking, the other side.`,
   ],
-  // The example on the figure: a thirty-minute sit.
-  everyLabel: 'How often',
+  // The interval, set in the middle of the figure (a thirty minute sit, so
+  // `bells` of them go round it).
   every: [
-    { minutes: 5, bells: 6, label: 'Every 5 min' },
-    { minutes: 10, bells: 3, label: 'Every 10 min' },
-    { minutes: 15, bells: 2, label: 'Every 15 min' },
+    { minutes: 1, bells: 30, below: 'minute' },
+    { minutes: 5, bells: 6, below: 'minutes' },
+    { minutes: 10, bells: 3, below: 'minutes' },
+    { minutes: 15, bells: 2, below: 'minutes' },
   ],
-  example: (minutes) => `A 30 minute sit, a bell every ${minutes} minutes.`,
-  hear: 'Hear it ring',
-  hearing: 'Stop',
+  everyAbove: 'Every',
+  everyLabel: 'Interval in minutes',
+  shorter: 'Ring more often',
+  longer: 'Ring less often',
   micro: 'Seven bells to choose from, at the volume you like. With an Apple Watch, each bell can tap your wrist too, or only tap.',
-  // The bell "Hear it ring" plays: the app's default (media.js).
-  bellName: 'Meditation Bell',
 };
 
 // ── 2.7 presets ──────────────────────────────────────────────
-// The figure grows one preset at a time; each step has one line. The app
-// starts with one preset (ten minutes, silence); every other one is made by
-// the person using it, so the rest are examples of what someone might add.
-// Presets are free: as many as you like.
+// The figure fills with presets one at a time. The app starts with one
+// preset (ten minutes, silence); every other one is made by the person
+// using it, so the rest are examples of what someone might add. Presets are
+// free: as many as you like.
 
 export const presets = {
   eyebrow: '06  PRESETS',
   h2: 'One setup for each thing you do.',
-  body: 'A preset keeps a length, a sound, a bell and an icon together. Make one for each kind of session and swipe between them on the timer.',
-  steps: [
-    'You start with one: ten minutes of silence.',
-    'Add one for focus: ninety minutes, with a bell every ten.',
-    'One for sleep, one for a walk, one to dance to.',
-    'Make as many as you like, all free.',
-  ],
+  body: 'All settings of a session are easy to change in a few seconds, but you can save multiple configurations for each of your habits or moods. You can also customize each preset with your own video or image backgrounds.',
   // The seven icons on the figure, in the order it adds them (presetSlot):
   // the one the app starts with, then six someone might make. `line` says
   // what each is set to; `icon` is a stage icon.
@@ -241,25 +235,24 @@ export const presets = {
 
 export const devices = {
   watch: {
-    eyebrow: '05  APPLE WATCH',
-    h2: 'On your wrist, too.',
-    body: pick(
-      'Start a session on your Apple Watch, even with your iPhone out of reach. Watch your heart rate as you sit, walk or dance, and keep the time as mindful minutes in Apple Health.',
-      'Run your sessions on your Apple Watch. Watch your heart rate as you sit, walk or dance, and keep the time as mindful minutes in Apple Health.',
-    ),
+    eyebrow: '05  THE APPLE ECOSYSTEM',
+    h2: 'Mind & Body',
+    body: 'The Loop companion app for the Apple Watch can also track your heart rate during your sessions. Your sessions can be saved in Apple Health as mindful minutes, a workout, both or neither.',
     // What the figure shows, in turn (DevicesSection sets its pace).
     activities: [
-      { key: 'sit', name: 'Sitting', note: 'heart rate · mindful minutes' },
-      { key: 'walk', name: 'Walking', note: 'heart rate' },
-      { key: 'dance', name: 'Dancing', note: 'heart rate' },
+      { key: 'sit', name: 'Sitting' },
+      { key: 'walk', name: 'Walking' },
+      { key: 'dance', name: 'Dancing' },
     ],
-    finePrint: ['The Watch app comes with the iPhone app.', pick('Heart rate is never written to iCloud.', null)].filter(Boolean),
+    nextLabel: 'Show the next activity',
   },
   everywhere: {
     h2: 'Where you already look.',
-    body: 'A running session shows on your Lock Screen and in the Dynamic Island, with pause, mute and stop. Start one from Control Center, Siri or a Watch complication. iCloud keeps presets and history the same on iPhone and iPad.',
+    body: 'A running session shows on your Lock Screen and in the Dynamic Island, with pause, mute and stop. Start one from Control Center, Siri, Shortcuts or a Watch complication. iCloud keeps presets and history the same on iPhone and iPad.',
     // The outlines the figure draws, in turn (surface:0 to surface:3).
-    surfaces: ['Dynamic Island', 'Lock Screen', 'Control Center', 'Apple Watch'],
+    surfaces: ['Dynamic Island', 'Lock Screen', 'Control Center', 'Siri', 'Shortcuts', 'Apple Watch'],
+    prevLabel: 'Previous place',
+    nextLabel: 'Next place',
     requirements: REQUIREMENTS,
   },
 };
@@ -273,7 +266,6 @@ export const privacy = {
   exception: 'The app sends anonymous usage statistics through TelemetryDeck, using a random install identifier that is hashed before it is sent. Never health data, never the names of what you play. They are on by default, and one switch in App Settings turns them off.',
   closing: 'We don’t know who you are. We prefer it that way.',
   website: 'This website uses no analytics and sets no cookies.',
-  plateLabel: 'anonymous counts',
 };
 
 // ── 2.11 free ────────────────────────────────────────────────
@@ -288,6 +280,7 @@ export const free = {
   tip: pick('If it earns a place in your day, there is an optional tip in App Settings. It unlocks nothing and changes nothing.', null),
   requirements: REQUIREMENTS,
   storeName: common.storeName,
+  coffee: { label: 'Buy me a coffee', url: 'https://buymeacoffee.com/opusculum' },
 };
 
 // ── 2.12 loop ────────────────────────────────────────────────

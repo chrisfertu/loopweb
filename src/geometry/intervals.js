@@ -6,7 +6,9 @@
 //            SESSION seconds, then resting a moment on the full ring.
 //   bells    up to MAX_BELLS small rings on the circle, spaced evenly from 12
 //            o'clock (where the session starts and ends). When the head
-//            reaches one, it rings: a ripple leaves it and fades.
+//            reaches one, it rings: a ripple leaves it and fades. The last
+//            RIPPLES ripples are drawn, so a bell every minute (thirty on
+//            the ring) still reads as one ring after another.
 //
 // The number of bells comes from the scene (`bells`); when it changes, the
 // rings slide to their new places. The figure is live (redrawn every frame by
@@ -19,12 +21,13 @@ import { LIVE_GROUP } from './clock';
 
 const TAU = Math.PI * 2;
 
-export const MAX_BELLS = 6;
+export const MAX_BELLS = 30;
+const RIPPLES = 4;
 
 const R = 0.8; // the ring
 const SESSION = 24; // seconds for the session to go round
 const HOLD = 3; // seconds it rests, complete, before it starts again
-const BELL_R = 0.05; // a bell's ring...
+const BELL_R = 0.045; // a bell's ring...
 const START_R = 0.075; // ...and the one at 12 o'clock, where it starts and ends
 const RIPPLE_SECONDS = 2.4;
 const RIPPLE_REACH = 0.3; // how far a ripple spreads from its bell
@@ -40,18 +43,21 @@ const smooth = (x) => {
 export function layoutIntervals(body) {
   const head = Math.round(body * 0.04);
   const perBell = Math.floor((body * 0.14) / MAX_BELLS);
-  const perRipple = Math.floor((body * 0.26) / MAX_BELLS);
+  const perRipple = Math.floor((body * 0.26) / RIPPLES);
   const bells = head;
   const ripples = bells + perBell * MAX_BELLS;
-  const ring = ripples + perRipple * MAX_BELLS;
+  const ring = ripples + perRipple * RIPPLES;
   return { body, head, perBell, perRipple, bells, ripples, ring, ringCount: body - ring };
 }
 
 // The figure's memory: where each bell is (an angle, easing toward its
-// place), when each last rang, and the bells reached in this lap.
+// place), when each last rang, the bells reached in this lap, and the
+// ripples going out (which bell, since when), newest last.
 export const intervalsState = (bells = 3) => ({
   angles: Array.from({ length: MAX_BELLS }, (_, k) => (k < bells ? (k / bells) * TAU : 0)),
   rang: Array(MAX_BELLS).fill(-1e9),
+  ripples: Array.from({ length: RIPPLES }, () => ({ k: 0, at: -1e9 })),
+  next: 0,
   lap: -1,
   passed: 0,
 });
@@ -96,6 +102,8 @@ export function writeIntervals(pos, meta, layout, elapsed, bells, state, dt = 0)
     const k = state.passed % n;
     reached.push(k);
     state.rang[k] = elapsed;
+    state.ripples[state.next] = { k, at: elapsed };
+    state.next = (state.next + 1) % RIPPLES;
     state.passed += 1;
   }
 
@@ -107,24 +115,33 @@ export function writeIntervals(pos, meta, layout, elapsed, bells, state, dt = 0)
     put(j, hx + rr * Math.sin(a), hy + rr * Math.cos(a), done >= 1 ? 0.5 : 1);
   }
 
-  // Bells and their ripples
+  // Bells. With many on the ring, each is a little smaller.
+  const small = n > 12 ? 0.6 : 1;
+  const radius = (k) => (k === 0 ? START_R : BELL_R * small);
   for (let k = 0; k < MAX_BELLS; k++) {
     const on = k < n ? 1 : 0;
     const [cx, cy] = at(state.angles[k], R);
     const since = elapsed - state.rang[k];
     const glow = on * (0.55 + 0.45 * Math.exp(-Math.max(0, since) * 1.4));
-    const br = k === 0 ? START_R : BELL_R;
+    const br = radius(k);
     for (let j = 0; j < perBell; j++) {
       const a = (j / perBell) * TAU;
       put(bellsAt + k * perBell + j, cx + br * Math.sin(a), cy + br * Math.cos(a), glow);
     }
-    const t = since / RIPPLE_SECONDS;
-    const live = on && t >= 0 && t < 1;
-    const rr = br + RIPPLE_REACH * (1 - (1 - t) * (1 - t));
+  }
+
+  // Ripples, from the bells that rang last.
+  for (let q = 0; q < RIPPLES; q++) {
+    const { k, at: rangAt } = state.ripples[q];
+    const [cx, cy] = at(state.angles[k], R);
+    const br = radius(k);
+    const t = (elapsed - rangAt) / RIPPLE_SECONDS;
+    const live = k < n && t >= 0 && t < 1;
+    const rr = live ? br + RIPPLE_REACH * (1 - (1 - t) * (1 - t)) : br;
     const fade = live ? (1 - t) * (1 - t) * 1.3 : 0;
     for (let j = 0; j < perRipple; j++) {
       const a = (j / perRipple) * TAU;
-      put(ripples + k * perRipple + j, cx + (live ? rr : br) * Math.sin(a), cy + (live ? rr : br) * Math.cos(a), fade);
+      put(ripples + q * perRipple + j, cx + rr * Math.sin(a), cy + rr * Math.cos(a), fade);
     }
   }
 

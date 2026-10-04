@@ -34,7 +34,7 @@ const still = [0, 0];
 export const HERO_SCALE = 1.9;
 export const HERO_SCALE_MOBILE = 1.9;
 
-// ── Hero, timer, sounds (the device column) ────────────────
+// ── Hero and timer (the device column) ─────────────────────
 
 // The app's mark, much larger than its anchor: it runs under the copy and
 // past the edges of the screen. It appears on load from the centre out, one
@@ -71,44 +71,15 @@ export const TIMER = {
   glow: 0.07,
 };
 
-// The shapes the seed head leaves empty, one after another: what a visitor
-// might bring. Same order as CUTOUTS in cutouts.js (the list is repeated
-// here so this module does not load the shape code).
-export const SOUND_SHAPES = ['file', 'bird', 'handpan', 'music'];
-
-// The seed head stands upright (no spin), so the empty shapes do too.
-export const SOUNDS = {
-  id: 'sounds',
-  shape: 'phyllotaxis',
-  anchor: 'device',
-  mobile: { anchor: 'device-sounds' },
-  // The rim of the seed head never quite settles: its grains keep leaving
-  // outward and fading.
-  ether: [0.7, 0.03, 0.24, 0.07],
-  farLight: 0.45,
-  colors: [TINT.glow, TINT.glow],
-  opacity: 0.7,
-  size: 1.35,
-  glow: 0.08,
-  morph: 2.4,
-  preload: SOUND_SHAPES.map((_, i) => `cutout:${i}`),
-};
-
-// The seed head with one of SOUND_SHAPES left empty (any other name: whole).
-export function withCutout(scene, name) {
-  const index = SOUND_SHAPES.indexOf(name);
-  return index < 0 ? scene : { ...scene, shape: `cutout:${index}` };
-}
-
 // ── Sound: silence, noise, binaural beats ──────────────────
 // One square anchor ("sound"); the section shows the figure of the sound
 // that is chosen: a horizon for silence, four clouds for the noises, two
-// tones for binaural beats (waves at 2 Hz, petals from 6 Hz).
+// mandalas for binaural beats (one petal per hertz: 2, 6, 10, 16).
 //
 // The section is a screen tall with its figure in the middle, so on desktop
 // its figures arrive late (the section's top a fifth of the way down the
-// screen), when the figure's place is on screen. The bells section is laid
-// out the same way.
+// screen), when the figure's place is on screen. The your-sounds and bells
+// sections are laid out the same way.
 const LATE = { window: [0.3, 0.1], mobile: { window: [0.9, 0.5] } };
 
 export const SOUND_SILENCE = {
@@ -149,53 +120,63 @@ export function withCloud(scene, type) {
   return cloud < 0 ? scene : { ...listening(scene), select: cloud };
 }
 
-// k is in radians per plate unit: 9 and 10 cycles across a 2.4-wide lane.
-const K1 = (TAU * 9) / 2.4;
-const K2 = (TAU * 10) / 2.4;
-
 // While a beat plays (Listen), `listen` replaces its vibration layers. The
 // petals ripple out from the centre, sooner for a faster beat; the tempo
 // stays far below the beat itself (never a flicker).
 const heard = (beat) => ({ ripple: [0.022, TAU * 1.5, TAU * (0.35 + beat * 0.1)] });
 
-const tone = (beat, extra) => ({ id: 'sound', ...LATE, beat, anchor: 'sound', opacity: 0.6, ...extra });
+// A beat's mandala: one petal per hertz, wobbling gently with as many folds.
+const tone = (beat, light, tint, glow) => ({
+  id: 'sound',
+  ...LATE,
+  beat,
+  anchor: 'sound',
+  shape: `mandala:${beat}`,
+  spin: TAU / 360,
+  wobble: [0.01, beat, 1, TAU * (0.3 + beat * 0.04)],
+  listen: { ...heard(beat), wobble: [0.025, beat, 1, TAU * (0.3 + beat * 0.04)] },
+  colors: [light, tint],
+  opacity: 0.6,
+  glow,
+});
 
 export const SOUND_TONES = [
-  tone(2, {
-    shape: 'binaural',
-    scale: 0.8,
-    wave: [0.075, K1, K2, TAU * 0.15],
-    listen: { wave: [0.11, K1, K2, TAU * 0.4] },
-    colorMode: 1,
-    groupScale: 1,
-    colors: [TINT.hz2, '#DCE5FF'],
-    glow: 0.05,
-  }),
-  tone(6, {
-    shape: 'lotus:6',
-    spin: TAU / 360,
-    wobble: [0.01, 6, 1, TAU * 0.5],
-    listen: { ...heard(6), wobble: [0.025, 6, 1, TAU * 0.5] },
-    colors: ['#C8E3B2', TINT.hz6],
-    glow: 0.07,
-  }),
-  tone(10, {
-    shape: 'lotus:8',
-    spin: TAU / 360,
-    wobble: [0.01, 8, 1, TAU * 0.7],
-    listen: { ...heard(10), wobble: [0.025, 8, 1, TAU * 0.7] },
-    colors: ['#DDF0FD', TINT.hz10],
-    glow: 0.07,
-  }),
-  tone(16, {
-    shape: 'lotus:16',
-    spin: TAU / 360,
-    wobble: [0.01, 16, 1, TAU * 1.0],
-    listen: { ...heard(16), wobble: [0.025, 16, 1, TAU * 1.0] },
-    colors: ['#E4DCFF', TINT.hz16],
-    glow: 0.08,
-  }),
+  tone(2, '#DCE5FF', TINT.hz2, 0.06),
+  tone(6, '#C8E3B2', TINT.hz6, 0.07),
+  tone(10, '#DDF0FD', TINT.hz10, 0.07),
+  tone(16, '#E4DCFF', TINT.hz16, 0.08),
 ];
+
+// ── Your sounds: a seed head ───────────────────────────────
+// The shapes the seed head leaves empty, one after another: what a visitor
+// might bring. Same order as CUTOUTS in cutouts.js (the list is repeated
+// here so this module does not load the shape code).
+export const SOUND_SHAPES = ['file', 'bird', 'handpan', 'music'];
+
+// The seed head stands upright (no spin), so the empty shapes do too. Laid
+// out like the sound section, so it arrives late too.
+export const SOUNDS = {
+  id: 'sounds',
+  ...LATE,
+  shape: 'phyllotaxis',
+  anchor: 'sounds',
+  // The rim of the seed head never quite settles: its grains keep leaving
+  // outward and fading.
+  ether: [0.7, 0.03, 0.24, 0.07],
+  farLight: 0.45,
+  colors: [TINT.glow, TINT.glow],
+  opacity: 0.7,
+  size: 1.35,
+  glow: 0.08,
+  morph: 2.4,
+  preload: SOUND_SHAPES.map((_, i) => `cutout:${i}`),
+};
+
+// The seed head with one of SOUND_SHAPES left empty (any other name: whole).
+export function withCutout(scene, name) {
+  const index = SOUND_SHAPES.indexOf(name);
+  return index < 0 ? scene : { ...scene, shape: `cutout:${index}` };
+}
 
 // While a scene's sound plays (Listen): its `listen` layers, and a little
 // more glow.
@@ -240,8 +221,11 @@ export const DEVICES_WATCH = {
 
 export const withPulse = (scene, pulse) => ({ ...scene, pulse });
 
-// Where a session shows, as outlines, one after another (`surface:k`).
-export const SURFACES = 4;
+// Where a session shows, as outlines, one after another: the Dynamic
+// Island, the Lock Screen, Control Center, Siri, Shortcuts and the Apple
+// Watch, in that order (the outlines are `surface:k`, k from this list).
+const SURFACE_KINDS = [0, 1, 2, 4, 5, 3];
+export const SURFACES = SURFACE_KINDS.length;
 
 export const DEVICES_EVERYWHERE = {
   id: 'devices.everywhere',
@@ -255,21 +239,20 @@ export const DEVICES_EVERYWHERE = {
   opacity: 0.6,
   glow: 0.04,
   morph: 2.2,
-  preload: Array.from({ length: SURFACES }, (_, k) => `surface:${k}`),
+  preload: SURFACE_KINDS.map((k) => `surface:${k}`),
 };
 
-export const withSurface = (scene, k) => ({ ...scene, shape: `surface:${k}` });
+// The i-th place in that order.
+export const withSurface = (scene, i) => ({ ...scene, shape: `surface:${SURFACE_KINDS[i]}` });
 
-// ── Presets: one circle becomes many ───────────────────────
+// ── Presets: seven circles ─────────────────────────────────
 // Circles of radius 0.5, so the centre one is half the anchor wide and the
-// six around it have their centres on its rim. Turned 30 degrees. Each of
-// the first seven circles holds a preset's icon (the field draws its rim;
-// presetSlot in nodes.js places the icon). The stage pins and the figure
-// grows: one circle, two, seven, then nineteen.
-
-const lattice = (count, icons, id) => ({
-  id,
-  shape: `lattice:${count},0.5,2,${icons}`,
+// six around it have their centres on its rim. Turned 30 degrees. Each
+// circle holds a preset's icon (the field draws its rim; presetSlot in
+// nodes.js places the icon, and the section brings the icons in one by one).
+export const PRESETS = {
+  id: 'presets',
+  shape: 'lattice:7,0.5,2,7',
   anchor: 'presets',
   rotation: TAU / 12,
   colorMode: 1,
@@ -277,26 +260,20 @@ const lattice = (count, icons, id) => ({
   colors: [TINT.glow, TINT.paper],
   opacity: 0.5,
   glow: 0.06,
-});
-
-export const PRESETS_ENTRY = lattice(1, 1, 'presets.1');
-export const PRESETS_STEPS = [
-  { ...lattice(2, 2, 'presets.2'), window: [1.0, 0.8] },
-  { ...lattice(7, 7, 'presets.7'), window: [1.0, 0.8] },
-  { ...lattice(19, 7, 'presets.19'), window: [1.0, 0.8] },
-];
+};
 
 // ── Privacy, free, and the loop ────────────────────────────
 
-// A closed circle, and a dotted line that meets it and leaves again. The
-// dashes travel along the line, in and then out.
+// You, your device and a closed double wall; dotted lines come in from
+// three sides, meet the wall and turn away. The dashes travel along the
+// lines, in and then out.
 export const PRIVACY = {
   id: 'privacy',
-  shape: 'enclosure',
+  shape: 'enclosure:0.8',
   anchor: 'privacy',
-  dash: [14, TAU * 0.6],
-  // Shorter legs on phones, where the 280px figure sits near the edge.
-  mobile: { shape: 'enclosure:0.5', dash: [6, TAU * 0.6] },
+  dash: [11, TAU * 0.6],
+  // Shorter legs on phones, where the figure reaches near the screen's edge.
+  mobile: { shape: 'enclosure:0.42', dash: [5, TAU * 0.6] },
   colorMode: 1,
   groupScale: 0.5,
   colors: [TINT.paper, '#9CC27A'],

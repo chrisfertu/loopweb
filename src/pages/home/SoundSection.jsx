@@ -1,43 +1,63 @@
-// 03  SOUND: silence first, and the sounds the app makes when it is wanted.
+// 02  SOUND: silence first, and the sounds the app makes when it is wanted.
 //
 // One section, one scene. The figure is the sound that is chosen: a horizon
 // for silence, four clouds for the noises (the one playing lights up), two
-// tones for binaural beats (waves at 2 Hz, petals from 6 Hz). It arrives as
-// silence; after that it follows the choices.
+// tones for binaural beats (two parallel waves at 2 Hz, petals from 6 Hz).
+// It arrives as silence; after that it follows the choices.
 //
-// The choices are three rows: Silence, Noise and Binaural beats. Choosing a
-// row shows its figure and its line; the noise and beat rows also show their
-// sounds as small buttons, and a tap on one plays it through ListenProvider
-// (a second tap stops it), so only one sound plays on the page. The sound
-// stops when the section leaves the viewport. While a /player session is
-// running or paused, the buttons are replaced by a link to it.
+// Under the figure, three round choices: Silence (chosen at first), Noise
+// and Binaural beats. Noise and binaural beats open a second row of four,
+// one per sound, each drawn after its figure; a tap on one plays it through
+// ListenProvider (a second tap stops it), so only one sound plays on the
+// page. Under the rows, what the chosen kind of sound is. The sound stops
+// when the section leaves the viewport. While a /player session is running
+// or paused, the second row is replaced by a link to it.
 //
-// Desktop (lg+): about one screen tall. Columns 1 to 5 hold the heading,
-// the choices and the micro line; the square "sound" anchor fills columns 6
-// to 12. Below lg: the heading, then the figure, then the choices, so the
-// figure sits between the words and never ends the section.
+// The figure and its choices fit in one phone screen. Desktop (lg+): about
+// one screen tall; the heading and the micro line in columns 1 to 5, the
+// figure with its choices under it in columns 6 to 12. Below lg: the
+// heading, the figure, the choices, then the micro line.
 
 import { memo, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, m as motion } from 'framer-motion';
 import { GeometryAnchor, SceneTrigger } from '../../geometry/components';
-import { listening, SOUND_NOISE, SOUND_SILENCE, SOUND_TONES, withCloud } from '../../geometry/scenes';
+import { listening, SOUND_NOISE, SOUND_SILENCE, SOUND_TONES, TINT, withCloud } from '../../geometry/scenes';
 import { sound as COPY } from '../../content/copy';
 import Reveal from '../../components/landing/Reveal';
 import SectionHeading from '../../components/landing/SectionHeading';
 import { soundKey, useListen } from '../../components/landing/listen';
 import { FOCUS_RING, PLAYER_PATH } from '../../components/landing/links';
-import { PlayIcon, StopIcon } from '../../components/landing/stage/icons';
+import { BeatIcon, BinauralIcon, NoiseCloud, SilenceIcon } from '../../components/landing/SoundIcons';
 
 const CONTAINER = 'mx-auto w-full max-w-[1200px] px-4 lg:px-10 xl:px-16';
 const MICRO = 'max-w-[46ch] text-pretty text-[13px] leading-5 text-white/55';
-const LINE = 'max-w-[44ch] text-pretty text-[15px] leading-6 text-muted';
+const LINE = 'mx-auto max-w-[44ch] text-pretty text-center text-[15px] leading-6 text-muted';
+const NAME = 'mt-1.5 block font-courier text-[11px] font-bold leading-4';
 
 const reveal = {
   initial: { opacity: 0, height: 0 },
   animate: { opacity: 1, height: 'auto', transition: { duration: 0.35, ease: 'easeOut' } },
   exit: { opacity: 0, height: 0, transition: { duration: 0.2, ease: 'easeIn' } },
 };
+
+const fade = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { duration: 0.35, ease: 'easeOut' } },
+  exit: { opacity: 0, transition: { duration: 0.15, ease: 'easeIn' } },
+};
+
+// The kinds of sound, drawn.
+const GROUP_ICON = { silence: SilenceIcon, noise: NoiseCloud, tones: BinauralIcon };
+
+// Each sound's colour, the one its figure is drawn in.
+const NOISE_TINT = { white: TINT.white, pink: TINT.pinkish, brown: TINT.brown, dark: TINT.dark };
+const BEAT_TINT = { 2: TINT.hz2, 6: TINT.hz6, 10: TINT.hz10, 16: TINT.hz16 };
+
+function OptionIcon({ option }) {
+  if (option.type === 'binaural') return <BeatIcon beat={option.frequency} color={BEAT_TINT[option.frequency]} />;
+  return <NoiseCloud color={NOISE_TINT[option.type]} />;
+}
 
 // The audio engine's sound for an option.
 const soundOf = (option) => (option.type === 'binaural' ? { type: 'binaural', frequency: option.frequency } : { type: option.type });
@@ -52,6 +72,32 @@ function sceneFor(group, option, playing) {
   return SOUND_SILENCE;
 }
 
+// One kind of sound: a round picture with its name under it.
+function GroupChoice({ group, on, onPick }) {
+  const Icon = GROUP_ICON[group.key];
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={on}
+      onClick={() => onPick(group.key)}
+      className={`group flex w-[88px] flex-col items-center rounded-lg py-1 ${FOCUS_RING}`}
+    >
+      <span
+        className={`flex h-14 w-14 items-center justify-center rounded-full border bg-black transition-colors ${
+          on ? 'border-opus-green text-white' : 'border-white/[0.16] text-white/55 group-hover:border-white/35 group-hover:text-white/85'
+        }`}
+      >
+        <span className="block h-8 w-8">
+          <Icon />
+        </span>
+      </span>
+      <span className={`${NAME} ${on ? 'text-white' : 'text-white/55'}`}>{group.name}</span>
+    </button>
+  );
+}
+
+// One sound: its figure, small, in a round button; a tap plays it.
 function SoundButton({ option, playing, onTap }) {
   return (
     <li>
@@ -60,16 +106,18 @@ function SoundButton({ option, playing, onTap }) {
         onClick={() => onTap(option)}
         aria-pressed={playing}
         aria-label={playing ? COPY.stopLabel(option.label) : COPY.playLabel(option.label)}
-        className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-3.5 font-courier text-[13px] font-bold leading-none transition-colors ${
-          playing
-            ? 'border-opus-green/70 bg-opus-green/10 text-opus-green-dim'
-            : 'border-white/[0.14] text-white/80 hover:border-white/30 hover:text-white'
-        } ${FOCUS_RING}`}
+        className={`group flex w-16 flex-col items-center rounded-lg py-1 ${FOCUS_RING}`}
       >
-        <span aria-hidden="true" className="block h-[18px] w-[18px]">
-          {playing ? <StopIcon /> : <PlayIcon />}
+        <span
+          className={`flex h-11 w-11 items-center justify-center rounded-full border bg-black transition-[border-color,opacity] ${
+            playing ? 'border-opus-green' : 'border-white/[0.14] opacity-80 group-hover:border-white/35 group-hover:opacity-100'
+          }`}
+        >
+          <span className="block h-7 w-7">
+            <OptionIcon option={option} />
+          </span>
         </span>
-        {option.short}
+        <span className={`${NAME} ${playing ? 'text-opus-green-dim' : 'text-white/60'}`}>{option.short}</span>
       </button>
     </li>
   );
@@ -129,77 +177,60 @@ function SoundSection() {
           className="lg:col-span-5 lg:row-start-2"
         />
 
-        <div className="mt-10 lg:col-span-7 lg:col-start-6 lg:row-span-4 lg:row-start-1 lg:mt-0 lg:self-center">
+        <div className="mt-8 lg:col-span-7 lg:col-start-6 lg:row-span-4 lg:row-start-1 lg:mt-0 lg:self-center">
           <GeometryAnchor
             name="sound"
             aria-hidden="true"
-            className="mx-auto aspect-square w-[min(100%,44svh)] lg:w-[min(72svh,50vw,100%)]"
+            className="mx-auto aspect-square w-[min(100%-24px,34svh)] lg:w-[min(44svh,40vw,100%)]"
           />
+
+          <Reveal className="mt-6">
+            <div role="radiogroup" aria-label={COPY.choicesLabel} className="flex justify-center gap-2">
+              {COPY.groups.map((g) => (
+                <GroupChoice key={g.key} group={g} on={g.key === group} onPick={pickGroup} />
+              ))}
+            </div>
+
+            <AnimatePresence initial={false} mode="wait">
+              {current.options.length ? (
+                <motion.div key={current.key} className="overflow-hidden" {...reveal}>
+                  {sessionActive ? (
+                    <p className="pt-4 text-center text-[14px] leading-5 text-muted">
+                      {'A session is playing. '}
+                      <Link
+                        to={PLAYER_PATH}
+                        className={`rounded-sm text-opus-green underline decoration-opus-green/40 underline-offset-4 transition-colors hover:text-opus-green-dim ${FOCUS_RING}`}
+                      >
+                        Open the player.
+                      </Link>
+                    </p>
+                  ) : (
+                    <ul aria-label={current.name} className="flex justify-center gap-1 pt-3">
+                      {current.options.map((opt) => (
+                        <SoundButton key={opt.label} option={opt} playing={soundKey(soundOf(opt)) === playingKey} onTap={onTap} />
+                      ))}
+                    </ul>
+                  )}
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
+
+            <div className="mx-auto mt-4 min-h-[72px] max-w-[44ch]">
+              <AnimatePresence initial={false} mode="wait">
+                <motion.div key={current.key} {...fade}>
+                  <p className={LINE}>{current.line}</p>
+                  {current.honest ? <p className={`${MICRO} mx-auto mt-2 text-center`}>{current.honest}</p> : null}
+                  {current.options.length && !sessionActive ? (
+                    <p className="mt-2 text-center font-courier text-[11px] leading-4 text-white/55">{COPY.hint}</p>
+                  ) : null}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </Reveal>
         </div>
 
-        <Reveal className="mt-10 lg:col-span-5 lg:row-start-3 lg:mt-10">
-          <div role="radiogroup" aria-label={COPY.choicesLabel} className="border-t border-white/10">
-            {COPY.groups.map((g) => {
-              const on = g.key === group;
-              return (
-                <div key={g.key} className="border-b border-white/10">
-                  <button
-                    type="button"
-                    role="radio"
-                    aria-checked={on}
-                    onClick={() => pickGroup(g.key)}
-                    className={`flex min-h-12 w-full items-center gap-3 rounded-sm py-2 text-left text-[17px] leading-6 transition-colors ${
-                      on ? 'text-white' : 'text-white/55 hover:text-white/85'
-                    } ${FOCUS_RING}`}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className={`h-2 w-2 shrink-0 rounded-full border transition-colors ${
-                        on ? 'border-opus-green bg-opus-green' : 'border-white/40'
-                      }`}
-                    />
-                    {g.name}
-                  </button>
-                  <AnimatePresence initial={false}>
-                    {on ? (
-                      <motion.div key={g.key} className="overflow-hidden pl-5" {...reveal}>
-                        <p className={`${LINE} pb-3`}>{g.line}</p>
-                        {g.options.length ? (
-                          sessionActive ? (
-                            <p className="pb-4 text-[14px] leading-5 text-muted">
-                              {'A session is playing. '}
-                              <Link
-                                to={PLAYER_PATH}
-                                className={`rounded-sm text-opus-green underline decoration-opus-green/40 underline-offset-4 transition-colors hover:text-opus-green-dim ${FOCUS_RING}`}
-                              >
-                                Open the player.
-                              </Link>
-                            </p>
-                          ) : (
-                            <ul className="flex flex-wrap gap-2 pb-4">
-                              {g.options.map((opt) => (
-                                <SoundButton
-                                  key={opt.label}
-                                  option={opt}
-                                  playing={soundKey(soundOf(opt)) === playingKey}
-                                  onTap={onTap}
-                                />
-                              ))}
-                            </ul>
-                          )
-                        ) : null}
-                        {g.honest ? <p className={`${MICRO} pb-4`}>{g.honest}</p> : null}
-                      </motion.div>
-                    ) : null}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
-          </div>
-          {current && current.options.length && !sessionActive ? (
-            <p className="mt-3 font-courier text-[11px] leading-4 text-white/55">{COPY.hint}</p>
-          ) : null}
-          <p className={`mt-5 ${MICRO}`}>{COPY.micro}</p>
+        <Reveal className="mt-8 lg:col-span-5 lg:row-start-3 lg:mt-8">
+          <p className={MICRO}>{COPY.micro}</p>
         </Reveal>
       </SceneTrigger>
     </section>

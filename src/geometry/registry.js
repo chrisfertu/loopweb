@@ -43,7 +43,7 @@ export const SCENE_DEFAULTS = {
   farLight: 1, // brightness at the figure's edge, when it has an ether
   pace: 1, // how fast a live figure's own motion runs (the flowing spiral)
   bells: 3, // interval bells: how many on the session ('intervals')
-  pulse: null, // the pulse figure's pace: { bpm (or [low, high]), amp, filling } ('pulse')
+  pulse: null, // the pulse figure's pace: { bpm (or [low, high]), amp, session, seconds } ('pulse')
   morph: 1.6, // seconds for a change of shape within the scene
   select: -1, // group to light up: a device graph node, a noise cloud
   window: [0.9, 0.5], // the scene arrives when its trigger's top crosses the middle of this range (in viewport heights)

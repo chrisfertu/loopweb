@@ -1,30 +1,27 @@
-// DeviceStory: the first three beats of Home, all drawn by the field.
+// DeviceStory: the first two beats of Home, both drawn by the field.
 //
 //   hero    the app's mark, far larger than its anchor, appearing from the
 //           centre out; the play triangle at its centre leads to the timer
 //   timer   a clock in grains inside sixty second marks, counting up from
 //           the moment it lands
-//   sounds  a seed head whose grains step aside for what a visitor brings:
-//           an audio file, a bird, a handpan, Apple Music, round and round
 //
-// Desktop (lg+): a 12-column grid. Columns 1 to 5 hold three blocks with
-// their copy centred: the hero at least one screen tall, the timer and
-// sounds blocks at least 0.72 of a screen. Each block is a SceneTrigger.
-// Columns 6 to 12 hold one sticky square anchor ("device") for all three
-// figures.
+// Desktop (lg+): a 12-column grid. Columns 1 to 5 hold two blocks with
+// their copy centred: the hero at least one screen tall, the timer block at
+// a screen tall too. Each block is a SceneTrigger. Columns 6 to 12 hold
+// one sticky square anchor ("device") for both figures.
 //
 // Mobile (< lg): each block has its own in-flow anchor ("device-hero",
-// "device-timer", "device-sounds"), never last in its block: above the
-// hero's title, and between the paragraphs of the other two.
+// "device-timer"), never last in its block: above the hero's title, and
+// between the timer's two paragraphs.
 //
 // No props, no timer subscription: memoised so nothing above re-renders it.
 
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { m as motion, useReducedMotion } from 'framer-motion';
 import { GeometryAnchor, SceneTrigger } from '../../geometry/components';
 import { LOGO_PLAY_R } from '../../geometry/nodes';
-import { HERO, HERO_SCALE, HERO_SCALE_MOBILE, SOUND_SHAPES, SOUNDS, TIMER, withCutout } from '../../geometry/scenes';
-import { hero as HERO_COPY, sounds as SOUNDS_COPY, stage as STAGE, timer as TIMER_COPY } from '../../content/copy';
+import { HERO, HERO_SCALE, HERO_SCALE_MOBILE, TIMER } from '../../geometry/scenes';
+import { hero as HERO_COPY, stage as STAGE, timer as TIMER_COPY } from '../../content/copy';
 import CtaRow from '../../components/landing/CtaRow';
 import { FOCUS_RING } from '../../components/landing/links';
 import SectionHeading from '../../components/landing/SectionHeading';
@@ -33,7 +30,7 @@ import Wordmark from '../../components/brand/Wordmark';
 
 // ── Sizes ──────────────────────────────────────────────────
 // The clock's second marks reach past the anchor, out to 1.14 of the radius
-// (7% of the side beyond each edge), and the seed head stays inside it. The
+// (7% of the side beyond each edge). The
 // hero's mark is drawn several times the anchor's size (HERO_SCALE): it runs
 // under the copy and off the screen, thinner and dimmer toward its edge.
 //
@@ -47,8 +44,7 @@ const DESKTOP_VARS = {
 
 // Mobile: the hero's anchor is small enough to leave the title and the
 // buttons on the first screen (the mark spreads past it, under them); the
-// clock and the seed head are as wide as the screen allows (the clock a
-// little less, for its marks).
+// clock is as wide as the screen allows, less room for its marks.
 const M_HERO = { width: 'min(56vw, 30svh)', height: 'min(56vw, 30svh)' };
 const M_TIMER_SIDE = 'min(100vw - 88px, 44svh)';
 const M_TIMER = {
@@ -57,31 +53,28 @@ const M_TIMER = {
   marginTop: `calc(${M_TIMER_SIDE} * 0.07 + 8px)`,
   marginBottom: `calc(${M_TIMER_SIDE} * 0.07 + 2.5rem)`,
 };
-const M_SOUNDS = { width: 'min(100vw - 56px, 44svh)', height: 'min(100vw - 56px, 44svh)', marginBottom: '2.5rem' };
 
 // The timer block's id: where the hero's play triangle leads.
 const TIMER_ID = 'timer';
 
 // "Micro" lines: small, at least 55% white (brief: contrast).
 const MICRO = 'text-[13px] leading-5 text-white/55 max-w-[46ch] text-pretty';
-const BODY_LINE = 'max-w-[52ch] text-pretty text-[16px] leading-[26px] text-white sm:text-[17px] sm:leading-[28px]';
+const BODY_LINE = 'max-w-[52ch] text-pretty text-[16px] leading-[26px] text-muted sm:text-[17px] sm:leading-[28px]';
 
 // ── Hooks ──────────────────────────────────────────────────
 
 // The block that covers a thin line at 55% of the viewport height. Blocks
 // are contiguous, so exactly one covers it while the story is on screen;
 // outside it the last one stays active. The line sits just above the point
-// where a block's figure has arrived, so what belongs to a block (the play
-// link, the loop of shapes) follows its figure. Returns [active, ...probe
-// refs] (one per block).
+// where a block's figure has arrived, so the play link follows its figure.
+// Returns [active, ...probe refs] (one per block).
 function useActiveBlock() {
   const hero = useRef(null);
   const timer = useRef(null);
-  const sounds = useRef(null);
   const [active, setActive] = useState(0);
 
   useEffect(() => {
-    const els = [hero.current, timer.current, sounds.current];
+    const els = [hero.current, timer.current];
     if (els.some((el) => !el) || typeof IntersectionObserver === 'undefined') return undefined;
     const inBand = new Set();
     const observer = new IntersectionObserver(
@@ -100,39 +93,7 @@ function useActiveBlock() {
     return () => observer.disconnect();
   }, []);
 
-  return [active, hero, timer, sounds];
-}
-
-// The seed head's loop: whole for a moment when the block arrives, then one
-// shape after another for as long as the block is the one on screen. Pause
-// motion holds the shape that is showing; reduced motion shows the first one.
-const FIRST_SHAPE_MS = 1400;
-const SHAPE_MS = 4600;
-
-function useShapeLoop(run) {
-  const reduce = useReducedMotion();
-  const paused = useMotionPaused();
-  const [index, setIndex] = useState(-1);
-
-  useEffect(() => {
-    if (!run || reduce || paused) return undefined;
-    const id = window.setTimeout(
-      () => setIndex((i) => (i + 1) % SOUND_SHAPES.length),
-      index < 0 ? FIRST_SHAPE_MS : SHAPE_MS,
-    );
-    return () => window.clearTimeout(id);
-  }, [run, reduce, paused, index]);
-
-  // Leaving the block closes the seed head; the loop starts over next time.
-  const [wasRunning, setWasRunning] = useState(run);
-  if (wasRunning !== run) {
-    setWasRunning(run);
-    if (!run) setIndex(-1);
-  }
-
-  if (!run) return null;
-  if (reduce) return SOUND_SHAPES[0];
-  return index < 0 ? null : SOUND_SHAPES[index];
+  return [active, hero, timer];
 }
 
 // ── Pieces ─────────────────────────────────────────────────
@@ -214,9 +175,7 @@ function ScrollCue() {
 // ── The story ──────────────────────────────────────────────
 
 function DeviceStory() {
-  const [active, heroProbe, timerProbe, soundsProbe] = useActiveBlock();
-  const shape = useShapeLoop(active === 2);
-  const soundsScene = useMemo(() => withCutout(SOUNDS, shape), [shape]);
+  const [active, heroProbe, timerProbe] = useActiveBlock();
 
   // Desktop blocks: copy centred (heights set per block). Phones: natural height.
   const block = 'relative flex flex-col px-4 lg:justify-center lg:px-0';
@@ -244,9 +203,10 @@ function DeviceStory() {
               title={HERO_COPY.h1}
               titleClassName="lg:[@media(max-height:800px)]:text-[clamp(2.25rem,1rem+3.4vw,3.5rem)]"
               body={HERO_COPY.body}
+              large
             >
-              <CtaRow />
-              <p className={`mt-5 ${MICRO}`}>{HERO_COPY.micro}</p>
+              <CtaRow className="mt-2" />
+              <p className={`mt-7 ${MICRO}`}>{HERO_COPY.micro}</p>
             </SectionHeading>
             <ScrollCue />
           </SceneTrigger>
@@ -257,34 +217,18 @@ function DeviceStory() {
             as="section"
             id={TIMER_ID}
             aria-labelledby="ds-timer-title"
-            className={`${block} pt-20 lg:min-h-[72svh] lg:py-16`}
+            className={`${block} pt-20 lg:min-h-[100svh] lg:py-16`}
           >
             <span ref={timerProbe} aria-hidden="true" className={probe} />
             <SectionHeading id="ds-timer-title" eyebrow={TIMER_COPY.eyebrow} title={TIMER_COPY.h2} body={TIMER_COPY.body}>
               <GeometryAnchor name="device-timer" aria-hidden="true" className="mx-auto lg:hidden" style={M_TIMER} />
-              <p className={`${BODY_LINE} lg:-mt-4`}>{TIMER_COPY.line}</p>
+              <p className={`${BODY_LINE} lg:-mt-3`}>{TIMER_COPY.line}</p>
               <p className="sr-only">{STAGE.timerAlt}</p>
-            </SectionHeading>
-          </SceneTrigger>
-
-          {/* 2.3 sounds */}
-          <SceneTrigger
-            scene={soundsScene}
-            as="section"
-            aria-labelledby="ds-sounds-title"
-            className={`${block} pb-8 pt-20 lg:min-h-[72svh] lg:py-16`}
-          >
-            <span ref={soundsProbe} aria-hidden="true" className={probe} />
-            <SectionHeading id="ds-sounds-title" eyebrow={SOUNDS_COPY.eyebrow} title={SOUNDS_COPY.h2} body={SOUNDS_COPY.body}>
-              <GeometryAnchor name="device-sounds" aria-hidden="true" className="mx-auto lg:hidden" style={M_SOUNDS} />
-              <p className={MICRO}>{SOUNDS_COPY.micro}</p>
-              <p className={`mt-3 ${MICRO}`}>{SOUNDS_COPY.footnote}</p>
-              <p className="sr-only">{STAGE.shapesAlt}</p>
             </SectionHeading>
           </SceneTrigger>
         </div>
 
-        {/* Desktop: the sticky anchor, beside all three blocks. */}
+        {/* Desktop: the sticky anchor, beside both blocks. */}
         <div className="hidden [container-type:inline-size] lg:col-span-7 lg:col-start-6 lg:row-start-1 lg:block">
           <div className="sticky pb-[calc(var(--side)*0.07_+_2rem)]" style={DESKTOP_VARS}>
             <GeometryAnchor name="device" className="relative mx-auto h-[var(--side)] w-[var(--side)]">

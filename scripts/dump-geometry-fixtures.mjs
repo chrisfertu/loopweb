@@ -3,7 +3,7 @@ import { createServer } from 'vite';
 const server = await createServer({ root: process.cwd(), server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' });
 const shapes = await server.ssrLoadModule('/src/geometry/shapes.js');
 const COUNT = 6000;
-const KEYS = ['ringcore', 'circle', 'dial', 'lotus:2', 'lotus:6', 'lotus:8', 'lotus:16', 'phyllotaxis', 'vesica', 'plate', 'bell:8,2,0', 'wavering', 'point', 'brownian', 'dust'];
+const KEYS = ['ringcore', 'circle', 'dial', 'lotus:2', 'lotus:6', 'lotus:8', 'lotus:16', 'mandala:2', 'mandala:6', 'mandala:10', 'mandala:16', 'phyllotaxis', 'vesica', 'plate', 'bell:8,2,0', 'wavering', 'point', 'brownian', 'dust'];
 const STEP = 251; // sample every 251st point (coprime with everything in sight)
 const lines = [];
 lines.push('//');

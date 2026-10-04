@@ -22,7 +22,7 @@ import ringSvg from './logo/ring.svg?raw';
 import chevronsSvg from './logo/chevrons.svg?raw';
 import bracketsSvg from './logo/brackets.svg?raw';
 import coreSvg from './logo/core.svg?raw';
-import { ENCLOSURE_R, LOGO_PLAY_R, METATRON_NODES, PRESET_ICON_R, ricochet } from './nodes';
+import { ENCLOSURE_R, LOGO_PLAY_R, METATRON_NODES, PRESET_ICON_R, ricochets } from './nodes';
 import { cutoutDisc } from './cutouts';
 import { layoutClock, writeClock } from './clock';
 import { writeSpiral } from './flowspiral';
@@ -88,9 +88,9 @@ const line = (a, b, { group = 0, w = 1 } = {}) => ({
 
 const poly = (pts, { group = 0, w = 1 } = {}) => ({ pts, group, w });
 
-// A rounded rectangle centred on the origin, drawn clockwise from the top
-// middle.
-const roundedRect = (w, h, rad, { group = 0, w: weight = 1 } = {}) => {
+// A rounded rectangle centred on the origin (or on `translate`), drawn
+// clockwise from the top middle.
+const roundedRect = (w, h, rad, { group = 0, w: weight = 1, translate } = {}) => {
   const hw = w / 2;
   const hh = h / 2;
   const r = Math.min(rad, hw, hh);
@@ -106,8 +106,49 @@ const roundedRect = (w, h, rad, { group = 0, w: weight = 1 } = {}) => {
   corner(-hw + r, -hh + r, TAU / 2);
   corner(-hw + r, hh - r, (3 * TAU) / 4);
   pts.push([0, hh, 0]);
+  if (translate) pts.forEach((p) => { p[0] += translate[0]; p[1] += translate[1]; });
   return { pts, group, w: weight };
 };
+
+// Digits drawn as lines, for a time on a small outline ("12:00"): each digit
+// a cell 0.6 of its height wide, a colon two dots. Centred on (cx, cy), `h`
+// tall. Squared strokes, except 0, an oval.
+const GLYPHS = {
+  1: [[[0.25, 0.8], [0.55, 1], [0.55, 0]]],
+  2: [[[0, 1], [1, 1], [1, 0.5], [0, 0.5], [0, 0], [1, 0]]],
+  3: [[[0, 1], [1, 1], [1, 0], [0, 0]], [[0.2, 0.5], [1, 0.5]]],
+  4: [[[0, 1], [0, 0.5], [1, 0.5]], [[1, 1], [1, 0]]],
+  5: [[[1, 1], [0, 1], [0, 0.5], [1, 0.5], [1, 0], [0, 0]]],
+  6: [[[1, 1], [0, 1], [0, 0], [1, 0], [1, 0.5], [0, 0.5]]],
+  7: [[[0, 1], [1, 1], [0.4, 0]]],
+  8: [[[0, 0.5], [0, 1], [1, 1], [1, 0], [0, 0], [0, 0.5], [1, 0.5]]],
+  9: [[[1, 0.5], [0, 0.5], [0, 1], [1, 1], [1, 0], [0, 0]]],
+};
+function digits(text, cx, cy, h, opts = {}) {
+  const cell = 0.6 * h;
+  const gap = 0.28 * h;
+  const widthOf = (ch) => (ch === ':' ? 0.12 * h : cell);
+  const total = [...text].reduce((sum, ch, i) => sum + widthOf(ch) + (i ? gap : 0), 0);
+  let x = cx - total / 2;
+  const strokes = [];
+  for (const ch of text) {
+    const at = (u, v) => [x + u * cell, cy - h / 2 + v * h, 0];
+    if (ch === ':') {
+      strokes.push(circle(x + 0.06 * h, cy + 0.2 * h, 0.05 * h, opts), circle(x + 0.06 * h, cy - 0.2 * h, 0.05 * h, opts));
+    } else if (ch === '0') {
+      const pts = [];
+      for (let i = 0; i <= 40; i++) {
+        const a = (i / 40) * TAU;
+        pts.push(at(0.5 + 0.5 * Math.sin(a), 0.5 + 0.5 * Math.cos(a)));
+      }
+      strokes.push(poly(pts, opts));
+    } else {
+      for (const path of GLYPHS[ch] || []) strokes.push(poly(path.map(([u, v]) => at(u, v)), opts));
+    }
+    x += widthOf(ch) + gap;
+  }
+  return strokes;
+}
 
 // ── Sampling ───────────────────────────────────────────────
 
@@ -262,15 +303,42 @@ const figures = {
     };
   },
 
-  // Three lanes the shader bends into the left tone, the right tone and their
-  // sum. Group 0 = left, 1 = right, 2 = sum.
-  binaural: () => ({
-    sets: [
-      { share: 0.3, strokes: [line([-1.2, 0.34], [1.2, 0.34], { group: 0 })] },
-      { share: 0.4, strokes: [line([-1.2, 0], [1.2, 0], { group: 2 })] },
-      { share: 0.3, strokes: [line([-1.2, -0.34], [1.2, -0.34], { group: 1 })] },
-    ],
-  }),
+  // A mandala of n petals: an outer ring of n pointed petals, an inner ring
+  // of n smaller ones between them, a dot at each outer tip, a small circle
+  // at the centre and a fine ring around it all. The binaural beats are
+  // drawn with one petal per hertz (2, 6, 10, 16).
+  mandala: (n = 6) => {
+    const petal = (a, inner, outer, width, group) => {
+      const pts = [];
+      const steps = 64;
+      for (let k = 0; k <= steps * 2; k++) {
+        const up = k <= steps;
+        const t = up ? k / steps : 2 - k / steps;
+        const along = inner + (outer - inner) * t;
+        const half = width * Math.pow(Math.sin(Math.PI * t), 0.9) * (up ? 1 : -1);
+        pts.push([Math.sin(a) * along + Math.cos(a) * half, Math.cos(a) * along - Math.sin(a) * half, 0]);
+      }
+      return poly(pts, { group });
+    };
+    const gap = Math.PI / n;
+    const outerW = Math.min(0.3, 0.66 * Math.sin(gap));
+    const innerW = Math.min(0.2, 0.5 * Math.sin(gap));
+    // Outer and inner petals interleaved (outer 0, inner 0, outer 1, ...),
+    // so a figure with more petals splits each one into neighbours.
+    const petals = [];
+    for (let i = 0; i < n; i++) {
+      const a = (i * TAU) / n;
+      petals.push(petal(a, 0.2, 0.86, outerW, 0), petal(a + gap, 0.2, 0.58, innerW, 0));
+    }
+    const tips = Array.from({ length: n }, (_, i) => circle(...polar(0.93, (i * TAU) / n).slice(0, 2), 0.022, { group: 1 }));
+    return {
+      sets: [
+        { share: 0.7, strokes: petals },
+        { share: 0.12, strokes: [circle(0, 0, 0.2, { group: 1 }), circle(0, 0, 0.07, { group: 1 })] },
+        { share: 0.18, strokes: [circle(0, 0, 1.02, { group: 1, w: 0.6 }), ...tips] },
+      ],
+    };
+  },
 
   // Petals as pointed lenses, like the brainwave covers in the app:
   // 2 petals (with a waveform), 6, 8, and 16 in two layers.
@@ -555,56 +623,123 @@ const figures = {
   surface: (kind = 0) => {
     const rect = (w, h, rad, opts) => roundedRect(w, h, rad, opts);
     const ring = (x, y, rad, frac, opts) => arc(x, y, rad, 0, TAU * frac, opts);
+    // A play triangle pointing right, its box centred on (x, y) less a
+    // little, so it looks centred (its weight is on the left).
     const play = (x, y, size, opts) => {
-      const pts = [0, 120, 240, 0].map((deg) => [x + size * Math.cos((deg * Math.PI) / 180), y + size * Math.sin((deg * Math.PI) / 180), 0]);
+      const cx = x - size * 0.22;
+      const pts = [0, 120, 240, 0].map((deg) => [cx + size * Math.cos((deg * Math.PI) / 180), y + size * Math.sin((deg * Math.PI) / 180), 0]);
       return poly(pts, opts);
     };
+    // The Lock Screen's Live Activity.
     if (kind === 1) {
       return {
         sets: [
-          { share: 0.62, strokes: [rect(1.84, 0.92, 0.24, { group: 0 }), circle(-0.6, 0.1, 0.13, { group: 0 })] },
-          { share: 0.1, strokes: [line([-0.38, 0.18], [0.2, 0.18], { group: 0 }), line([-0.38, 0.02], [0.02, 0.02], { group: 0 })] },
-          { share: 0.08, strokes: [line([-0.72, -0.24], [0.72, -0.24], { group: 0 })] },
-          { share: 0.2, strokes: [line([-0.72, -0.24], [0.2, -0.24], { group: 1 }), play(0.56, 0.1, 0.09, { group: 1 })] },
+          { share: 0.66, strokes: [rect(1.84, 0.92, 0.24, { group: 0 }), circle(-0.6, 0.1, 0.13, { group: 0 })] },
+          { share: 0.14, strokes: [line([-0.38, 0.18], [0.2, 0.18], { group: 0 }), line([-0.38, 0.02], [0.02, 0.02], { group: 0 })] },
+          { share: 0.2, strokes: [play(0.56, 0.1, 0.1, { group: 1 })] },
         ],
       };
     }
+    // Control Center: a tile with a play button.
     if (kind === 2) {
       return {
         sets: [
           { share: 0.7, strokes: [rect(1.1, 1.1, 0.3, { group: 0 })] },
-          { share: 0.3, strokes: [play(0.04, 0, 0.22, { group: 1 })] },
+          { share: 0.3, strokes: [play(0, 0, 0.22, { group: 1 })] },
         ],
       };
     }
-    if (kind === 3) {
+    // Siri: a voice, three waves inside a circle, swelling in the middle.
+    if (kind === 4) {
+      const voice = (amp, cycles, phase) => {
+        const pts = [];
+        for (let i = 0; i <= 160; i++) {
+          const x = -0.42 + (0.84 * i) / 160;
+          const env = Math.pow(Math.cos((x / 0.42) * (Math.PI / 2)), 2);
+          pts.push([x, amp * env * Math.sin(x * cycles * Math.PI + phase), 0]);
+        }
+        return poly(pts, { group: 1 });
+      };
       return {
         sets: [
-          { share: 0.5, strokes: [rect(1.32, 1.56, 0.42, { group: 0 })] },
-          { share: 0.18, strokes: [circle(0, 0, 0.42, { group: 0, w: 0.4 })] },
-          { share: 0.32, strokes: [ring(0, 0, 0.42, 0.7, { group: 1 }), play(0.02, 0, 0.1, { group: 1 })] },
+          { share: 0.4, strokes: [circle(0, 0, 0.56, { group: 0 })] },
+          { share: 0.6, strokes: [voice(0.2, 3.2, 0), voice(0.13, 4.6, 1.3), voice(0.08, 6.1, 2.4)] },
         ],
       };
     }
+    // Shortcuts: an action, as the Shortcuts app shows it. The app's mark
+    // and a play button on the first row, three settings under it (length,
+    // sound, bell).
+    if (kind === 5) {
+      const setting = (y, w) => [
+        rect(0.5, 0.14, 0.07, { group: 0, translate: [-0.42, y], w: 0.6 }),
+        line([-0.06, y], [-0.06 + w, y], { group: 0, w: 0.6 }),
+      ];
+      return {
+        sets: [
+          { share: 0.46, strokes: [rect(1.6, 1.12, 0.16, { group: 0 })] },
+          { share: 0.14, strokes: [rect(0.2, 0.2, 0.06, { group: 0, translate: [-0.56, 0.33] }), line([-0.36, 0.33], [0.24, 0.33], { group: 0 })] },
+          { share: 0.26, strokes: [...setting(0.06, 0.46), ...setting(-0.14, 0.36), ...setting(-0.34, 0.5)] },
+          { share: 0.14, strokes: [play(0.56, 0.33, 0.08, { group: 1 })] },
+        ],
+      };
+    }
+    // Apple Watch: the case, a dial with its minute marks, the session's
+    // ring and a play button.
+    if (kind === 3) {
+      const marks = [];
+      for (let i = 0; i < 60; i++) {
+        const a = (i * TAU) / 60;
+        marks.push(line(polar(0.49, a), polar(i % 5 === 0 ? 0.56 : 0.52, a), { group: 0, w: 0.5 }));
+      }
+      return {
+        sets: [
+          { share: 0.42, strokes: [rect(1.32, 1.56, 0.42, { group: 0 })] },
+          { share: 0.14, strokes: [circle(0, 0, 0.42, { group: 0, w: 0.4 })] },
+          { share: 0.16, strokes: marks },
+          { share: 0.28, strokes: [ring(0, 0, 0.42, 0.7, { group: 1 }), play(0, 0, 0.11, { group: 1 })] },
+        ],
+      };
+    }
+    // The Dynamic Island under the top of an iPhone: the pill, the app's
+    // round mark on the left and the time on the right.
+    const top = [];
+    const R = 0.3;
+    const [L, T, B] = [0.92, 0.7, -0.6];
+    top.push([-L, B, 0]);
+    for (let i = 0; i <= 16; i++) {
+      const a = -TAU / 4 + (i / 16) * (TAU / 4);
+      top.push([-L + R + R * Math.sin(a), T - R + R * Math.cos(a), 0]);
+    }
+    for (let i = 0; i <= 16; i++) {
+      const a = (i / 16) * (TAU / 4);
+      top.push([L - R + R * Math.sin(a), T - R + R * Math.cos(a), 0]);
+    }
+    top.push([L, B, 0]);
     return {
       sets: [
-        { share: 0.66, strokes: [rect(1.76, 0.5, 0.25, { group: 0 })] },
-        { share: 0.1, strokes: [circle(-0.6, 0, 0.11, { group: 0 })] },
-        { share: 0.24, strokes: [circle(0.6, 0, 0.11, { group: 0, w: 0.35 }), ring(0.6, 0, 0.11, 0.7, { group: 1 })] },
+        { share: 0.34, strokes: [poly(top, { group: 0, w: 0.5 })] },
+        { share: 0.4, strokes: [rect(1.24, 0.36, 0.18, { group: 0, translate: [0, 0.42] })] },
+        { share: 0.08, strokes: [circle(-0.43, 0.42, 0.08, { group: 0 })] },
+        { share: 0.18, strokes: digits('12:00', 0.33, 0.42, 0.095, { group: 1 }) },
       ],
     };
   },
 
-  // Privacy: your device inside your iCloud, closed. A line comes in, meets
-  // the circle and leaves again (nodes.js). It is drawn whole here; the
-  // scene's `dash` cuts it into dashes that travel along it.
+  // Privacy: you, inside your device, inside your iCloud, behind a double
+  // wall. Lines come in from three sides, meet the wall and turn away
+  // (nodes.js); nothing reaches in. They are drawn whole here; the scene's
+  // `dash` cuts them into dashes that travel along them.
   enclosure: (len = 1.2) => {
-    const { from, hit, to } = ricochet(len);
+    const lines = ricochets(len).map(({ from, hit, to }) => poly([from, hit, to].map(([x, y]) => [x, y, 0]), { group: 2 }));
+    const you = [];
+    for (let i = 0; i < 5; i++) you.push(circle(0, 0, 0.03 + i * 0.022, { group: 0, w: 0.5 }));
     return {
       sets: [
-        { share: 0.3, strokes: [circle(0, 0, 0.45)] },
-        { share: 0.5, strokes: [circle(0, 0, ENCLOSURE_R, { group: 1 })] },
-        { share: 0.2, strokes: [poly([from, hit, to].map(([x, y]) => [x, y, 0]), { group: 2 })] },
+        { share: 0.14, strokes: you },
+        { share: 0.16, strokes: [circle(0, 0, 0.42, { group: 0, w: 0.6 })] },
+        { share: 0.44, strokes: [circle(0, 0, ENCLOSURE_R, { group: 1 }), circle(0, 0, ENCLOSURE_R - 0.06, { group: 1, w: 0.6 })] },
+        { share: 0.26, strokes: lines },
       ],
     };
   },

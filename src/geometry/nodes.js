@@ -15,18 +15,27 @@ export const METATRON_NODES = (() => {
   return nodes;
 })();
 
-// The privacy figure's dotted line: it comes in, meets the outer circle and
-// leaves again at the same angle. Angles are clockwise from 12 o'clock.
-// Returns { from, hit, to } in plate units for legs `len` long.
-const RICOCHET_AT = (60 * Math.PI) / 180; // where the line meets the circle
-const RICOCHET_SPREAD = (50 * Math.PI) / 180; // each leg's angle to the normal
+// The privacy figure's dotted lines: each comes in, meets the outer circle
+// and turns away at the same angle. Three, from different sides. Angles are
+// clockwise from 12 o'clock. Returns [{ from, hit, to }] in plate units for
+// legs `len` long.
+const RICOCHETS = [
+  { at: 60, spread: 50 },
+  { at: 185, spread: -45 },
+  { at: 295, spread: 55 },
+];
+
 export const ENCLOSURE_R = 0.9;
 
-export function ricochet(len = 1.2) {
+export function ricochets(len = 1.2) {
   const r = ENCLOSURE_R + 0.025;
-  const hit = [r * Math.sin(RICOCHET_AT), r * Math.cos(RICOCHET_AT)];
-  const leg = (a) => [hit[0] + len * Math.sin(a), hit[1] + len * Math.cos(a)];
-  return { from: leg(RICOCHET_AT - RICOCHET_SPREAD), hit, to: leg(RICOCHET_AT + RICOCHET_SPREAD) };
+  return RICOCHETS.map(({ at, spread }) => {
+    const a = (at * Math.PI) / 180;
+    const s = (spread * Math.PI) / 180;
+    const hit = [r * Math.sin(a), r * Math.cos(a)];
+    const leg = (d) => [hit[0] + len * Math.sin(d), hit[1] + len * Math.cos(d)];
+    return { from: leg(a - s), hit, to: leg(a + s) };
+  });
 }
 
 // The presets figure: circles of radius 0.5 on a hexagonal lattice, the

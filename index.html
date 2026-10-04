@@ -4,30 +4,36 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <!-- Primary Meta Tags -->
-    <title>OPUS Loop - Meditation Timer for iOS</title>
-    <meta name="title" content="OPUS Loop - Meditation Timer for iOS" />
-    <meta name="description" content="A free meditation timer with binaural beats, interval bells, Apple Music import, and Apple Watch support. No subscription, no account. One-time purchase for extra configurations." />
+    <!-- Primary meta. The seo placeholders are filled at build and dev time
+         by vite-plugin-seo.js from src/content/seo.js (VITE_APP_103_LIVE). -->
+    <title>{{seo.title}}</title>
+    <meta name="title" content="{{seo.title}}" />
+    <meta name="description" content="{{seo.description}}" />
     <meta name="keywords" content="meditation timer, meditation app, binaural beats, mindfulness timer, focus timer, sleep sounds, brown noise, prayer timer, interval bells, Apple Watch meditation, mindful minutes, iOS meditation app, free meditation app" />
     <meta name="author" content="OPUS" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
-    <link rel="canonical" href="https://opusloop.co/" />
+    <link rel="canonical" href="{{seo.canonical}}" />
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://opusloop.co/" />
-    <meta property="og:title" content="OPUS Loop - Free Meditation Timer for iOS" />
-    <meta property="og:description" content="A free meditation timer with binaural beats, interval bells, Apple Music import, and Apple Watch support. No subscription, no account." />
-    <meta property="og:image" content="https://opusloop.co/images/og-image.png" />
-    <meta property="og:site_name" content="OPUS Loop" />
-    <meta property="og:locale" content="en_US" />
+    <!-- Open Graph -->
+    <meta property="og:type" content="{{seo.ogType}}" />
+    <meta property="og:url" content="{{seo.ogUrl}}" />
+    <meta property="og:title" content="{{seo.ogTitle}}" />
+    <meta property="og:description" content="{{seo.ogDescription}}" />
+    <meta property="og:image" content="{{seo.ogImage}}" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="{{seo.ogImageWidth}}" />
+    <meta property="og:image:height" content="{{seo.ogImageHeight}}" />
+    <meta property="og:image:alt" content="{{seo.ogImageAlt}}" />
+    <meta property="og:site_name" content="{{seo.ogSiteName}}" />
+    <meta property="og:locale" content="{{seo.ogLocale}}" />
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://opusloop.co/" />
-    <meta property="twitter:title" content="OPUS Loop - Free Meditation Timer for iOS" />
-    <meta property="twitter:description" content="A free meditation timer with binaural beats, interval bells, Apple Music import, and Apple Watch support. No subscription, no account." />
-    <meta property="twitter:image" content="https://opusloop.co/images/og-image.png" />
+    <meta name="twitter:card" content="{{seo.twitterCard}}" />
+    <meta name="twitter:url" content="{{seo.twitterUrl}}" />
+    <meta name="twitter:title" content="{{seo.twitterTitle}}" />
+    <meta name="twitter:description" content="{{seo.twitterDescription}}" />
+    <meta name="twitter:image" content="{{seo.twitterImage}}" />
+    <meta name="twitter:image:alt" content="{{seo.twitterImageAlt}}" />
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/images/logo.svg" />
@@ -37,102 +43,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <!-- Rounded digits where ui-rounded does not exist (outside Apple systems): only the ten digits and the colon. -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&text=0123456789%3A&display=swap" rel="stylesheet" />
 
     <!-- Theme -->
     <meta name="theme-color" content="#000000" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-itunes-app" content="app-id=6756740657, app-clip-bundle-id=ro.opus.loop.Clip, app-clip-display=card" />
 
-    <!-- PWA -->
+    <!-- PWA (the service worker is registered from src/main.jsx, production only) -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="OPUS Loop" />
+    <meta name="apple-mobile-web-app-title" content="Loop" />
 
-    <!-- Structured Data -->
+    <!-- Structured data -->
     <script type="application/ld+json">
-    [{
-      "@context": "https://schema.org",
-      "@type": "MobileApplication",
-      "name": "OPUS Loop",
-      "description": "A free meditation timer with binaural beats, interval bells, Apple Music import, and Apple Watch support. No subscription, no account required.",
-      "applicationCategory": "HealthApplication",
-      "operatingSystem": "iOS",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "downloadUrl": "https://apps.apple.com/ro/app/loop-meditation-focus/id6756740657",
-      "featureList": [
-        "Meditation and focus timer",
-        "Binaural beats and noise generator",
-        "Interval bells for timed sessions",
-        "Apple Music and audio file import",
-        "Apple Watch companion with heart rate",
-        "Apple Health mindful minutes",
-        "iCloud sync across devices",
-        "Custom backgrounds and configurations",
-        "Free with optional one-time purchase"
-      ],
-      "author": {
-        "@type": "Organization",
-        "name": "OPUS",
-        "url": "https://opus.ro"
-      }
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Is OPUS Loop free?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. OPUS Loop is free to download with all core features: timer, binaural beats, noise generator, Apple Music import, Apple Watch, Apple Health, and more. A one-time purchase of $4.99 adds the ability to save multiple configurations."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How does OPUS Loop work?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Set a duration with the scroll wheel, choose a soundtrack or silence, and tap play. The app times your session and plays your chosen sound. When the session ends, you hear a bell."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Does OPUS Loop have a subscription?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "No. There is no subscription and no recurring fees. The app is free with all features included. An optional one-time purchase of $4.99 unlocks the ability to save unlimited configurations."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Does OPUS Loop track my data?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "No. OPUS Loop has no servers, no accounts, and no user tracking. Your sessions and settings stay on your device and your personal iCloud account."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I use OPUS Loop without downloading the app?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Visit opusloop.co/player for a free web-based timer with binaural beats, noise generators, and custom audio import that works directly in your browser."
-          }
-        }
-      ]
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "OPUS Loop",
-      "url": "https://opusloop.co",
-      "description": "A free meditation timer for iOS with binaural beats, interval bells, and Apple ecosystem integration."
-    }]
+{{seo.jsonLd}}
     </script>
 
     <!-- SPA GitHub Pages redirect handler -->
@@ -152,12 +78,5 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js');
-        });
-      }
-    </script>
   </body>
 </html>

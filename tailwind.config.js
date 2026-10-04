@@ -9,30 +9,21 @@ export default {
       fontFamily: {
         sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
         courier: ['"Courier Prime"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+        // Digits drawn by the web (timers, counters): the app's SF Pro Rounded,
+        // and Nunito (index.html loads the digits only) where that does not exist.
+        rounded: ['ui-rounded', '"SF Pro Rounded"', 'Nunito', 'system-ui', 'sans-serif'],
       },
       colors: {
-        'opus-green': '#00A86B',
-        'opus-green-dim': '#00B271',
-        'opus-teal': '#162828',
-      },
-      animation: {
-        'float': 'float 6s ease-in-out infinite',
-        'fade-in': 'fadeIn 0.8s ease-out forwards',
-        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
-      },
-      keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-8px)' },
-        },
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-        fadeInUp: {
-          '0%': { opacity: '0', transform: 'translateY(16px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
+        // The app's accent (accentGreen). Links, active states, focus rings.
+        'opus-green': '#7A9B58',
+        'opus-green-dim': '#93B571',
+        // Luminous icon greens: geometry and the brand mark only, never text.
+        'loop-glow': '#64D262',
+        'loop-core': '#14E468',
+        paper: '#E8E6E1',
+        surface: '#0E0E10',
+        // Body copy (the app's secondary text), 7.6:1 on black.
+        muted: '#9A9AA0',
       },
     },
   },

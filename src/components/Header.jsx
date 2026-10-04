@@ -1,70 +1,125 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { usePath, isHomePath } from '../hooks/usePath';
+import MotionToggle from './MotionToggle';
+import ringSvg from '../geometry/logo/ring.svg?raw';
+import coreSvg from '../geometry/logo/core.svg?raw';
+import Wordmark from './brand/Wordmark';
+
+const APP_STORE_URL = 'https://apps.apple.com/app/id6756740657';
+const SCROLLED_AT = 24;
+
+// The app mark (ring + core in the icon's green, and its dot), from the same
+// SVGs the geometry engine draws.
+const pathsOf = (svg) => Array.from(svg.matchAll(/\sd="([^"]+)"/g), (m) => m[1]);
+const MARK_PATHS = [...pathsOf(ringSvg), ...pathsOf(coreSvg)];
+
+const LoopMark = ({ className = '' }) => (
+  <svg
+    viewBox="160 160 704 704"
+    className={className}
+    aria-hidden="true"
+    focusable="false"
+  >
+    {MARK_PATHS.map((d, i) => (
+      <path key={i} d={d} fill="#64D262" />
+    ))}
+    <circle cx="512" cy="512" r="44" fill="#14E468" />
+  </svg>
+);
+
+const readScrolled = () => typeof window !== 'undefined' && window.scrollY > SCROLLED_AT;
+// On Home the hero carries the large wordmark, so the header shows only the
+// mark until the hero has mostly scrolled away.
+const readPastHero = () => typeof window !== 'undefined' && window.scrollY > window.innerHeight * 0.45;
 
 const Header = () => {
-  const [visible, setVisible] = useState(false);
-  const location = useLocation();
-  const isHome = location.pathname === '/' || location.pathname === '/clip';
+  const path = usePath();
+  const isHome = isHomePath(path);
+  const [scrolled, setScrolled] = useState(readScrolled);
+  const [pastHero, setPastHero] = useState(readPastHero);
+
+  // The page's only scroll listener outside the geometry engine. State only
+  // changes when a threshold is crossed.
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(readScrolled());
+      setPastHero(readPastHero());
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const handleLogoClick = useCallback((e) => {
     if (isHome) {
       e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      } catch {
+        window.scrollTo(0, 0);
+      }
     }
   }, [isHome]);
 
-  useEffect(() => {
-    if (!isHome) {
-      setVisible(true);
-      return;
-    }
+  // Skip link: move focus to the download block, not just the scroll position.
+  const handleSkip = useCallback((e) => {
+    const target = document.getElementById('download');
+    if (!target) return;
+    e.preventDefault();
+    if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+    target.scrollIntoView();
+    target.focus({ preventScroll: true });
+  }, []);
 
-    const handleScroll = () => {
-      setVisible(window.scrollY > window.innerHeight * 0.7);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isHome]);
+  if (path === '/player') return null;
 
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.header
-          className="header-bar"
-          initial={{ y: -60, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -60, opacity: 0 }}
-          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+    <header className="header-bar" data-scrolled={scrolled ? 'true' : 'false'}>
+      {isHome && (
+        <a
+          href="#download"
+          onClick={handleSkip}
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-[calc(env(safe-area-inset-top)+8px)] focus:z-[70] focus:rounded-full focus:bg-surface focus:px-4 focus:py-2.5 focus:text-sm focus:text-white"
         >
-          <div className="max-w-6xl mx-auto w-full px-5 flex items-center justify-between h-full">
-            <Link to="/" onClick={handleLogoClick} className="flex items-center gap-2.5 group">
-              <img src="/images/logo.svg" alt="OPUS Loop" className="w-6 h-6" />
-              <span className="font-courier text-[11px] tracking-[0.2em] uppercase text-white/50 group-hover:text-white/70 transition-colors">
-                OPUS Loop
-              </span>
-            </Link>
-
-            <nav className="flex items-center gap-5">
-              <Link
-                to="/player"
-                className="text-[13px] text-white/40 hover:text-white/70 transition-colors"
-              >
-                Web Player
-              </Link>
-              <Link
-                to="/support"
-                className="text-[13px] text-white/40 hover:text-white/70 transition-colors"
-              >
-                Support
-              </Link>
-            </nav>
-          </div>
-        </motion.header>
+          Skip to download
+        </a>
       )}
-    </AnimatePresence>
+      <div className="mx-auto flex h-14 w-full max-w-[1200px] items-center justify-between gap-3 px-4 lg:px-10 xl:px-16">
+        <Link
+          to="/"
+          onClick={handleLogoClick}
+          className="flex min-h-[44px] items-center gap-2.5 rounded-md text-white"
+        >
+          <LoopMark className="h-[22px] w-[22px] flex-shrink-0" />
+          <Wordmark
+            className={`h-[19px] w-auto text-paper transition-opacity duration-500 ease-out motion-reduce:transition-none ${
+              isHome && !pastHero ? 'opacity-0' : 'opacity-100'
+            }`}
+          />
+        </Link>
+
+        <nav aria-label="Main" className="flex items-center gap-1 lg:gap-3">
+          <Link
+            to="/support"
+            className="hidden min-h-[44px] items-center rounded-md px-2 text-sm text-muted transition-colors hover:text-white lg:inline-flex"
+          >
+            Support
+          </Link>
+          <a
+            href={APP_STORE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex min-h-[44px] items-center rounded-full px-1"
+          >
+            <span className="whitespace-nowrap rounded-full border border-white/[0.14] px-3.5 py-1.5 text-[13px] leading-none text-white transition-colors group-hover:border-white/30 group-hover:bg-white/[0.06]">
+              Get the app
+            </span>
+          </a>
+          <MotionToggle />
+        </nav>
+      </div>
+    </header>
   );
 };
 

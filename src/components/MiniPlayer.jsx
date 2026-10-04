@@ -1,103 +1,111 @@
-import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useLayoutEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { m as motion, AnimatePresence } from 'framer-motion';
 import { useTimerContext } from '../contexts/TimerContext';
 import { formatTime } from '../hooks/useTimer';
+import { usePath } from '../hooks/usePath';
 
+// Bottom bar for a web session that is running or paused, on every route but
+// /player, at any scroll position. It reads the tick context (the countdown),
+// so it is the only thing outside /player that re-renders every second.
 const MiniPlayer = () => {
   const {
     timerState,
-    elapsedSeconds,
+    displaySeconds,
     selectedSound,
     onPlayPause,
     onStop,
     onToggleSoundPicker,
   } = useTimerContext();
 
-  const location = useLocation();
+  const path = usePath();
   const navigate = useNavigate();
-  const isHome = location.pathname === '/' || location.pathname === '/clip';
-  const [heroVisible, setHeroVisible] = useState(true);
-
-  useEffect(() => {
-    if (!isHome) {
-      setHeroVisible(false);
-      return;
-    }
-
-    const handleScroll = () => {
-      setHeroVisible(window.scrollY < window.innerHeight * 0.6);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isHome]);
+  const barRef = useRef(null);
 
   const isActive = timerState === 'running' || timerState === 'paused';
   const isRunning = timerState === 'running';
-  const shouldShow = isActive && !heroVisible;
+  const visible = isActive && path !== '/player';
 
-  const handleTimerTap = () => {
-    if (isHome) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      navigate('/');
+  // Publish the bar's height as --mini-h so #root pads the page above it.
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    const bar = barRef.current;
+    if (!visible || !bar) {
+      root.style.setProperty('--mini-h', '0px');
+      return undefined;
     }
-  };
+    const publish = () => root.style.setProperty('--mini-h', `${bar.offsetHeight}px`);
+    publish();
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(publish) : null;
+    observer?.observe(bar);
+    return () => {
+      observer?.disconnect();
+      root.style.setProperty('--mini-h', '0px');
+    };
+  }, [visible]);
 
   return (
     <AnimatePresence>
-      {shouldShow && (
+      {visible && (
         <motion.div
+          ref={barRef}
           className="miniplayer"
+          role="region"
+          aria-label="Session"
           initial={{ y: 80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
           transition={{ type: 'spring', damping: 28, stiffness: 300 }}
         >
-          <div className="flex items-center justify-between w-full max-w-6xl mx-auto px-4">
-            <div className="flex items-center gap-3 min-w-0 flex-1">
+          <div className="mx-auto flex w-full max-w-[1200px] items-center justify-between gap-3 px-4 lg:px-10 xl:px-16">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
               <button
-                onClick={onPlayPause}
-                className="miniplayer-btn flex-shrink-0"
+                type="button"
+                onClick={() => onPlayPause()}
+                className="miniplayer-btn"
                 aria-label={isRunning ? 'Pause' : 'Resume'}
               >
                 {isRunning ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white" aria-hidden="true">
                     <rect x="6" y="4" width="4" height="16" rx="1" />
                     <rect x="14" y="4" width="4" height="16" rx="1" />
                   </svg>
                 ) : (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white" aria-hidden="true">
                     <path d="M8 5.14v14l11-7-11-7z" />
                   </svg>
                 )}
               </button>
 
               <button
-                onClick={handleTimerTap}
-                className="font-courier text-sm text-white/80 tabular-nums tracking-wide hover:text-white transition-colors"
+                type="button"
+                onClick={() => navigate('/player')}
+                title="Open the player"
+                className="min-h-[44px] rounded-md px-1 font-rounded text-xl font-light tabular-nums leading-none text-white transition-colors hover:text-white/80"
               >
-                {formatTime(elapsedSeconds)}
+                <span className="sr-only">Open the player, </span>
+                {formatTime(displaySeconds)}
               </button>
 
-              <span className="text-white/20 text-xs">·</span>
+              <span className="text-white/40" aria-hidden="true">·</span>
 
               <button
+                type="button"
                 onClick={onToggleSoundPicker}
-                className="text-[13px] text-white/40 hover:text-white/60 transition-colors truncate min-w-0"
+                className="min-h-[44px] min-w-0 truncate rounded-md px-1 text-left font-courier text-sm font-bold text-white/70 transition-colors hover:text-white"
               >
+                <span className="sr-only">Change sound, </span>
                 {selectedSound.label}
               </button>
             </div>
 
             <button
-              onClick={onStop}
-              className="miniplayer-btn flex-shrink-0 ml-3"
+              type="button"
+              onClick={() => onStop()}
+              className="miniplayer-btn"
               aria-label="Stop"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true">
                 <rect x="6" y="6" width="12" height="12" rx="2" />
               </svg>
             </button>

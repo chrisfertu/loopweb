@@ -1,20 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-// Sound definitions
-export const SOUNDS = [
-  { type: 'silence', label: 'Silence', subtitle: null, group: 'default' },
-  { type: 'binaural', label: '2Hz Delta', subtitle: 'Deep sleep', frequency: 2, group: 'binaural' },
-  { type: 'binaural', label: '4Hz Theta', subtitle: 'Meditation', frequency: 4, group: 'binaural' },
-  { type: 'binaural', label: '10Hz Alpha', subtitle: 'Relaxation', frequency: 10, group: 'binaural' },
-  { type: 'binaural', label: '20Hz Beta', subtitle: 'Active focus', frequency: 20, group: 'binaural' },
-  { type: 'white', label: 'White Noise', subtitle: null, group: 'noise' },
-  { type: 'pink', label: 'Pink Noise', subtitle: null, group: 'noise' },
-  { type: 'brown', label: 'Brown Noise', subtitle: null, group: 'noise' },
-  { type: 'dark', label: 'Dark Noise', subtitle: null, group: 'noise' },
-];
-
-export const DEFAULT_SOUND = SOUNDS[0]; // Silence
+import { SOUNDS } from '../content/sounds';
 
 const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrack, onImportTrack, onToggleLoop }) => {
   const fileInputRef = useRef(null);
@@ -25,7 +11,8 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
 
     const closedByBack = { current: false };
 
-    window.history.pushState({ soundPicker: true }, '');
+    // Keep the router's state (idx, key) on our entry so its history indexes stay valid.
+    window.history.pushState({ ...window.history.state, soundPicker: true }, '');
 
     const handlePopState = () => {
       closedByBack.current = true;
@@ -36,7 +23,9 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
 
     return () => {
       window.removeEventListener('popstate', handlePopState);
-      if (!closedByBack.current) {
+      // Undo our entry only if it is still on top. After a route change the
+      // router's entry is on top, and going back would leave the new page.
+      if (!closedByBack.current && window.history.state?.soundPicker) {
         window.history.back();
       }
     };
@@ -77,6 +66,9 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
           {/* Sheet */}
           <motion.div
             className="sound-picker-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Sound"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
@@ -99,8 +91,9 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
             <div className="flex items-center justify-between px-5 pb-3">
               <h3 className="text-base font-semibold text-white">Sound</h3>
               <button
+                type="button"
                 onClick={onClose}
-                className="text-white/40 hover:text-white/70 transition-colors text-sm"
+                className="min-h-[44px] px-2 text-white/70 hover:text-white transition-colors text-sm"
               >
                 Done
               </button>
@@ -152,8 +145,12 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
                     />
                     {/* Loop toggle */}
                     <div className="flex items-center justify-between px-4 py-2">
-                      <span className="text-xs text-white/40">Loop</span>
+                      <span id="sound-picker-loop" className="text-xs text-white/60">Loop</span>
                       <button
+                        type="button"
+                        role="switch"
+                        aria-checked={!!customTrack.loop}
+                        aria-labelledby="sound-picker-loop"
                         onClick={onToggleLoop}
                         className={`w-9 h-5 rounded-full transition-colors relative ${
                           customTrack.loop ? 'bg-opus-green/60' : 'bg-white/10'
@@ -169,6 +166,7 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
                   </div>
                 ) : null}
                 <button
+                  type="button"
                   onClick={() => fileInputRef.current?.click()}
                   className="w-full text-left px-4 py-3 rounded-lg text-sm text-opus-green hover:bg-white/5 transition-colors"
                 >
@@ -194,7 +192,7 @@ const SoundPicker = ({ isOpen, onClose, selectedSound, onSelectSound, customTrac
 const SoundGroup = ({ label, children }) => (
   <div className="mb-2">
     {label && (
-      <p className="text-[11px] uppercase tracking-wider text-white/25 px-4 pt-3 pb-1 font-courier">
+      <p className="text-[11px] uppercase tracking-wider text-white/55 px-4 pt-3 pb-1 font-courier">
         {label}
       </p>
     )}
@@ -205,7 +203,9 @@ const SoundGroup = ({ label, children }) => (
 // Individual sound row
 const SoundRow = ({ sound, selected, onSelect }) => (
   <button
+    type="button"
     onClick={onSelect}
+    aria-pressed={selected}
     className={`w-full text-left flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${
       selected ? 'bg-white/10' : 'hover:bg-white/5'
     }`}
@@ -213,11 +213,11 @@ const SoundRow = ({ sound, selected, onSelect }) => (
     <div>
       <span className="text-sm text-white">{sound.label}</span>
       {sound.subtitle && (
-        <span className="text-xs text-white/30 ml-2">{sound.subtitle}</span>
+        <span className="text-xs text-white/55 ml-2">{sound.subtitle}</span>
       )}
     </div>
     {selected && (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00A86B" strokeWidth="2.5">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7A9B58" strokeWidth="2.5" aria-hidden="true">
         <polyline points="20 6 9 17 4 12" />
       </svg>
     )}

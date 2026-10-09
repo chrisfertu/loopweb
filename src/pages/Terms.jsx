@@ -1,65 +1,83 @@
-import PageLayout from '../components/PageLayout';
+import { Link } from 'react-router-dom';
+import { APP_103_LIVE } from '../content/copy';
+import PageLayout, { PageSection } from '../components/PageLayout';
+
+// Mirrors the in-app terms (App Settings > Terms of Service), plus Purchases.
+// Purchases switch on VITE_APP_103_LIVE: 1.0.3 is free with an optional tip;
+// 1.0.2 sold a one-time preset unlock.
 
 const Terms = () => (
-  <PageLayout title="Terms of Service" lastUpdated="Last updated: February 2026">
-    <div className="legal-section">
-      <h2>Health Notice</h2>
+  <PageLayout title="Terms of Service" lastUpdated="Last updated: September 2026">
+    <PageSection title="Health notice">
       <p>
-        OPUS Loop is a wellness tool, not a medical device. It cannot diagnose, treat,
-        cure, or prevent any disease. If you experience any adverse effects, stop using the app.
+        Loop is a wellness tool, not a medical device. It cannot diagnose, treat, cure, or
+        prevent any disease. If you experience any adverse effects, stop using the app.
       </p>
-    </div>
+    </PageSection>
 
-    <div className="legal-section">
-      <h2>What This App Does</h2>
+    <PageSection title="What this app does">
       <p>
-        OPUS Loop is a meditation timer and sound player. Your meditation sessions can
-        optionally be saved to Apple Health. All data stays on your device or in your
-        personal iCloud account.
+        Loop is a meditation timer and sound player. Your meditation sessions can optionally
+        be saved to Apple Health. Your sessions, presets and settings stay on your device or in
+        your personal iCloud account.
       </p>
-    </div>
+    </PageSection>
 
-    <div className="legal-section">
-      <h2>Your Responsibilities</h2>
+    <PageSection title="Your responsibilities">
       <p>
-        Use the app lawfully and for personal use. You are responsible for any content
-        you import into the app and for keeping your device secure.
+        Use the app lawfully and for personal use. You are responsible for any content you import
+        into the app and for keeping your device secure.
       </p>
-    </div>
+    </PageSection>
 
-    <div className="legal-section">
-      <h2>Purchases</h2>
-      <p>
-        OPUS Loop is a one-time purchase. There are no subscriptions, no in-app purchases,
-        and no &ldquo;Pro&rdquo; upgrades. All features are included. Refunds are handled
-        by Apple through the App Store.
-      </p>
-    </div>
+    <PageSection title="Purchases">
+      {APP_103_LIVE ? (
+        <>
+          <p>
+            Loop is free. Every feature is included, unlimited presets too, and nothing is
+            paywalled. There is no subscription.
+          </p>
+          <p>
+            There is one optional in-app purchase: a tip, which you can leave from App Settings,
+            more than once if you like. A tip unlocks nothing and changes nothing. If you bought
+            the preset unlock in an earlier version, nothing changes for you.
+          </p>
+          <p>Apple handles payment and refunds through the App Store.</p>
+        </>
+      ) : (
+        <>
+          <p>
+            Loop is free to download, and there is no subscription. The timer, every sound
+            and your imports are included. One preset is free; more presets are a one-time in-app
+            purchase.
+          </p>
+          <p>Apple handles payment and refunds through the App Store.</p>
+        </>
+      )}
+    </PageSection>
 
-    <div className="legal-section">
-      <h2>Privacy</h2>
+    <PageSection title="Privacy">
       <p>
-        See the <a href="/privacy">Privacy Policy</a> for details. In short: we don&rsquo;t
-        operate servers, we don&rsquo;t store your data, and we don&rsquo;t require an account.
-        Health data is only written to Apple Health if you explicitly enable it.
+        See the <Link to="/privacy">Privacy Policy</Link> for details. In short: we don&rsquo;t
+        operate servers and we don&rsquo;t require an account. Your data is stored on your device
+        and, if you use iCloud sync, in your personal iCloud account. The app sends anonymous
+        usage statistics, which you can turn off in App Settings. Health data is only written to
+        Apple Health if you allow it.
       </p>
-    </div>
+    </PageSection>
 
-    <div className="legal-section">
-      <h2>Changes</h2>
+    <PageSection title="Changes">
       <p>
-        We may update these terms as the app evolves. Significant changes will be noted
-        in the app or on this page.
+        We may update these terms as the app evolves. Significant changes will be noted in the
+        app or on this page.
       </p>
-    </div>
+    </PageSection>
 
-    <div className="legal-section">
-      <h2>Contact</h2>
+    <PageSection title="Contact">
       <p>
-        Questions about these terms? Reach us at{' '}
-        <a href="mailto:hello@opus.ro">hello@opus.ro</a>.
+        Questions about these terms? Reach us at <a href="mailto:hello@opus.ro">hello@opus.ro</a>.
       </p>
-    </div>
+    </PageSection>
   </PageLayout>
 );
 

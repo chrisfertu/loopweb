@@ -1,9 +1,24 @@
-import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+} from 'react';
 import { useAudioEngine } from '../hooks/useAudioEngine';
 import { useTimer, formatTime } from '../hooks/useTimer';
-import { DEFAULT_SOUND } from '../components/SoundPicker';
+import { DEFAULT_SOUND } from '../content/sounds';
 
-const TimerContext = createContext(null);
+// Two contexts over one provider:
+// - TimerStateContext: selection, pickers, handlers and timerState. Memoised,
+//   so it only changes when one of those changes (never on a tick).
+// - TimerTickContext: the same object plus the per-second fields
+//   (elapsedSeconds, displaySeconds). Only the Player and MiniPlayer read it.
+const TimerStateContext = createContext(null);
+const TimerTickContext = createContext(null);
 
 export function TimerProvider({ children }) {
   const [selectedSound, setSelectedSound] = useState(DEFAULT_SOUND);
@@ -16,53 +31,69 @@ export function TimerProvider({ children }) {
   const lastBellRef = useRef(0);
 
   const timer = useTimer();
-  const audio = useAudioEngine();
+  const audio = useAudioEngine(); // stable object
+  const { timerState, elapsedSeconds, displaySeconds, duration } = timer;
+
+  // useTimer returns a new object every tick; the handlers read the latest one
+  // through this ref so they (and the state context) stay stable.
+  const timerRef = useRef(timer);
+  useLayoutEffect(() => {
+    timerRef.current = timer;
+  });
+
+  const unmute = useCallback(() => {
+    audio.setMuted(false);
+    setIsMuted(false);
+  }, [audio]);
 
   const handlePlayPause = useCallback((durationSeconds = null) => {
-    if (timer.timerState === 'idle') {
+    const t = timerRef.current;
+    // Ignore anything that is not a positive number (e.g. a click event).
+    const seconds = typeof durationSeconds === 'number' && durationSeconds > 0 ? durationSeconds : null;
+    if (t.timerState === 'idle') {
       lastBellRef.current = 0;
-      timer.start(durationSeconds, async () => {
+      t.start(seconds, async () => {
         // countdown completed - stop audio
         await audio.stop();
-        setIsMuted(false);
+        unmute();
       });
+      unmute();
       audio.play(selectedSound);
-      setIsMuted(false);
-    } else if (timer.timerState === 'running') {
-      timer.pause();
+    } else if (t.timerState === 'running') {
+      t.pause();
       audio.pause();
-      setIsMuted(false);
-    } else if (timer.timerState === 'paused') {
-      timer.resume();
+      unmute();
+    } else if (t.timerState === 'paused') {
+      t.resume();
       audio.resume();
-      setIsMuted(false);
+      unmute();
     }
-  }, [timer, audio, selectedSound]);
+  }, [audio, selectedSound, unmute]);
 
   const handleStop = useCallback(async () => {
-    timer.stop();
-    await audio.stop();
-    setIsMuted(false);
+    timerRef.current.stop();
     lastBellRef.current = 0;
-  }, [timer, audio]);
+    await audio.stop();
+    unmute();
+  }, [audio, unmute]);
 
   const handleSelectSound = useCallback((sound) => {
     setSelectedSound(sound);
-    if (timer.timerState === 'running') {
+    if (timerRef.current.timerState === 'running') {
       audio.play(sound);
     }
     setShowSoundPicker(false);
-  }, [timer.timerState, audio]);
+  }, [audio]);
 
   const handleImportTrack = useCallback((file) => {
     const track = { name: file.name, file, loop: true };
     setCustomTrack(track);
     const sound = { type: 'custom', label: file.name, file, loop: true };
     setSelectedSound(sound);
-    if (timer.timerState === 'running') {
+    if (timerRef.current.timerState === 'running') {
       audio.play(sound);
     }
-  }, [timer.timerState, audio]);
+  }, [audio]);
 
   const handleToggleLoop = useCallback(() => {
     if (!customTrack) return;
@@ -71,22 +102,18 @@ export function TimerProvider({ children }) {
     if (selectedSound.type === 'custom') {
       const updatedSound = { ...selectedSound, loop: newLoop };
       setSelectedSound(updatedSound);
-      if (timer.timerState === 'running') {
+      if (timerRef.current.timerState === 'running') {
         audio.play(updatedSound);
       }
     }
-  }, [customTrack, selectedSound, timer.timerState, audio]);
+  }, [customTrack, selectedSound, audio]);
 
   const handleToggleMute = useCallback(() => {
-    if (timer.timerState !== 'running') return;
-    if (isMuted) {
-      audio.resume();
-      setIsMuted(false);
-    } else {
-      audio.pause();
-      setIsMuted(true);
-    }
-  }, [timer.timerState, audio, isMuted]);
+    if (timerRef.current.timerState !== 'running') return;
+    const next = !isMuted;
+    audio.setMuted(next);
+    setIsMuted(next);
+  }, [audio, isMuted]);
 
   const toggleSoundPicker = useCallback(() => {
     setShowSoundPicker((v) => !v);
@@ -98,6 +125,11 @@ export function TimerProvider({ children }) {
     setShowSoundPicker(false);
   }, []);
 
+  const closePickers = useCallback(() => {
+    setShowSoundPicker(false);
+    setShowBellPicker(false);
+  }, []);
+
   const handleSetBellEnabled = useCallback((enabled) => {
     setBellEnabled(enabled);
   }, []);
@@ -106,22 +138,29 @@ export function TimerProvider({ children }) {
     setBellInterval(minutes);
   }, []);
 
-  // Play bell at interval during active timer
+  // Interval bell. lastBellRef counts the intervals already rung (reset to 0
+  // on start and stop), so a skipped or late tick still rings the bell once,
+  // never twice. Turning the bell on or changing the interval mid-session
+  // starts counting from the current interval, so nothing rings at once.
+  // (Declared before the ringing effect so it runs first.)
   useEffect(() => {
-    if (timer.timerState !== 'running' || !bellEnabled || !bellInterval) return;
+    const minutes = bellInterval;
+    lastBellRef.current = minutes ? Math.floor(timerRef.current.elapsedSeconds / (minutes * 60)) : 0;
+  }, [bellEnabled, bellInterval]);
+
+  useEffect(() => {
+    if (timerState !== 'running' || !bellEnabled || !bellInterval) return;
     const intervalSec = bellInterval * 60;
-    const elapsed = timer.elapsedSeconds;
-    if (elapsed > 0 && elapsed % intervalSec === 0 && elapsed !== lastBellRef.current) {
-      lastBellRef.current = elapsed;
+    const due = Math.floor(elapsedSeconds / intervalSec);
+    if (due > lastBellRef.current) {
+      lastBellRef.current = due;
       audio.playBell();
     }
-  }, [timer.elapsedSeconds, timer.timerState, bellEnabled, bellInterval, audio]);
+  }, [elapsedSeconds, timerState, bellEnabled, bellInterval, audio]);
 
-  const value = {
-    timerState: timer.timerState,
-    elapsedSeconds: timer.elapsedSeconds,
-    displaySeconds: timer.displaySeconds,
-    duration: timer.duration,
+  const stateValue = useMemo(() => ({
+    timerState,
+    duration,
     selectedSound,
     showSoundPicker,
     customTrack,
@@ -140,19 +179,64 @@ export function TimerProvider({ children }) {
     onToggleBellPicker: toggleBellPicker,
     onSetBellEnabled: handleSetBellEnabled,
     onSetBellInterval: handleSetBellInterval,
-  };
+    onClosePickers: closePickers,
+  }), [
+    timerState,
+    duration,
+    selectedSound,
+    showSoundPicker,
+    customTrack,
+    isMuted,
+    handlePlayPause,
+    handleStop,
+    handleSelectSound,
+    handleImportTrack,
+    handleToggleLoop,
+    handleToggleMute,
+    toggleSoundPicker,
+    bellEnabled,
+    bellInterval,
+    showBellPicker,
+    toggleBellPicker,
+    handleSetBellEnabled,
+    handleSetBellInterval,
+    closePickers,
+  ]);
+
+  const tickValue = useMemo(
+    () => ({ ...stateValue, elapsedSeconds, displaySeconds }),
+    [stateValue, elapsedSeconds, displaySeconds],
+  );
 
   return (
-    <TimerContext.Provider value={value}>
-      {children}
-    </TimerContext.Provider>
+    <TimerStateContext.Provider value={stateValue}>
+      <TimerTickContext.Provider value={tickValue}>
+        {children}
+      </TimerTickContext.Provider>
+    </TimerStateContext.Provider>
   );
 }
 
+/**
+ * Everything, including the per-second fields. Re-renders every second while
+ * a session runs: only for the Player and the MiniPlayer.
+ */
 export function useTimerContext() {
-  const context = useContext(TimerContext);
+  const context = useContext(TimerTickContext);
   if (!context) {
     throw new Error('useTimerContext must be used within a TimerProvider');
+  }
+  return context;
+}
+
+/**
+ * The same object without elapsedSeconds/displaySeconds. It does not change
+ * on ticks, so landing components and the app shell use this one.
+ */
+export function useTimerState() {
+  const context = useContext(TimerStateContext);
+  if (!context) {
+    throw new Error('useTimerState must be used within a TimerProvider');
   }
   return context;
 }

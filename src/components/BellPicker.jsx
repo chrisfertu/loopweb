@@ -11,7 +11,8 @@ const BellPicker = ({ isOpen, onClose, bellEnabled, onSetBellEnabled, bellInterv
 
     const closedByBack = { current: false };
 
-    window.history.pushState({ bellPicker: true }, '');
+    // Keep the router's state (idx, key) on our entry so its history indexes stay valid.
+    window.history.pushState({ ...window.history.state, bellPicker: true }, '');
 
     const handlePopState = () => {
       closedByBack.current = true;
@@ -22,7 +23,9 @@ const BellPicker = ({ isOpen, onClose, bellEnabled, onSetBellEnabled, bellInterv
 
     return () => {
       window.removeEventListener('popstate', handlePopState);
-      if (!closedByBack.current) {
+      // Undo our entry only if it is still on top. After a route change the
+      // router's entry is on top, and going back would leave the new page.
+      if (!closedByBack.current && window.history.state?.bellPicker) {
         window.history.back();
       }
     };
@@ -44,6 +47,9 @@ const BellPicker = ({ isOpen, onClose, bellEnabled, onSetBellEnabled, bellInterv
           {/* Sheet */}
           <motion.div
             className="sound-picker-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Interval Bell"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
@@ -66,8 +72,9 @@ const BellPicker = ({ isOpen, onClose, bellEnabled, onSetBellEnabled, bellInterv
             <div className="flex items-center justify-between px-5 pb-3">
               <h3 className="text-base font-semibold text-white">Interval Bell</h3>
               <button
+                type="button"
                 onClick={onClose}
-                className="text-white/40 hover:text-white/70 transition-colors text-sm"
+                className="min-h-[44px] px-2 text-white/70 hover:text-white transition-colors text-sm"
               >
                 Done
               </button>
@@ -77,8 +84,12 @@ const BellPicker = ({ isOpen, onClose, bellEnabled, onSetBellEnabled, bellInterv
             <div className="px-4 pb-10">
               {/* Toggle */}
               <div className="flex items-center justify-between py-3 px-1">
-                <span className="text-sm text-white/70">Play a bell</span>
+                <span id="bell-picker-enabled" className="text-sm text-white/70">Play a bell</span>
                 <button
+                  type="button"
+                  role="switch"
+                  aria-checked={!!bellEnabled}
+                  aria-labelledby="bell-picker-enabled"
                   onClick={() => onSetBellEnabled(!bellEnabled)}
                   className={`w-9 h-5 rounded-full transition-colors relative ${
                     bellEnabled ? 'bg-opus-green/60' : 'bg-white/10'
@@ -92,7 +103,7 @@ const BellPicker = ({ isOpen, onClose, bellEnabled, onSetBellEnabled, bellInterv
                 </button>
               </div>
 
-              {/* Interval grid — visible when enabled */}
+              {/* Interval grid, visible when enabled */}
               <AnimatePresence>
                 {bellEnabled && (
                   <motion.div
@@ -102,25 +113,28 @@ const BellPicker = ({ isOpen, onClose, bellEnabled, onSetBellEnabled, bellInterv
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden"
                   >
-                    <p className="text-[11px] uppercase tracking-wider text-white/25 px-1 pt-3 pb-2 font-courier">
+                    <p className="text-[11px] uppercase tracking-wider text-white/55 px-1 pt-3 pb-2 font-courier">
                       Every
                     </p>
                     <div className="grid grid-cols-5 gap-2">
                       {INTERVALS.map((min) => (
                         <button
+                          type="button"
                           key={min}
+                          aria-pressed={bellInterval === min}
+                          aria-label={min === 1 ? 'Every minute' : `Every ${min} minutes`}
                           onClick={() => onSetBellInterval(min)}
                           className={`py-2.5 rounded-lg text-sm font-courier transition-colors ${
                             bellInterval === min
                               ? 'bg-white/[0.12] text-white'
-                              : 'bg-white/[0.04] text-white/40 hover:bg-white/[0.08]'
+                              : 'bg-white/[0.04] text-white/65 hover:bg-white/[0.08]'
                           }`}
                         >
                           {min}
                         </button>
                       ))}
                     </div>
-                    <p className="text-[11px] text-white/20 px-1 pt-2 font-courier">
+                    <p className="text-[11px] text-white/55 px-1 pt-2 font-courier">
                       {bellInterval === 1 ? '1 minute' : `${bellInterval} minutes`}
                     </p>
                   </motion.div>

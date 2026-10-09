@@ -1,8 +1,9 @@
 {
-  "name": "OPUS Loop",
-  "short_name": "OPUS Loop",
-  "description": "A meditation timer you own forever. No subscription. No account.",
-  "start_url": "/player",
+  "name": "Loop",
+  "short_name": "Loop",
+  "description": "A free meditation timer in your browser. No subscription, no account.",
+  "id": "/player",
+  "start_url": "/player/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",

@@ -3,16 +3,18 @@ import { Link } from 'react-router-dom';
 import { usePath, isHomePath } from '../hooks/usePath';
 import MotionToggle from './MotionToggle';
 import ringSvg from '../geometry/logo/ring.svg?raw';
+import chevronsSvg from '../geometry/logo/chevrons.svg?raw';
+import bracketsSvg from '../geometry/logo/brackets.svg?raw';
 import coreSvg from '../geometry/logo/core.svg?raw';
 import Wordmark from './brand/Wordmark';
 
 const APP_STORE_URL = 'https://apps.apple.com/app/id6756740657';
 const SCROLLED_AT = 24;
 
-// The app mark (ring + core in the icon's green, and its dot), from the same
-// SVGs the geometry engine draws.
+// The app mark (ring, chevrons, brackets and core in the icon's green, and
+// its dot), from the same SVGs the geometry engine draws.
 const pathsOf = (svg) => Array.from(svg.matchAll(/\sd="([^"]+)"/g), (m) => m[1]);
-const MARK_PATHS = [...pathsOf(ringSvg), ...pathsOf(coreSvg)];
+const MARK_PATHS = [ringSvg, chevronsSvg, bracketsSvg, coreSvg].flatMap(pathsOf);
 
 const LoopMark = ({ className = '' }) => (
   <svg

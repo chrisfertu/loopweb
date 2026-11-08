@@ -8,9 +8,9 @@ export function normalizePath(pathname) {
   return (pathname || '/').replace(/\/+$/, '') || '/';
 }
 
-/** True for the landing page: '/', '/clip' and anything under '/clip/'. */
+/** True for the landing page. '/clip' has its own page (pages/Clip.jsx). */
 export function isHomePath(path) {
-  return path === '/' || path === '/clip' || path.startsWith('/clip/');
+  return path === '/';
 }
 
 /** The current pathname, normalised. */

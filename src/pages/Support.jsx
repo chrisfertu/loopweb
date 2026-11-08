@@ -195,11 +195,27 @@ const Support = () => (
 
     <Topic title="Health and Apple Watch">
       <Question title="How do I track mindful minutes?">
-        <p>
-          Mindful minutes are on by default for each preset. The first time you finish a
-          session, the app asks for access to Apple Health. After that, every completed session
-          is saved as mindful minutes. You can turn it off per preset in the session settings.
-        </p>
+        {APP_103_LIVE ? (
+          <>
+            <p>
+              Mindful minutes are on by default for each preset. When you first open the app, it
+              says what it would save in Apple Health and opens the Health sheet, where you turn
+              on what you want. With an Apple Watch paired, it also asks for Mind &amp; Body:
+              workouts, heart rate and energy.
+            </p>
+            <p>
+              After that, every completed session is saved as mindful minutes. You can turn it
+              off per preset in the session settings. To change what Loop may save, open the
+              Health app, tap your picture, then Apps, then Loop.
+            </p>
+          </>
+        ) : (
+          <p>
+            Mindful minutes are on by default for each preset. The first time you finish a
+            session, the app asks for access to Apple Health. After that, every completed session
+            is saved as mindful minutes. You can turn it off per preset in the session settings.
+          </p>
+        )}
       </Question>
       <Question title="What is Mind & Body mode?">
         <p>

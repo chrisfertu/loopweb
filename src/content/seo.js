@@ -42,6 +42,11 @@ export const ROUTES = {
     description:
       'How Loop handles your data. No account and no ads. Your data stays on your device and in your own iCloud, and anonymous usage statistics can be turned off.',
   },
+  '/clip/': {
+    title: 'Open on iPhone · Loop',
+    description:
+      'This code opens Loop, a meditation timer, on an iPhone. Get the app on the App Store, or use the web player in your browser.',
+  },
   '/terms/': {
     title: 'Terms of Service · Loop',
     description: 'The terms of service for Loop, a meditation timer and sound player for iPhone, iPad and Apple Watch.',

@@ -16,6 +16,7 @@ const Player = lazy(() => import('./pages/Player'));
 const Support = lazy(() => import('./pages/Support'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
+const Clip = lazy(() => import('./pages/Clip'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 const SoundPicker = lazy(() => import('./components/SoundPicker'));
 const BellPicker = lazy(() => import('./components/BellPicker'));
@@ -157,7 +158,7 @@ function AppContent() {
           <Suspense fallback={<div className="min-h-[100svh]" />}>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/clip/*" element={<Home />} />
+              <Route path="/clip/*" element={<Clip />} />
               <Route path="/player" element={<Player />} />
               <Route path="/support" element={<Support />} />
               <Route path="/privacy" element={<Privacy />} />

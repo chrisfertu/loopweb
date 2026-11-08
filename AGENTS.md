@@ -50,7 +50,7 @@ public/
 scripts/og-image.swift
 ```
 
-Routes: `/` and `/clip/*` (Home), `/player` (full-screen player, no Header/MiniPlayer), `/support`, `/privacy`, `/terms`, `*` (NotFound).
+Routes: `/` (Home), `/clip/*` (Clip: where the App Clip's QR codes land on a phone that cannot open an App Clip), `/player` (full-screen player, no Header/MiniPlayer), `/support`, `/privacy`, `/terms`, `*` (NotFound).
 
 ## The geometry field
 

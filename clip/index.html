@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- Primary meta. The seo placeholders are filled at build and dev time
+         by vite-plugin-seo.js from src/content/seo.js (VITE_APP_103_LIVE). -->
+    <title>Open on iPhone · Loop</title>
+    <meta name="title" content="Open on iPhone · Loop" />
+    <meta name="description" content="This code opens Loop, a meditation timer, on an iPhone. Get the app on the App Store, or use the web player in your browser." />
+    <meta name="keywords" content="meditation timer, meditation app, binaural beats, mindfulness timer, focus timer, sleep sounds, brown noise, prayer timer, interval bells, Apple Watch meditation, mindful minutes, iOS meditation app, free meditation app" />
+    <meta name="author" content="OPUS" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+    <link rel="canonical" href="https://opusloop.co/clip/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://opusloop.co/clip/" />
+    <meta property="og:title" content="Loop, a free meditation timer" />
+    <meta property="og:description" content="This code opens Loop, a meditation timer, on an iPhone. Get the app on the App Store, or use the web player in your browser." />
+    <meta property="og:image" content="https://opusloop.co/images/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Loop wordmark, its two o’s drawn as one infinity sign, beside a thin green ring around the app icon, on black. Your rituals, without a monthly sacrifice." />
+    <meta property="og:site_name" content="Loop" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://opusloop.co/clip/" />
+    <meta name="twitter:title" content="Loop, a free meditation timer" />
+    <meta name="twitter:description" content="This code opens Loop, a meditation timer, on an iPhone. Get the app on the App Store, or use the web player in your browser." />
+    <meta name="twitter:image" content="https://opusloop.co/images/og-image.png" />
+    <meta name="twitter:image:alt" content="The Loop wordmark, its two o’s drawn as one infinity sign, beside a thin green ring around the app icon, on black. Your rituals, without a monthly sacrifice." />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/logo.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <!-- Rounded digits where ui-rounded does not exist (outside Apple systems): only the ten digits and the colon. -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&text=0123456789%3A&display=swap" rel="stylesheet" />
+
+    <!-- Theme -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-itunes-app" content="app-id=6756740657, app-clip-bundle-id=ro.opus.loop.Clip, app-clip-display=card" />
+
+    <!-- PWA (the service worker is registered from src/main.jsx, production only) -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Loop" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "MobileApplication",
+    "name": "Loop",
+    "alternateName": "Loop - Meditation \u0026 Focus",
+    "description": "A free meditation timer and sound player for iPhone, iPad and Apple Watch, with binaural beats, noise, bells and your own audio. No subscription, no account.",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "iOS 18 or later, watchOS 11 or later",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "downloadUrl": "https://apps.apple.com/app/id6756740657",
+    "installUrl": "https://apps.apple.com/app/id6756740657",
+    "featureList": [
+      "Meditation and focus timer, from one minute to twenty-four hours, or open-ended",
+      "Binaural beats at 2, 6, 10 and 16 Hz, generated on the device",
+      "White, pink, brown and dark noise, and Silence",
+      "Seven bells for the start and the end, with an optional interval bell",
+      "Import from Files, your music library and Apple Music",
+      "Presets with their own sound, bell, background and icon",
+      "Apple Watch app with heart rate",
+      "Apple Health mindful minutes",
+      "iCloud sync across iPhone and iPad",
+      "Free, nothing paywalled; an optional tip that unlocks nothing"
+    ],
+    "author": {
+      "@type": "Organization",
+      "name": "OPUS",
+      "url": "https://opus.ro"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Is Loop free?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Every feature is included, unlimited presets too. There is no subscription and no account. If you want to, you can leave an optional tip in App Settings. It unlocks nothing."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does Loop work?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Choose a duration, pick a sound (binaural beats, noise, Silence or your own audio) and tap play. If you like, add one of seven bells to ring at the start and the end, and at an interval."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does Loop have a subscription?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. There is no subscription and nothing is paywalled."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does Loop track my data?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "There are no accounts and no ads, and OPUS runs no servers for your data. The app sends anonymous usage statistics through TelemetryDeck, using a random install identifier that is hashed before it is sent. Health data and the names of your sounds are never sent. You can turn this off in App Settings."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I use Loop without downloading the app?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Visit opusloop.co/player for a free web timer with binaural beats, noise, an interval bell and your own audio file. It works directly in your browser."
+        }
+      }
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Loop",
+    "url": "https://opusloop.co",
+    "description": "A free meditation timer for iPhone, iPad and Apple Watch. Binaural beats, noise, bells and your own audio. No subscription, no account."
+  }
+]
+    </script>
+
+    <!-- SPA GitHub Pages redirect handler -->
+    <script>
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) {
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+            l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
+    <script type="module" crossorigin src="/assets/index-KUxEevlv.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-nTCLE-aX.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
